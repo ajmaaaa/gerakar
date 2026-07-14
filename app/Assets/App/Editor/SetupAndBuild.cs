@@ -385,7 +385,7 @@ public static class SetupAndBuild
     private static void BuildAPK()
     {
         Debug.Log("[GerakAR] Menjalankan build Android APK...");
-        PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+        PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.ARM64;
         PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
         
         string targetPath = "Builds/GerakAR.apk";
