@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: MovementData_Squat
+  m_EditorClassIdentifier: GerakAR.Content.MovementData
+  movementId: squat
+  referenceImageName: squat_target
+  displayName: Squat
+  categoryColor: {r: 0.72156864, g: 0.40784314, b: 0.2901961, a: 1}
+  modelPrefab: {fileID: 0}
+  animationClip: {fileID: 0}
+  keyPoses:
+  - normalizedTime: 0
+    label: Berdiri siap
+  - normalizedTime: 0.18
+    label: Mulai tekuk lutut
+  - normalizedTime: 0.35
+    label: Setengah turun
+  - normalizedTime: 0.5
+    label: Posisi terbawah
+  - normalizedTime: 0.68
+    label: Setengah naik
+  - normalizedTime: 1
+    label: Kembali berdiri
+  shortDescription: Gerakan untuk melatih kekuatan otot kaki dan bokong.
+  steps:
+  - Berdiri dengan kaki selebar bahu.
+  - Tekuk lutut dan turunkan pinggul perlahan.
+  - Berdiri kembali secara perlahan.
+  safetyTips:
+  - Jaga lutut tetap searah dengan ujung kaki.
+  - Jangan bungkukkan punggung.
+  trainedAreas:
+  - Paha depan (Quadriceps)
+  - Bokong (Gluteus)
+  - Betis (Calves)
+  - Punggung bawah
+  commonMistakes:
+  - Lutut melebihi ujung jari kaki.
+  - Tumit terangkat dari lantai.
+  - Punggung membungkuk berlebihan.
+  relatedMovements:
+  - title: Bodyweight Squat
+    thumbnail: {fileID: 0}
+    shortDescription: Squat menggunakan berat badan sendiri tanpa tambahan beban.
+    steps:
+    - Berdiri tegak, kaki selebar bahu.
+    - Turunkan tubuh seperti duduk di kursi.
+    - Naik kembali sambil dorong tumit ke lantai.
+    safetyTips:
+    - Mulai dari gerakan kecil jika baru belajar.
+  - title: Squat Jump
+    thumbnail: {fileID: 0}
+    shortDescription: Squat dengan lompatan eksplosif untuk melatih daya ledak kaki.
+    steps:
+    - Lakukan posisi squat dasar.
+    - Lompat setinggi mungkin saat naik.
+    - Mendarat lembut dengan lutut sedikit ditekuk.
+    safetyTips:
+    - Mendarat dengan lembut untuk menjaga lutut.
+  - title: Pistol Squat
+    thumbnail: {fileID: 0}
+    shortDescription: Squat satu kaki untuk melatih keseimbangan dan kekuatan.
+    steps:
+    - Berdiri di satu kaki.
+    - Ulurkan kaki lainnya ke depan.
+    - Turunkan tubuh perlahan pada satu kaki.
+    safetyTips:
+    - Latihan keseimbangan dulu sebelum mencoba pistol squat.
+  - title: Front Squat
+    thumbnail: {fileID: 0}
+    shortDescription: Squat dengan posisi beban di depan dada untuk melatih paha depan.
+    steps:
+    - Posisikan beban di depan bahu.
+    - Siku tinggi dan dada tegak.
+    - Turun dan naik dengan kontrol penuh.
+    safetyTips:
+    - Jaga siku tetap tinggi agar beban stabil.
+  audioGuide: {fileID: 0}

@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: MovementData_LadderDrill
+  m_EditorClassIdentifier: GerakAR.Content.MovementData
+  movementId: ladder_drill
+  referenceImageName: ladder_drill_target
+  displayName: Ladder Drill
+  categoryColor: {r: 0.7647059, g: 0.63529414, b: 0.29411766, a: 1}
+  modelPrefab: {fileID: 0}
+  animationClip: {fileID: 0}
+  keyPoses:
+  - normalizedTime: 0
+    label: Siap di sisi tangga
+  - normalizedTime: 0.2
+    label: Masuk kotak pertama
+  - normalizedTime: 0.4
+    label: Langkah kedua masuk
+  - normalizedTime: 0.6
+    label: Keluar sisi lain
+  - normalizedTime: 0.8
+    label: Langkah cepat berikut
+  - normalizedTime: 1
+    label: Selesai satu putaran
+  shortDescription: Latihan kelincahan kaki dengan pola gerakan cepat di tangga gesit.
+  steps:
+  - Berdiri di sisi tangga, lutut sedikit ditekuk.
+  - Masukkan satu kaki lalu kaki lain ke dalam kotak tangga.
+  - Keluar ke sisi berikutnya dan ulangi dengan cepat.
+  safetyTips:
+  - Mendarat dengan lembut di ujung kaki, bukan tumit.
+  - Pastikan tangga rata dan tidak licin.
+  trainedAreas:
+  - Kelincahan kaki
+  - Koordinasi tangan dan kaki
+  - Daya tahan aerobik
+  - Waktu reaksi
+  commonMistakes:
+  - Mendarat terlalu keras dengan seluruh telapak kaki.
+  - Melihat ke bawah terus sehingga postur bungkuk.
+  - Langkah terlalu lebar sehingga melewati kotak.
+  relatedMovements:
+  - title: One-In
+    thumbnail: {fileID: 0}
+    shortDescription: Satu kaki di setiap kotak tangga, langkah cepat dan ringan.
+    steps:
+    - Masukkan kaki kanan ke kotak pertama.
+    - Ikuti dengan kaki kiri ke kotak kedua.
+    - Ulangi secepatnya sampai ujung tangga.
+    safetyTips:
+    - Jaga pandangan lurus ke depan tangga.
+  - title: Two-In
+    thumbnail: {fileID: 0}
+    shortDescription: Dua kaki masuk ke setiap kotak secara bergantian.
+    steps:
+    - Masukkan kedua kaki ke satu kotak secara berurutan.
+    - Pindah ke kotak berikutnya dengan pola yang sama.
+    - Jaga ritme yang konsisten.
+    safetyTips:
+    - Mulai lambat dulu untuk menghafal pola.
+  - title: Side Shuffle
+    thumbnail: {fileID: 0}
+    shortDescription: Gerak menyamping melewati tangga untuk kelincahan lateral.
+    steps:
+    - Hadap ke samping tangga.
+    - Masuk ke kotak dengan kaki terdepan lalu susul kaki belakang.
+    - Keluar di sisi lain dan lanjut ke kotak berikutnya.
+    safetyTips:
+    - Tetap hadap ke satu arah selama seluruh set.
+  - title: Two-Foot Hop
+    thumbnail: {fileID: 0}
+    shortDescription: Lompat dua kaki bersamaan masuk setiap kotak tangga.
+    steps:
+    - Berdiri di ujung tangga dengan kaki rapat.
+    - Lompat masuk ke kotak pertama.
+    - Lanjut lompat ke kotak berikutnya.
+    safetyTips:
+    - Mendarat lembut dengan lutut sedikit ditekuk setiap kali mendarat.
+  audioGuide: {fileID: 0}
