@@ -16,6 +16,12 @@ namespace GerakAR.Core
         // ── AR Tracking ──────────────────────────────────────────────
 
         /// <summary>
+        /// Raised when a movement image target is first detected (toast starts).
+        /// Payload: movementId (string).
+        /// </summary>
+        public static event Action<string> OnDetectionStarted;
+
+        /// <summary>
         /// Raised when a movement image target is first detected.
         /// Payload: movementId (string).
         /// </summary>
@@ -55,6 +61,9 @@ namespace GerakAR.Core
         public static event Action<string> OnMaterialOpened;
 
         // ── Invoke helpers (call these from raising systems) ─────────
+
+        public static void RaiseDetectionStarted(string movementId) =>
+            OnDetectionStarted?.Invoke(movementId);
 
         public static void RaiseMovementDetected(string movementId) =>
             OnMovementDetected?.Invoke(movementId);
