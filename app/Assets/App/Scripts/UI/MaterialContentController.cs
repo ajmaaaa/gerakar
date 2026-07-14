@@ -36,8 +36,10 @@ namespace GerakAR.UI
         // ── Inspector – Primary movement ──────────────────────────────
 
         [Header("Header")]
+        [SerializeField] private TextMeshProUGUI categoryTypeLabel;  // Shows "Gerakan Utama" or "Materi Tambahan"
         [SerializeField] private TextMeshProUGUI movementNameText;
         [SerializeField] private Image categoryAccentBar;
+        [SerializeField] private Button backToPrimaryButton;        // Button to return to main movement
 
         [Header("Half-state content")]
         [SerializeField] private TextMeshProUGUI shortDescriptionText;
@@ -55,20 +57,12 @@ namespace GerakAR.UI
         [SerializeField] private Transform relatedCardsContainer;
         [SerializeField] private GameObject relatedCardPrefab;
 
-        // ── Inspector – Related detail view ───────────────────────────
-
-        [Header("Related detail overlay")]
-        [SerializeField] private GameObject relatedDetailPanel;
-        [SerializeField] private TextMeshProUGUI relatedDetailTitle;
-        [SerializeField] private TextMeshProUGUI relatedDetailLabel;  // "Materi Tambahan"
-        [SerializeField] private TextMeshProUGUI relatedDetailDesc;
-        [SerializeField] private Transform relatedDetailStepsContainer;
-        [SerializeField] private Button relatedBackButton;
-
         // ── Private state ─────────────────────────────────────────────
 
         private MovementData _currentMovement;
+        private bool _isViewingRelated;
         private readonly List<GameObject> _spawnedItems = new();
+        private readonly List<GameObject> _spawnedCards = new();
 
         // ── Unity lifecycle ───────────────────────────────────────────
 
@@ -77,8 +71,14 @@ namespace GerakAR.UI
             BottomSheetController.OnSheetStateChanged += OnSheetStateChanged;
             GerakAREvents.OnMovementDetected += OnMovementDetected;
 
-            relatedBackButton?.onClick.AddListener(CloseRelatedDetail);
-            relatedDetailPanel?.SetActive(false);
+            if (backToPrimaryButton != null)
+            {
+                backToPrimaryButton.onClick.AddListener(RestorePrimaryContent);
+                backToPrimaryButton.gameObject.SetActive(false);
+            }
+
+            if (categoryTypeLabel != null)
+                categoryTypeLabel.text = "Gerakan Utama";
         }
 
         private void OnDestroy()
@@ -93,6 +93,12 @@ namespace GerakAR.UI
         public void SetMovement(MovementData data)
         {
             _currentMovement = data;
+            _isViewingRelated = false;
+            if (backToPrimaryButton != null)
+                backToPrimaryButton.gameObject.SetActive(false);
+            if (categoryTypeLabel != null)
+                categoryTypeLabel.text = "Gerakan Utama";
+
             PopulatePrimary(data);
         }
 
@@ -148,13 +154,14 @@ namespace GerakAR.UI
 
         private void PopulateRelatedCards(List<RelatedMovementData> related)
         {
+            ClearCards();
             if (relatedCardsContainer == null || relatedCardPrefab == null) return;
             if (related == null) return;
 
             foreach (var rel in related)
             {
                 var card = Instantiate(relatedCardPrefab, relatedCardsContainer);
-                _spawnedItems.Add(card);
+                _spawnedCards.Add(card);
 
                 // Wire thumbnail
                 var thumbImg = card.transform.Find("Thumbnail")?.GetComponent<Image>();
@@ -165,35 +172,48 @@ namespace GerakAR.UI
                 var titleTmp = card.transform.Find("Title")?.GetComponent<TextMeshProUGUI>();
                 if (titleTmp != null) titleTmp.text = rel.title;
 
-                // Wire tap
+                // Wire tap to show related movement inside the main sheet view
                 var btn = card.GetComponent<Button>();
                 var relCopy = rel; // capture for lambda
-                btn?.onClick.AddListener(() => ShowRelatedDetail(relCopy));
+                btn?.onClick.AddListener(() => ViewRelatedMovement(relCopy));
             }
         }
 
-        private void ShowRelatedDetail(RelatedMovementData rel)
+        private void ViewRelatedMovement(RelatedMovementData rel)
         {
-            relatedDetailPanel?.SetActive(true);
-            if (relatedDetailTitle != null) relatedDetailTitle.text = rel.title;
-            if (relatedDetailLabel != null) relatedDetailLabel.text = "Materi Tambahan";
-            if (relatedDetailDesc != null) relatedDetailDesc.text = rel.shortDescription;
+            _isViewingRelated = true;
+            if (backToPrimaryButton != null)
+                backToPrimaryButton.gameObject.SetActive(true);
+            if (categoryTypeLabel != null)
+                categoryTypeLabel.text = "Materi Tambahan";
 
-            // Clear and refill steps
-            if (relatedDetailStepsContainer != null)
+            ClearDynamic();
+
+            // Populate from related data
+            if (movementNameText != null)
+                movementNameText.text = rel.title.ToUpper();
+
+            if (shortDescriptionText != null)
+                shortDescriptionText.text = rel.shortDescription;
+
+            // Steps
+            int stepCount = Mathf.Min(rel.steps?.Count ?? 0, 3);
+            for (int i = 0; i < stepCount; i++)
+                SpawnBullet(stepsContainer, $"{i + 1}. {rel.steps[i]}", stepItemPrefab);
+
+            // Safety tip
+            if (safetyTipText != null && rel.safetyTips?.Count > 0)
+                safetyTipText.text = $"⚠ {rel.safetyTips[0]}";
+
+            // Related movements (in related detail view, let's keep the related list visible at the bottom so they can tap other ones!)
+        }
+
+        private void RestorePrimaryContent()
+        {
+            if (_currentMovement != null)
             {
-                foreach (Transform child in relatedDetailStepsContainer)
-                    Destroy(child.gameObject);
-
-                int i = 1;
-                foreach (var step in rel.steps ?? new List<string>())
-                    SpawnBullet(relatedDetailStepsContainer, $"{i++}. {step}", stepItemPrefab);
+                SetMovement(_currentMovement);
             }
-        }
-
-        private void CloseRelatedDetail()
-        {
-            relatedDetailPanel?.SetActive(false);
         }
 
         // ── Helpers ───────────────────────────────────────────────────
@@ -212,6 +232,13 @@ namespace GerakAR.UI
             foreach (var go in _spawnedItems)
                 if (go != null) Destroy(go);
             _spawnedItems.Clear();
+        }
+
+        private void ClearCards()
+        {
+            foreach (var card in _spawnedCards)
+                if (card != null) Destroy(card);
+            _spawnedCards.Clear();
         }
     }
 }
