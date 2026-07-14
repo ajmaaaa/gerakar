@@ -31,6 +31,9 @@ namespace GerakAR.UI
         [Header("Scan Overlay")]
         [SerializeField] private GameObject scanOverlay;
 
+        [Header("Detection Toast (green checkmark)")]
+        [SerializeField] private GameObject detectionToast;
+
         [Header("AR Controls (shown when tracking)")]
         [SerializeField] private GameObject arControls;
         [SerializeField] private TextMeshProUGUI movementNameLabel;
@@ -59,7 +62,8 @@ namespace GerakAR.UI
             closeButton?.onClick.AddListener(OnClosePressed);
             materialButton?.onClick.AddListener(OnMaterialPressed);
 
-            // Initial state: show scan overlay
+            // Initial state: show scan overlay, hide detection toast
+            SetActive(detectionToast, false);
             ApplyState(AppState.Scanning);
         }
 
@@ -76,10 +80,12 @@ namespace GerakAR.UI
         private void ApplyState(AppState state)
         {
             bool scanning = state == AppState.Scanning || state == AppState.TrackingLost;
+            bool detecting = state == AppState.Detecting;
             bool tracking = state is AppState.TrackingLoop or AppState.InspectingPose;
             bool showMaterial = state == AppState.ShowingMaterial;
 
             SetActive(scanOverlay, scanning);
+            SetActive(detectionToast, detecting);
             SetActive(arControls, tracking || showMaterial);
 
             // Timeline: only when tracking, not when material is open
