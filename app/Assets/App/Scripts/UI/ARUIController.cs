@@ -44,6 +44,10 @@ namespace GerakAR.UI
 
         [Header("Timeline")]
         [SerializeField] private GameObject timelineRoot;
+        [SerializeField] private Button playPauseButton;
+        [SerializeField] private Image playPauseIcon;
+        [SerializeField] private Sprite playSprite;
+        [SerializeField] private Sprite pauseSprite;
 
         // ── Private ───────────────────────────────────────────────────
 
@@ -57,10 +61,13 @@ namespace GerakAR.UI
 
             AppStateManager.OnStateChanged += OnStateChanged;
             GerakAREvents.OnMovementDetected += OnMovementDetected;
+            GerakAREvents.OnLoopStarted += OnLoopStarted;
 
             // Wire buttons
             closeButton?.onClick.AddListener(OnClosePressed);
             materialButton?.onClick.AddListener(OnMaterialPressed);
+            if (playPauseButton != null)
+                playPauseButton.onClick.AddListener(OnPlayPausePressed);
 
             // Initial state: show scan overlay, hide detection toast
             SetActive(detectionToast, false);
@@ -71,6 +78,7 @@ namespace GerakAR.UI
         {
             AppStateManager.OnStateChanged -= OnStateChanged;
             GerakAREvents.OnMovementDetected -= OnMovementDetected;
+            GerakAREvents.OnLoopStarted -= OnLoopStarted;
         }
 
         // ── State changes ─────────────────────────────────────────────
@@ -95,11 +103,19 @@ namespace GerakAR.UI
             bool fabsVisible = tracking || showMaterial;
             SetActive(closeButton?.gameObject, fabsVisible);
             SetActive(materialButton?.gameObject, fabsVisible && !showMaterial);
+
+            // Synchronize Play/Pause icon state
+            UpdatePlayPauseUI();
         }
 
         private void OnMovementDetected(string movementId)
         {
             // The label is updated separately; just ensure controls are shown
+        }
+
+        private void OnLoopStarted(string movementId)
+        {
+            UpdatePlayPauseUI();
         }
 
         // ── Label update ──────────────────────────────────────────────
@@ -125,6 +141,31 @@ namespace GerakAR.UI
         {
             _stateMgr?.TransitionTo(AppState.ShowingMaterial);
             GerakAREvents.RaiseMaterialOpened(_stateMgr?.ActiveId ?? string.Empty);
+        }
+
+        private void OnPlayPausePressed()
+        {
+            if (Audio.AudioGuideController.Instance != null)
+            {
+                Audio.AudioGuideController.Instance.TogglePlayPause();
+                
+                // Mirror to animation controller
+                var movementController = FindAnyObjectByType<Animation.MovementController>();
+                if (movementController != null)
+                {
+                    movementController.SetLoopPaused(!Audio.AudioGuideController.Instance.IsPlaying);
+                }
+
+                UpdatePlayPauseUI();
+            }
+        }
+
+        private void UpdatePlayPauseUI()
+        {
+            if (playPauseIcon == null) return;
+
+            bool isPlaying = Audio.AudioGuideController.Instance != null && Audio.AudioGuideController.Instance.IsPlaying;
+            playPauseIcon.sprite = isPlaying ? pauseSprite : playSprite;
         }
 
         // ── Helpers ───────────────────────────────────────────────────
