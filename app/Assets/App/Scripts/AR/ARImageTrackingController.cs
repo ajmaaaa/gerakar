@@ -98,7 +98,7 @@ namespace GerakAR.AR
             }
         }
 
-        // ── Active tracking ───────────────────────────────────────────
+        private Coroutine _detectionCo;
 
         private void HandleImageActive(ARTrackedImage img)
         {
@@ -122,26 +122,61 @@ namespace GerakAR.AR
             bool isNewTarget = modelPool.ActiveMovementId != data.movementId;
             if (isNewTarget && _stateMgr.Is(AppState.ShowingMaterial))
             {
-                // Notify UI to close the sheet; UI controller listens to state
                 _stateMgr.TransitionTo(AppState.Scanning);
             }
 
-            // Activate model
-            GameObject model = modelPool.Activate(data);
-            modelPool.UpdateAnchor(img.transform);
-
-            // Fire event and transition state
+            // Start detection flow if it is a new target or we were not in tracking loop
             if (isNewTarget || _stateMgr.Is(AppState.Scanning) || _stateMgr.Is(AppState.TrackingLost))
             {
+                if (_detectionCo == null)
+                {
+                    _detectionCo = StartCoroutine(DetectionSequence(img, data));
+                }
+            }
+            else
+            {
+                // Normal frame update only if not currently in detection toast
+                if (_detectionCo == null)
+                {
+                    modelPool.UpdateAnchor(img.transform);
+                }
+            }
+        }
+
+        private IEnumerator DetectionSequence(ARTrackedImage img, MovementData data)
+        {
+            // Transition to Detecting state and notify UI
+            _stateMgr.TransitionTo(AppState.Detecting);
+            GerakAREvents.RaiseDetectionStarted(data.movementId);
+            modelPool.HideActive();
+
+            // Show green checkmark toast for 1.2 seconds
+            yield return new WaitForSeconds(1.2f);
+
+            // Double check we are still in Detecting state (not canceled by tracking lost)
+            if (_stateMgr.Is(AppState.Detecting))
+            {
+                GameObject model = modelPool.Activate(data);
+                modelPool.UpdateAnchor(img.transform);
+
                 GerakAREvents.RaiseMovementDetected(data.movementId);
                 _stateMgr.TransitionTo(AppState.TrackingLoop);
             }
+
+            _detectionCo = null;
         }
 
         // ── Lost tracking ─────────────────────────────────────────────
 
         private void HandleImageLost(ARTrackedImage img)
         {
+            // Cancel active detection sequence
+            if (_detectionCo != null)
+            {
+                StopCoroutine(_detectionCo);
+                _detectionCo = null;
+            }
+
             string imageName = img.referenceImage.name;
             MovementData data = movementDatabase?.FindByReferenceImageName(imageName);
             if (data == null) return;
@@ -149,8 +184,8 @@ namespace GerakAR.AR
             // Only react if this is the currently active movement
             if (modelPool.ActiveMovementId != data.movementId) return;
 
-            // Transition to TrackingLost if we are in a live state
-            if (_stateMgr.IsAny(AppState.TrackingLoop, AppState.InspectingPose, AppState.ShowingMaterial))
+            // Transition to TrackingLost if we are in a live state or detecting
+            if (_stateMgr.IsAny(AppState.TrackingLoop, AppState.InspectingPose, AppState.ShowingMaterial, AppState.Detecting))
             {
                 _stateMgr.TransitionTo(AppState.TrackingLost);
             }
