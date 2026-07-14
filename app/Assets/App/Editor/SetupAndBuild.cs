@@ -51,7 +51,7 @@ public static class SetupAndBuild
         camGo.tag = "MainCamera";
 
         // UI Canvas
-        var canvasGo = new GameObject("Canvas");
+        var canvasGo = new GameObject("Canvas", typeof(RectTransform));
         var canvas = canvasGo.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvasGo.AddComponent<CanvasScaler>();
@@ -59,16 +59,14 @@ public static class SetupAndBuild
         var canvasGroup = canvasGo.AddComponent<CanvasGroup>();
 
         // 1. Intro Panel
-        var introGo = new GameObject("IntroPanel");
-        introGo.transform.SetParent(canvasGo.transform, false);
+        var introGo = CreateUIObject("IntroPanel", canvasGo);
         var introImg = introGo.AddComponent<Image>();
         introImg.color = ColorCleanOffWhite;
         StretchRect(introGo.GetComponent<RectTransform>());
         var introController = managersGo.AddComponent<IntroController>();
 
         // Intro Logo / Title Text
-        var titleGo = new GameObject("TitleText");
-        titleGo.transform.SetParent(introGo.transform, false);
+        var titleGo = CreateUIObject("TitleText", introGo);
         var titleText = titleGo.AddComponent<TextMeshProUGUI>();
         titleText.text = "GerakAR";
         titleText.fontSize = 48;
@@ -77,16 +75,14 @@ public static class SetupAndBuild
         SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, 0f, 300f, 100f);
 
         // 2. Onboarding Panel
-        var onboardGo = new GameObject("OnboardingPanel");
-        onboardGo.transform.SetParent(canvasGo.transform, false);
+        var onboardGo = CreateUIObject("OnboardingPanel", canvasGo);
         var onboardImg = onboardGo.AddComponent<Image>();
         onboardImg.color = ColorCleanOffWhite;
         StretchRect(onboardGo.GetComponent<RectTransform>());
         onboardGo.SetActive(false);
 
         // Onboarding Title
-        var obTitleGo = new GameObject("OnboardingTitle");
-        obTitleGo.transform.SetParent(onboardGo.transform, false);
+        var obTitleGo = CreateUIObject("OnboardingTitle", onboardGo);
         var obTitle = obTitleGo.AddComponent<TextMeshProUGUI>();
         obTitle.text = "Sebelum Mulai";
         obTitle.fontSize = 32;
@@ -95,8 +91,7 @@ public static class SetupAndBuild
         SetCenterPosition(obTitleGo.GetComponent<RectTransform>(), 0f, 150f, 400f, 60f);
 
         // Onboarding Instructions Text
-        var obTextGo = new GameObject("OnboardingText");
-        obTextGo.transform.SetParent(onboardGo.transform, false);
+        var obTextGo = CreateUIObject("OnboardingText", onboardGo);
         var obText = obTextGo.AddComponent<TextMeshProUGUI>();
         obText.text = "• Gunakan di tempat yang cukup luas.\n• Minta guru atau orang tua mendampingi.\n• Izinkan kamera untuk melihat gerakan.";
         obText.fontSize = 18;
@@ -105,15 +100,13 @@ public static class SetupAndBuild
         SetCenterPosition(obTextGo.GetComponent<RectTransform>(), 0f, 0f, 500f, 180f);
 
         // Onboarding Start Button
-        var startBtnGo = new GameObject("MulaiButton");
-        startBtnGo.transform.SetParent(onboardGo.transform, false);
+        var startBtnGo = CreateUIObject("MulaiButton", onboardGo);
         var startBtnImg = startBtnGo.AddComponent<Image>();
         startBtnImg.color = ColorDeepForest;
         var startBtn = startBtnGo.AddComponent<Button>();
         SetCenterPosition(startBtnGo.GetComponent<RectTransform>(), 0f, -150f, 200f, 60f);
 
-        var btnTextGo = new GameObject("Text");
-        btnTextGo.transform.SetParent(startBtnGo.transform, false);
+        var btnTextGo = CreateUIObject("Text", startBtnGo);
         var btnText = btnTextGo.AddComponent<TextMeshProUGUI>();
         btnText.text = "MULAI";
         btnText.fontSize = 20;
@@ -122,15 +115,13 @@ public static class SetupAndBuild
         StretchRect(btnTextGo.GetComponent<RectTransform>());
 
         // 3. Unsupported Panel
-        var unsupGo = new GameObject("UnsupportedPanel");
-        unsupGo.transform.SetParent(canvasGo.transform, false);
+        var unsupGo = CreateUIObject("UnsupportedPanel", canvasGo);
         var unsupImg = unsupGo.AddComponent<Image>();
         unsupImg.color = ColorCleanOffWhite;
         StretchRect(unsupGo.GetComponent<RectTransform>());
         unsupGo.SetActive(false);
 
-        var unsupTextGo = new GameObject("UnsupportedText");
-        unsupTextGo.transform.SetParent(unsupGo.transform, false);
+        var unsupTextGo = CreateUIObject("UnsupportedText", unsupGo);
         var unsupText = unsupTextGo.AddComponent<TextMeshProUGUI>();
         unsupText.fontSize = 20;
         unsupText.color = ColorCharcoal;
@@ -212,7 +203,7 @@ public static class SetupAndBuild
         serialAudio.ApplyModifiedProperties();
 
         // Canvas
-        var canvasGo = new GameObject("UI Canvas");
+        var canvasGo = new GameObject("UI Canvas", typeof(RectTransform));
         var canvas = canvasGo.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvasGo.AddComponent<CanvasScaler>();
@@ -221,20 +212,17 @@ public static class SetupAndBuild
         var arUI = canvasGo.AddComponent<ARUIController>();
 
         // 1. Scan Overlay Panel
-        var scanGo = new GameObject("ScanOverlay");
-        scanGo.transform.SetParent(canvasGo.transform, false);
+        var scanGo = CreateUIObject("ScanOverlay", canvasGo);
         StretchRect(scanGo.GetComponent<RectTransform>());
 
         // Corner Frame Image (Corner Only focuses)
-        var scanFrameGo = new GameObject("ScanFrame");
-        scanFrameGo.transform.SetParent(scanGo.transform, false);
+        var scanFrameGo = CreateUIObject("ScanFrame", scanGo);
         var frameImg = scanFrameGo.AddComponent<Image>();
         frameImg.color = Color.white; // Assign outline or transparent sprite here
         SetCenterPosition(scanFrameGo.GetComponent<RectTransform>(), 0f, 0f, 220f, 220f);
 
         // Hint Text
-        var hintGo = new GameObject("HintText");
-        hintGo.transform.SetParent(scanGo.transform, false);
+        var hintGo = CreateUIObject("HintText", scanGo);
         var hintText = hintGo.AddComponent<TextMeshProUGUI>();
         hintText.text = "Arahkan kamera ke gambar gerakan";
         hintText.fontSize = 16;
@@ -243,14 +231,12 @@ public static class SetupAndBuild
         SetCenterPosition(hintGo.GetComponent<RectTransform>(), 0f, -160f, 400f, 50f);
 
         // 2. Detection Toast Panel
-        var toastGo = new GameObject("DetectionToast");
-        toastGo.transform.SetParent(canvasGo.transform, false);
+        var toastGo = CreateUIObject("DetectionToast", canvasGo);
         var toastImg = toastGo.AddComponent<Image>();
         toastImg.color = ColorCleanOffWhite;
         SetCenterPosition(toastGo.GetComponent<RectTransform>(), 0f, 50f, 280f, 80f);
 
-        var toastTextGo = new GameObject("Text");
-        toastTextGo.transform.SetParent(toastGo.transform, false);
+        var toastTextGo = CreateUIObject("Text", toastGo);
         var toastText = toastTextGo.AddComponent<TextMeshProUGUI>();
         toastText.text = "✔ Gambar Terdeteksi";
         toastText.fontSize = 18;
@@ -260,14 +246,12 @@ public static class SetupAndBuild
         toastGo.SetActive(false);
 
         // 3. AR Controls Panel (Group label + timeline + FABs)
-        var arControlsGo = new GameObject("ARControls");
-        arControlsGo.transform.SetParent(canvasGo.transform, false);
+        var arControlsGo = CreateUIObject("ARControls", canvasGo);
         StretchRect(arControlsGo.GetComponent<RectTransform>());
         arControlsGo.SetActive(false);
 
         // Name Label
-        var nameLabelGo = new GameObject("MovementNameLabel");
-        nameLabelGo.transform.SetParent(arControlsGo.transform, false);
+        var nameLabelGo = CreateUIObject("MovementNameLabel", arControlsGo);
         var nameLabel = nameLabelGo.AddComponent<TextMeshProUGUI>();
         nameLabel.text = "SQUAT";
         nameLabel.fontSize = 24;
@@ -276,35 +260,30 @@ public static class SetupAndBuild
         SetCenterPosition(nameLabelGo.GetComponent<RectTransform>(), 0f, 300f, 300f, 60f);
 
         // Close Button FAB
-        var closeGo = new GameObject("CloseButton");
-        closeGo.transform.SetParent(arControlsGo.transform, false);
+        var closeGo = CreateUIObject("CloseButton", arControlsGo);
         var closeImg = closeGo.AddComponent<Image>();
         closeImg.color = Color.white;
         var closeBtn = closeGo.AddComponent<Button>();
         SetAnchorRight(closeGo.GetComponent<RectTransform>(), -30f, 150f, 54f, 54f);
 
         // Material Button FAB
-        var matBtnGo = new GameObject("MaterialButton");
-        matBtnGo.transform.SetParent(arControlsGo.transform, false);
+        var matBtnGo = CreateUIObject("MaterialButton", arControlsGo);
         var matBtnImg = matBtnGo.AddComponent<Image>();
         matBtnImg.color = ColorDeepForest;
         var matBtn = matBtnGo.AddComponent<Button>();
         SetAnchorRight(matBtnGo.GetComponent<RectTransform>(), -30f, 80f, 54f, 54f);
 
         // Timeline
-        var timelineRootGo = new GameObject("Timeline");
-        timelineRootGo.transform.SetParent(arControlsGo.transform, false);
+        var timelineRootGo = CreateUIObject("Timeline", arControlsGo);
         SetCenterPosition(timelineRootGo.GetComponent<RectTransform>(), 0f, -300f, 500f, 80f);
 
         // Slider component
-        var sliderGo = new GameObject("Slider");
-        sliderGo.transform.SetParent(timelineRootGo.transform, false);
+        var sliderGo = CreateUIObject("Slider", timelineRootGo);
         var slider = sliderGo.AddComponent<Slider>();
         StretchRect(sliderGo.GetComponent<RectTransform>());
 
         // Play/Pause Button
-        var playPauseGo = new GameObject("PlayPauseButton");
-        playPauseGo.transform.SetParent(timelineRootGo.transform, false);
+        var playPauseGo = CreateUIObject("PlayPauseButton", timelineRootGo);
         var playPauseImg = playPauseGo.AddComponent<Image>();
         playPauseImg.color = Color.white;
         var playPauseBtn = playPauseGo.AddComponent<Button>();
@@ -318,8 +297,7 @@ public static class SetupAndBuild
         serialTimeline.ApplyModifiedProperties();
 
         // 4. Bottom Sheet Panel
-        var sheetGo = new GameObject("BottomSheet");
-        sheetGo.transform.SetParent(canvasGo.transform, false);
+        var sheetGo = CreateUIObject("BottomSheet", canvasGo);
         var sheetImg = sheetGo.AddComponent<Image>();
         sheetImg.color = ColorCleanOffWhite;
         var sheetRT = sheetGo.GetComponent<RectTransform>();
@@ -330,15 +308,13 @@ public static class SetupAndBuild
         sheetRT.sizeDelta = new Vector2(0f, Screen.height * 0.92f);
 
         // Grab Handle
-        var handleGo = new GameObject("GrabHandle");
-        handleGo.transform.SetParent(sheetGo.transform, false);
+        var handleGo = CreateUIObject("GrabHandle", sheetGo);
         var handleImg = handleGo.AddComponent<Image>();
         handleImg.color = ColorSoftSage;
         SetCenterPosition(handleGo.GetComponent<RectTransform>(), 0f, sheetRT.sizeDelta.y - 15f, 80f, 60f);
 
         // Sheet Header Type (Utama / Tambahan)
-        var categoryGo = new GameObject("CategoryTypeLabel");
-        categoryGo.transform.SetParent(sheetGo.transform, false);
+        var categoryGo = CreateUIObject("CategoryTypeLabel", sheetGo);
         var categoryTxt = categoryGo.AddComponent<TextMeshProUGUI>();
         categoryTxt.text = "Gerakan Utama";
         categoryTxt.fontSize = 14;
@@ -346,16 +322,14 @@ public static class SetupAndBuild
         SetCenterPosition(categoryGo.GetComponent<RectTransform>(), -150f, sheetRT.sizeDelta.y - 60f, 200f, 30f);
 
         // Back to primary button
-        var backBtnGo = new GameObject("BackToPrimaryButton");
-        backBtnGo.transform.SetParent(sheetGo.transform, false);
+        var backBtnGo = CreateUIObject("BackToPrimaryButton", sheetGo);
         var backBtnImg = backBtnGo.AddComponent<Image>();
         backBtnImg.color = ColorDeepForest;
         var backBtn = backBtnGo.AddComponent<Button>();
         SetCenterPosition(backBtnGo.GetComponent<RectTransform>(), 150f, sheetRT.sizeDelta.y - 60f, 120f, 35f);
 
         // Sheet Controller & Scrim
-        var scrimGo = new GameObject("Scrim");
-        scrimGo.transform.SetParent(canvasGo.transform, false);
+        var scrimGo = CreateUIObject("Scrim", canvasGo);
         var scrimImg = scrimGo.AddComponent<Image>();
         scrimImg.color = new Color(0, 0, 0, 0f);
         StretchRect(scrimGo.GetComponent<RectTransform>());
@@ -476,5 +450,13 @@ public static class SetupAndBuild
         rt.pivot = new Vector2(0f, 0.5f);
         rt.anchoredPosition = new Vector2(x, y);
         rt.sizeDelta = new Vector2(w, h);
+    }
+
+    private static GameObject CreateUIObject(string name, GameObject parent)
+    {
+        var go = new GameObject(name, typeof(RectTransform));
+        if (parent != null)
+            go.transform.SetParent(parent.transform, false);
+        return go;
     }
 }
