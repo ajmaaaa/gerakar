@@ -123,16 +123,23 @@ Managers (empty GameObject)
   - ModelPool
       modelRoot: [assign ModelRoot transform]
   - MovementController
+  - AudioGuideController (RequireComponent: AudioSource)
+      movementDatabase: [assign MovementDatabase.asset]
 
 UI Canvas (Screen Space - Overlay, sort order 10)
   ├── ScanOverlay
-  │     ├── ScanFrame (Image with border sprite)
+  │     ├── ScanFrame (Image with border sprite, corners only)
   │     └── HintText (TMP): "Arahkan kamera ke gambar gerakan"
+  │
+  ├── DetectionToast (hidden initially)
+  │     └── Panel (Warm Cream, green checkmark icon + Text: "Gambar terdeteksi")
   │
   ├── ARControls (hidden initially)
   │     ├── MovementLabel (TMP): movement name
   │     └── Timeline
   │           ├── Slider (UI Slider)
+  │           ├── PlayPauseButton (Button, next to slider)
+  │           │     └── Icon (Image)
   │           ├── MarkerContainer (RectTransform)
   │           ├── HintText (TMP): "Lepaskan untuk melanjutkan gerakan"
   │           └── PoseTimelineController
@@ -144,31 +151,34 @@ UI Canvas (Screen Space - Overlay, sort order 10)
   ├── BottomSheet
   │     ├── Grab Handle
   │     ├── CloseButton (X)
+  │     ├── CategoryTypeLabel (TMP) ← "Gerakan Utama" / "Materi Tambahan"
+  │     ├── BackToPrimaryButton (Button) ← hidden initially
   │     ├── MovementName (TMP)
   │     ├── CategoryAccentBar (Image)
-  │     ├── ShortDescription (TMP)
-  │     ├── StepsContainer (VerticalLayoutGroup)
-  │     ├── SafetyTip (TMP)
-  │     ├── FullStateExtras (hidden in Half state)
+  │     ├── ScrollView (Vertical)
+  │     │     └── Content
+  │     │           ├── ShortDescription (TMP)
+  │     │           ├── StepsContainer (VerticalLayoutGroup)
+  │     │           └── SafetyTip (TMP)
+  │     ├── FullStateExtras (hidden in Half state, inside ScrollView)
   │     │     ├── TrainedAreasContainer
   │     │     └── CommonMistakesContainer
-  │     ├── RelatedCardsContainer (HorizontalScrollView)
-  │     └── RelatedDetailPanel (initially inactive)
-  │           ├── BackButton
-  │           ├── LabelText (TMP): "Materi Tambahan"
-  │           ├── TitleText (TMP)
-  │           ├── DescText (TMP)
-  │           └── StepsContainer
+  │     └── RelatedCardsContainer (HorizontalScrollView)
   │
   └── Scrim (full-screen semi-transparent Image, initially inactive)
 
 ARUIController.cs wiring:
   scanOverlay → ScanOverlay
+  detectionToast → DetectionToast
   arControls → ARControls
   movementNameLabel → MovementLabel
   closeButton → CloseButton
   materialButton → MaterialButton
   timelineRoot → Timeline
+  playPauseButton → PlayPauseButton
+  playPauseIcon → PlayPauseButton/Icon
+  playSprite → [Play Icon Sprite]
+  pauseSprite → [Pause Icon Sprite]
 ```
 
 ---
