@@ -11,6 +11,7 @@ using GerakAR.UI;
 using GerakAR.Audio;
 using GerakAR.Content;
 using System.Collections.Generic;
+using UnityEditor.Build;
 
 public static class SetupAndBuild
 {
@@ -164,7 +165,7 @@ public static class SetupAndBuild
 
         // XR Origin & Camera setup
         var originGo = new GameObject("XR Origin");
-        var origin = originGo.AddComponent<UnityEngine.XR.Interaction.Toolkit.AR.XROrigin>();
+        var origin = originGo.AddComponent<Unity.XR.CoreUtils.XROrigin>();
         var camGo = new GameObject("AR Camera");
         camGo.transform.SetParent(originGo.transform, false);
         var cam = camGo.AddComponent<Camera>();
