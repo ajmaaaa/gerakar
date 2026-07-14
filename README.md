@@ -24,6 +24,17 @@ Aplikasi mobile Augmented Reality untuk anak Sekolah Dasar. Arahkan kamera ke ga
 
 ---
 
+## Alur Interaksi & Desain Utama
+
+- **Bingkai Scan (Fokus)**: Hanya berupa garis siku sudut tepi (bracket corners) tanpa background transparan. Bingkai ini akan langsung hilang ketika target terdeteksi.
+- **Toast Transisi Deteksi**: Saat target terdeteksi, layar menampilkan toast bercentang hijau **"Gambar terdeteksi"** selama 1.2 detik sebelum memunculkan model AR.
+- **Bottom Sheet Dinamis**:
+  - Konten materi dapat di-scroll secara vertikal (atas-bawah).
+  - Kartu gerakan serupa berada di bagian bawah dan dapat di-scroll secara horizontal (kiri-kanan).
+  - Memilih gerakan serupa akan langsung memperbarui materi di atasnya secara langsung (*in-place*) dengan label **"Materi Tambahan"** dan tombol untuk kembali ke gerakan utama.
+
+---
+
 ## Tech Stack
 
 | Bagian | Teknologi |
