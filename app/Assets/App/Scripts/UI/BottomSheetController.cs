@@ -95,7 +95,7 @@ namespace GerakAR.UI
             _screenHeight = Screen.height;
             // anchoredPosition.y = 0 → sheet bottom edge at pivot (bottom of screen)
             // We push the sheet upward by (fraction × screenHeight)
-            _closedY = -sheetRect != null ? sheetRect.rect.height : 0f;
+            _closedY = -(sheetRect != null ? sheetRect.rect.height : 0f);
             _halfY   = _screenHeight * halfFraction;
             _fullY   = _screenHeight * fullFraction;
         }
