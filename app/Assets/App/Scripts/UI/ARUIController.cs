@@ -140,7 +140,8 @@ namespace GerakAR.UI
         private void OnMaterialPressed()
         {
             _stateMgr?.TransitionTo(AppState.ShowingMaterial);
-            GerakAREvents.RaiseMaterialOpened(_stateMgr?.ActiveId ?? string.Empty);
+            string activeId = _stateMgr != null ? _stateMgr.ActiveId() : string.Empty;
+            GerakAREvents.RaiseMaterialOpened(activeId);
         }
 
         private void OnPlayPausePressed()
