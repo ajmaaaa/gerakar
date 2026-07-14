@@ -176,16 +176,34 @@ ARUIController.cs wiring:
 ## Color Tokens (Green Forest)
 
 ```
-Deep Forest    #12372A  – FABs, headers
-Forest Green   #1F5D42  – active elements, progress
-Moss Green     #607D4F  – markers, secondary
-Soft Sage      #A9BEA2  – track, inactive, grab handle
-Warm Cream     #F4F0E6  – bottom sheet background, cards
-Charcoal       #202620  – body text
-Terracotta     #B8684A  – Squat accent
-Muted Teal     #3F7C78  – Dynamic Stretch accent
-Muted Mustard  #C3A24B  – Ladder Drill accent
+Clean Off-White #FAF9F6  – Background bottom sheet, kartu, panel (lebih bersih, tidak kusam)
+Deep Forest     #12372A  – FAB, teks heading
+Forest Green    #1F5D42  – Progress, nomor langkah
+Soft Sage       #A9BEA2  – Track timeline, grab handle
+Charcoal        #202620  – Teks isi
+Terracotta      #B8684A  – Aksen Squat
+Muted Teal      #3F7C78  – Aksen Dynamic Stretch
+Muted Mustard   #C3A24B  – Aksen Ladder Drill
 ```
+
+---
+
+## Aturan Desain & Interaksi Penting
+
+### 1. Bingkai Scan (Fokus)
+- Bingkai scan hanya berupa **garis sudut tepi saja** (bracket corners).
+- **TIDAK boleh** menggunakan background semi-transparent putih/abu-abu di dalam atau di luar bingkai.
+- Bingkai scan langsung **hilang** ketika gambar terdeteksi (masuk state `Detecting`).
+
+### 2. Efek Transisi Deteksi
+- Ketika gambar target terdeteksi, muncul panel toast di tengah layar dengan pesan **"Gambar terdeteksi"** dan **ikon centang hijau** selama 1.2 detik.
+- Selama toast ini tampil, model AR utama **tetap disembunyikan**.
+- Setelah 1.2 detik (toast selesai), model AR utama baru dimunculkan dan animasi loop berjalan.
+
+### 3. Interaksi Bottom Sheet
+- Konten materi (deskripsi, langkah, tips) berada dalam ScrollView vertikal (bisa di-scroll atas-bawah).
+- Daftar gerakan serupa berada di bagian bawah, dapat digeser horizontal (kiri-kanan).
+- Ketika kartu gerakan serupa ditekan, konten materi di atasnya langsung diperbarui di tempat (*in-place update*) sesuai gerakan yang dipilih, lengkap dengan label **"Materi Tambahan"** dan tombol **"Kembali ke Gerakan Utama"**. Model AR di kamera tetap mempertahankan gerakan utama.
 
 ---
 
