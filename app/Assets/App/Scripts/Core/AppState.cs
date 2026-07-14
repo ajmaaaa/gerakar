@@ -31,6 +31,9 @@ namespace GerakAR.Core
         /// <summary>Bottom-sheet material panel is open; animation is paused.</summary>
         ShowingMaterial,
 
+        /// <summary>Object is detected; showing green checkmark toast before showing AR.</summary>
+        Detecting,
+
         /// <summary>Tracking was lost; grace timer is counting down before hiding the model.</summary>
         TrackingLost,
 
