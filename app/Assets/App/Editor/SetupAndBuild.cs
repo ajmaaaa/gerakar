@@ -21,6 +21,7 @@ public static class SetupAndBuild
     private static readonly Color ColorForestGreen = new Color(0.12f, 0.365f, 0.259f, 1f);  // #1F5D42
     private static readonly Color ColorSoftSage = new Color(0.66f, 0.745f, 0.635f, 1f);     // #A9BEA2
     private static readonly Color ColorCharcoal = new Color(0.125f, 0.149f, 0.125f, 1f);    // #202620
+    private static readonly Color ColorMossGreen = new Color(0.376f, 0.490f, 0.310f, 1f);   // #607D4F
 
     [MenuItem("GerakAR/Setup Scenes and Build APK")]
     public static void ExecuteSetupAndBuild()
@@ -796,16 +797,6 @@ public static class SetupAndBuild
 
         var arUI = canvasGo.AddComponent<ARUIController>();
 
-        // 1. Scan Overlay Panel
-        var scanGo = CreateUIObject("ScanOverlay", canvasGo);
-        StretchRect(scanGo.GetComponent<RectTransform>());
-
-        // Corner Frame Image (Corner Only focuses)
-        var scanFrameGo = CreateUIObject("ScanFrame", scanGo);
-        var frameImg = scanFrameGo.AddComponent<Image>();
-        frameImg.sprite = frameSprite;
-        frameImg.type = Image.Type.Simple;
-        frameImg.color = Color.white;
         // 1. Scan Overlay Panel (G03)
         var scanGo = CreateUIObject("ScanOverlay", canvasGo);
         StretchRect(scanGo.GetComponent<RectTransform>());
@@ -833,8 +824,8 @@ public static class SetupAndBuild
         // G03 Central Scan Guide Frame
         var scanFrameGo = CreateUIObject("ScanFrame", scanGo);
         var scanFrameImg = scanFrameGo.AddComponent<Image>();
-        var frameSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Samples/XR Interaction Toolkit/3.3.0/Starter Assets/DemoSceneAssets/Sprites/Round Radius 4 Outline.png");
-        if (frameSprite != null) scanFrameImg.sprite = frameSprite;
+        var frameSpriteAsset = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Samples/XR Interaction Toolkit/3.3.0/Starter Assets/DemoSceneAssets/Sprites/Round Radius 4 Outline.png");
+        if (frameSpriteAsset != null) scanFrameImg.sprite = frameSpriteAsset;
         scanFrameImg.type = Image.Type.Sliced;
         scanFrameImg.color = ColorCleanOffWhite;
         SetCenterPosition(scanFrameGo.GetComponent<RectTransform>(), 0f, 80f, 480f, 480f);
@@ -1431,7 +1422,7 @@ public static class SetupAndBuild
         serialSheet.ApplyModifiedProperties();
 
         // Wire sheet close button to close sheet
-        sheetCloseBtn.onClick.AddListener(sheetCtrl.Close);
+        sheetCloseBtn.onClick.AddListener(sheetCtrl.CloseSheet);
 
         // Material content controller
         var matCtrl = sheetGo.AddComponent<MaterialContentController>();
