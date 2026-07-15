@@ -91,9 +91,8 @@ namespace GerakAR.UI
 
         private void RecalculateSnapPoints()
         {
-            _screenHeight = Screen.height;
-            // anchoredPosition.y = 0 → sheet bottom edge at pivot (bottom of screen)
-            // We push the sheet upward by (fraction × screenHeight)
+            var parentRT = transform.parent as RectTransform;
+            _screenHeight = parentRT != null ? parentRT.rect.height : Screen.height;
             _closedY = -(sheetRect != null ? sheetRect.rect.height : 0f);
             _fullY   = _screenHeight * fullFraction;
         }
