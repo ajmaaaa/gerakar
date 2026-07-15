@@ -91,88 +91,56 @@ public static class SetupAndBuild
         if (interFont != null) titleText.font = interFont;
         SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, 0f, 300f, 100f);
 
-        // 2. Onboarding Panel - Full screen layout sesuai mockup
+        // 2. Onboarding Panel - Full screen, layout sesuai mockup
         var onboardGo = CreateUIObject("OnboardingPanel", canvasGo);
         var onboardImg = onboardGo.AddComponent<Image>();
         onboardImg.color = ColorCleanOffWhite;
         StretchRect(onboardGo.GetComponent<RectTransform>());
         onboardGo.SetActive(false);
 
-        // Judul "Sebelum Mulai" - besar di tengah atas area konten
+        // Judul "Sebelum Mulai" - besar, tebal, tengah, agak ke atas
         var obTitleGo = CreateUIObject("OnboardingTitle", onboardGo);
         var obTitle = obTitleGo.AddComponent<TextMeshProUGUI>();
         obTitle.text = "Sebelum Mulai";
-        obTitle.fontSize = 52;
+        obTitle.fontSize = 64;
         obTitle.fontStyle = FontStyles.Bold;
         obTitle.color = ColorDeepForest;
-        obTitle.alignment = TextAlignmentOptions.Left;
+        obTitle.alignment = TextAlignmentOptions.Center;
         if (interFont != null) obTitle.font = interFont;
-        SetCenterPosition(obTitleGo.GetComponent<RectTransform>(), 0f, 250f, 900f, 80f);
+        SetCenterPosition(obTitleGo.GetComponent<RectTransform>(), 0f, 180f, 900f, 100f);
 
-        // Bullet item 1
-        var bullet1Go = CreateUIObject("Bullet1", onboardGo);
-        var bullet1Img = bullet1Go.AddComponent<Image>();
-        bullet1Img.color = ColorDeepForest;
-        SetCenterPosition(bullet1Go.GetComponent<RectTransform>(), -390f, 100f, 64f, 64f);
+        // Instruksi - satu blok teks dengan bullet ● unicode
+        var obTextGo = CreateUIObject("OnboardingText", onboardGo);
+        var obText = obTextGo.AddComponent<TextMeshProUGUI>();
+        obText.text = "● Gunakan di tempat yang cukup luas.\n\n● Minta guru atau orang tua mendampingi.\n\n● Izinkan kamera untuk melihat gerakan.";
+        obText.fontSize = 34;
+        obText.color = ColorCharcoal;
+        obText.alignment = TextAlignmentOptions.Left;
+        obText.lineSpacing = 10f;
+        if (interFont != null) obText.font = interFont;
+        SetCenterPosition(obTextGo.GetComponent<RectTransform>(), 0f, -80f, 880f, 340f);
 
-        var bullet1TextGo = CreateUIObject("Bullet1Text", onboardGo);
-        var bullet1Text = bullet1TextGo.AddComponent<TextMeshProUGUI>();
-        bullet1Text.text = "Gunakan di tempat yang cukup luas.";
-        bullet1Text.fontSize = 32;
-        bullet1Text.color = ColorCharcoal;
-        bullet1Text.alignment = TextAlignmentOptions.Left;
-        if (interFont != null) bullet1Text.font = interFont;
-        SetCenterPosition(bullet1TextGo.GetComponent<RectTransform>(), 80f, 100f, 720f, 90f);
-
-        // Bullet item 2
-        var bullet2Go = CreateUIObject("Bullet2", onboardGo);
-        var bullet2Img = bullet2Go.AddComponent<Image>();
-        bullet2Img.color = ColorDeepForest;
-        SetCenterPosition(bullet2Go.GetComponent<RectTransform>(), -390f, -50f, 64f, 64f);
-
-        var bullet2TextGo = CreateUIObject("Bullet2Text", onboardGo);
-        var bullet2Text = bullet2TextGo.AddComponent<TextMeshProUGUI>();
-        bullet2Text.text = "Minta guru atau orang tua mendampingi.";
-        bullet2Text.fontSize = 32;
-        bullet2Text.color = ColorCharcoal;
-        bullet2Text.alignment = TextAlignmentOptions.Left;
-        if (interFont != null) bullet2Text.font = interFont;
-        SetCenterPosition(bullet2TextGo.GetComponent<RectTransform>(), 80f, -50f, 720f, 90f);
-
-        // Bullet item 3
-        var bullet3Go = CreateUIObject("Bullet3", onboardGo);
-        var bullet3Img = bullet3Go.AddComponent<Image>();
-        bullet3Img.color = ColorDeepForest;
-        SetCenterPosition(bullet3Go.GetComponent<RectTransform>(), -390f, -200f, 64f, 64f);
-
-        var bullet3TextGo = CreateUIObject("Bullet3Text", onboardGo);
-        var bullet3Text = bullet3TextGo.AddComponent<TextMeshProUGUI>();
-        bullet3Text.text = "Izinkan kamera untuk melihat gerakan.";
-        bullet3Text.fontSize = 32;
-        bullet3Text.color = ColorCharcoal;
-        bullet3Text.alignment = TextAlignmentOptions.Left;
-        if (interFont != null) bullet3Text.font = interFont;
-        SetCenterPosition(bullet3TextGo.GetComponent<RectTransform>(), 80f, -200f, 720f, 90f);
-
-        // Tombol MULAI - lebar penuh di bagian bawah layar
+        // Tombol MULAI - lebar penuh, rounded, di bagian bawah layar
         var startBtnGo = CreateUIObject("MulaiButton", onboardGo);
         var startBtnImg = startBtnGo.AddComponent<Image>();
         startBtnImg.sprite = btnSprite;
         startBtnImg.type = Image.Type.Sliced;
         startBtnImg.color = ColorDeepForest;
         var startBtn = startBtnGo.AddComponent<Button>();
-        // Anchor ke bawah, lebar penuh dengan margin kiri-kanan
+        // Pasang OnboardingButtonWirer untuk wiring runtime yang pasti berhasil
+        startBtnGo.AddComponent<GerakAR.UI.OnboardingButtonWirer>();
+        // Anchor bawah - lebar nyaris penuh layar
         var startBtnRT = startBtnGo.GetComponent<RectTransform>();
-        startBtnRT.anchorMin = new Vector2(0.05f, 0f);
-        startBtnRT.anchorMax = new Vector2(0.95f, 0f);
+        startBtnRT.anchorMin = new Vector2(0.06f, 0f);
+        startBtnRT.anchorMax = new Vector2(0.94f, 0f);
         startBtnRT.pivot = new Vector2(0.5f, 0f);
-        startBtnRT.anchoredPosition = new Vector2(0f, 80f);
-        startBtnRT.sizeDelta = new Vector2(0f, 90f);
+        startBtnRT.anchoredPosition = new Vector2(0f, 100f);
+        startBtnRT.sizeDelta = new Vector2(0f, 100f);
 
         var btnTextGo = CreateUIObject("Text", startBtnGo);
         var btnText = btnTextGo.AddComponent<TextMeshProUGUI>();
         btnText.text = "MULAI";
-        btnText.fontSize = 36;
+        btnText.fontSize = 40;
         btnText.fontStyle = FontStyles.Bold;
         btnText.color = Color.white;
         btnText.alignment = TextAlignmentOptions.Center;
