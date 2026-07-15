@@ -88,7 +88,7 @@ namespace GerakAR.UI
         private void ApplyState(AppState state)
         {
             bool scanning = state == AppState.Scanning || state == AppState.TrackingLost;
-            bool detecting = state == AppState.Detecting;
+            bool detecting = state == AppState.TargetConfirmed;
             bool tracking = state is AppState.TrackingLoop or AppState.InspectingPose;
             bool showMaterial = state == AppState.ShowingMaterial;
 
@@ -140,7 +140,7 @@ namespace GerakAR.UI
         private void OnMaterialPressed()
         {
             _stateMgr?.TransitionTo(AppState.ShowingMaterial);
-            string activeId = _stateMgr != null ? _stateMgr.ActiveId() : string.Empty;
+            string activeId = ActiveMovementContext.ActiveId ?? string.Empty;
             GerakAREvents.RaiseMaterialOpened(activeId);
         }
 
@@ -149,14 +149,6 @@ namespace GerakAR.UI
             if (Audio.AudioGuideController.Instance != null)
             {
                 Audio.AudioGuideController.Instance.TogglePlayPause();
-                
-                // Mirror to animation controller
-                var movementController = FindAnyObjectByType<Animation.MovementController>();
-                if (movementController != null)
-                {
-                    movementController.SetLoopPaused(!Audio.AudioGuideController.Instance.IsPlaying);
-                }
-
                 UpdatePlayPauseUI();
             }
         }
@@ -178,9 +170,5 @@ namespace GerakAR.UI
         }
     }
 
-    // Tiny extension to read active movement id without coupling to ModelPool
-    internal static class AppStateManagerArUIExt
-    {
-        public static string ActiveId(this AppStateManager mgr) => null; // overridden at runtime
-    }
+
 }

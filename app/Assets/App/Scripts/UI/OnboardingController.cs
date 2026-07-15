@@ -46,9 +46,7 @@ namespace GerakAR.UI
 
         private void OnStateChanged(AppState prev, AppState next)
         {
-            // Onboarding check happens after CheckingAR succeeds (Scanning state)
-            // We intercept here before the scene actually starts scanning.
-            if (next != AppState.Scanning) return;
+            if (next != AppState.Onboarding) return;
 
             if (!PlayerPrefs.HasKey(OnboardingKey) || PlayerPrefs.GetInt(OnboardingKey) == 0)
             {
@@ -56,7 +54,7 @@ namespace GerakAR.UI
             }
             else
             {
-                LoadARScene();
+                AppStateManager.Instance?.TransitionTo(AppState.CheckingAR);
             }
         }
 
@@ -79,12 +77,7 @@ namespace GerakAR.UI
             if (onboardingPanel != null)
                 onboardingPanel.SetActive(false);
 
-            LoadARScene();
-        }
-
-        private void LoadARScene()
-        {
-            SceneManager.LoadScene(MainARScene);
+            AppStateManager.Instance?.TransitionTo(AppState.CheckingAR);
         }
     }
 }
