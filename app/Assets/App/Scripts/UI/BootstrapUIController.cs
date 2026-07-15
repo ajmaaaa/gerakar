@@ -40,7 +40,7 @@ namespace GerakAR.UI
             if (introPanel != null)
                 introPanel.SetActive(state == AppState.Intro);
 
-            if (state == AppState.UnsupportedNotice)
+            if (state == AppState.UnsupportedNotice || state == AppState.ARInstallFailed)
             {
                 Invoke(nameof(RouteToNonARCatalog), 1.5f);
             }
@@ -51,7 +51,7 @@ namespace GerakAR.UI
 
             if (unsupportedPanel != null)
             {
-                bool showNonAR = state == AppState.NonARCatalog || state == AppState.UnsupportedNotice;
+                bool showNonAR = state == AppState.NonARCatalog || state == AppState.UnsupportedNotice || state == AppState.ARInstallFailed;
                 bool showCamDenied = state == AppState.CameraDenied;
                 
                 unsupportedPanel.SetActive(showNonAR || showCamDenied);
@@ -70,8 +70,11 @@ namespace GerakAR.UI
 
         private void RouteToNonARCatalog()
         {
-            if (AppStateManager.Instance != null && AppStateManager.Instance.Is(AppState.UnsupportedNotice))
+            if (AppStateManager.Instance != null && 
+                (AppStateManager.Instance.Is(AppState.UnsupportedNotice) || AppStateManager.Instance.Is(AppState.ARInstallFailed)))
+            {
                 AppStateManager.Instance.TransitionTo(AppState.NonARCatalog);
+            }
         }
     }
 }

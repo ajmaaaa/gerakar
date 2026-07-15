@@ -74,7 +74,7 @@ public static class SetupAndBuild
         // 3. RelatedCard prefab
         var cardGo = new GameObject("RelatedCard", typeof(RectTransform));
         var cardImg = cardGo.AddComponent<Image>();
-        cardImg.preserveAspect = true;
+        
         cardImg.sprite = btnSprite;
         cardImg.type = Image.Type.Sliced;
         cardImg.color = Color.white;
@@ -146,7 +146,7 @@ public static class SetupAndBuild
         // 1. Intro Panel (G01) - Hijau Tua Hutan
         var introGo = CreateUIObject("IntroPanel", canvasGo);
         var introImg = introGo.AddComponent<Image>();
-        introImg.preserveAspect = true;
+        
         introImg.color = ColorDeepForest;
         StretchRect(introGo.GetComponent<RectTransform>());
         var introCanvasGroup = introGo.AddComponent<CanvasGroup>();
@@ -164,16 +164,16 @@ public static class SetupAndBuild
         introMetaText.color = Color.white;
         introMetaText.alignment = TextAlignmentOptions.Left;
         if (interFont != null) introMetaText.font = interFont;
-        SetAnchorTop(introMetaGo.GetComponent<RectTransform>(), -86.7f, -48.0f, 160.0f, 33.3f);
+        SetAnchorTopLeft(introMetaGo.GetComponent<RectTransform>(), 20.0f, -48.0f, 160.0f, 33.3f);
 
         // G01 Header Kanan - Stylized UNP Logo Badge (Gold Circle with UNP text)
         var unpBadgeGo = CreateUIObject("UNPBadge", introGo);
         var unpBadgeImg = unpBadgeGo.AddComponent<Image>();
-        unpBadgeImg.preserveAspect = true;
+        
         unpBadgeImg.sprite = btnSprite;
         unpBadgeImg.type = Image.Type.Sliced;
         unpBadgeImg.color = new Color(0.957f, 0.729f, 0.094f, 1f); // Gold #F4BA18
-        SetAnchorTop(unpBadgeGo.GetComponent<RectTransform>(), 133.3f, -48.0f, 33.3f, 33.3f);
+        SetAnchorTopRight(unpBadgeGo.GetComponent<RectTransform>(), -20.0f, -48.0f, 33.3f, 33.3f);
 
         var unpTextGo = CreateUIObject("Text", unpBadgeGo);
         var unpText = unpTextGo.AddComponent<TextMeshProUGUI>();
@@ -225,7 +225,7 @@ public static class SetupAndBuild
         // G01 Loading progress bar
         var progressTrackGo = CreateUIObject("ProgressTrack", brandGroupGo);
         var trackImg = progressTrackGo.AddComponent<Image>();
-        trackImg.preserveAspect = true;
+        
         trackImg.sprite = btnSprite;
         trackImg.type = Image.Type.Sliced;
         trackImg.color = new Color(0.12f, 0.365f, 0.259f, 0.3f); // #1F5D42 with 30% opacity
@@ -233,10 +233,11 @@ public static class SetupAndBuild
 
         var progressFillGo = CreateUIObject("ProgressFill", progressTrackGo);
         var fillImg = progressFillGo.AddComponent<Image>();
-        fillImg.preserveAspect = true;
+        
         fillImg.sprite = btnSprite;
         fillImg.type = Image.Type.Filled;
         fillImg.fillMethod = Image.FillMethod.Horizontal;
+        fillImg.fillOrigin = 0; // Explicitly fill from Left
         fillImg.color = ColorCleanOffWhite;
         StretchRect(progressFillGo.GetComponent<RectTransform>());
 
@@ -249,7 +250,7 @@ public static class SetupAndBuild
         // 2. Onboarding Panel (G02) - Warm Cream
         var onboardGo = CreateUIObject("OnboardingPanel", canvasGo);
         var onboardImg = onboardGo.AddComponent<Image>();
-        onboardImg.preserveAspect = true;
+        
         onboardImg.color = new Color(0.957f, 0.941f, 0.902f, 1f); // Warm Cream #F4F0E6
         StretchRect(onboardGo.GetComponent<RectTransform>());
         onboardGo.SetActive(false);
@@ -260,7 +261,7 @@ public static class SetupAndBuild
 
         var checkIconCircleGo = CreateUIObject("CheckCircle", safetyHeaderGo);
         var circleImg = checkIconCircleGo.AddComponent<Image>();
-        circleImg.preserveAspect = true;
+        
         circleImg.sprite = btnSprite;
         circleImg.type = Image.Type.Sliced;
         circleImg.color = new Color(0.66f, 0.745f, 0.635f, 0.3f); // Soft Sage 30%
@@ -307,7 +308,7 @@ public static class SetupAndBuild
         // Card 1
         var card1Go = CreateUIObject("Card1", obListGo);
         var card1Img = card1Go.AddComponent<Image>();
-        card1Img.preserveAspect = true;
+        
         card1Img.sprite = btnSprite;
         card1Img.type = Image.Type.Sliced;
         card1Img.color = Color.white;
@@ -347,7 +348,7 @@ public static class SetupAndBuild
         // Card 2
         var card2Go = CreateUIObject("Card2", obListGo);
         var card2Img = card2Go.AddComponent<Image>();
-        card2Img.preserveAspect = true;
+        
         card2Img.sprite = btnSprite;
         card2Img.type = Image.Type.Sliced;
         card2Img.color = Color.white;
@@ -387,7 +388,7 @@ public static class SetupAndBuild
         // Card 3
         var card3Go = CreateUIObject("Card3", obListGo);
         var card3Img = card3Go.AddComponent<Image>();
-        card3Img.preserveAspect = true;
+        
         card3Img.sprite = btnSprite;
         card3Img.type = Image.Type.Sliced;
         card3Img.color = Color.white;
@@ -431,7 +432,7 @@ public static class SetupAndBuild
         // Tombol MULAI
         var startBtnGo = CreateUIObject("MulaiButton", btnGroupGo);
         var startBtnImg = startBtnGo.AddComponent<Image>();
-        startBtnImg.preserveAspect = true;
+        
         startBtnImg.sprite = btnSprite;
         startBtnImg.type = Image.Type.Sliced;
         startBtnImg.color = ColorForestGreen;
@@ -487,7 +488,7 @@ public static class SetupAndBuild
         // 3. Unsupported Panel (Parent for G08 & G09 Fallbacks)
         var unsupGo = CreateUIObject("UnsupportedPanel", canvasGo);
         var unsupImg = unsupGo.AddComponent<Image>();
-        unsupImg.preserveAspect = true;
+        
         unsupImg.color = new Color(0.957f, 0.941f, 0.902f, 1f); // Warm Cream #F4F0E6
         StretchRect(unsupGo.GetComponent<RectTransform>());
         unsupGo.SetActive(false);
@@ -526,7 +527,7 @@ public static class SetupAndBuild
 
         var nonARBadgeGo = CreateUIObject("Badge", nonARHeaderGo);
         var badgeImg = nonARBadgeGo.AddComponent<Image>();
-        badgeImg.preserveAspect = true;
+        
         badgeImg.sprite = btnSprite;
         badgeImg.type = Image.Type.Sliced;
         badgeImg.color = new Color(0.72f, 0.4f, 0.29f, 0.1f); // Light Terracotta/Amber
@@ -547,7 +548,7 @@ public static class SetupAndBuild
         // G08 Terracotta Warning Banner
         var warnBannerGo = CreateUIObject("WarningBanner", nonARModePanelGo);
         var warnImg = warnBannerGo.AddComponent<Image>();
-        warnImg.preserveAspect = true;
+        
         warnImg.sprite = btnSprite;
         warnImg.type = Image.Type.Sliced;
         warnImg.color = new Color(0.72f, 0.4f, 0.29f, 0.08f); // Terracotta 8%
@@ -592,7 +593,7 @@ public static class SetupAndBuild
         // Catalogue Card Squat
         var cardSquatGo = CreateUIObject("CardSquat", catalogCatalogGo);
         var squatImg = cardSquatGo.AddComponent<Image>();
-        squatImg.preserveAspect = true;
+        
         squatImg.sprite = btnSprite;
         squatImg.type = Image.Type.Sliced;
         squatImg.color = Color.white;
@@ -620,7 +621,7 @@ public static class SetupAndBuild
 
         var squatBukaGo = CreateUIObject("BukaButton", cardSquatGo);
         var squatBukaImg = squatBukaGo.AddComponent<Image>();
-        squatBukaImg.preserveAspect = true;
+        
         squatBukaImg.sprite = btnSprite;
         squatBukaImg.type = Image.Type.Sliced;
         squatBukaImg.color = ColorForestGreen;
@@ -642,7 +643,7 @@ public static class SetupAndBuild
         // Card Jumping Jack (Locked)
         var cardJackGo = CreateUIObject("CardJacks", catalogCatalogGo);
         var jackImg = cardJackGo.AddComponent<Image>();
-        jackImg.preserveAspect = true;
+        
         jackImg.sprite = btnSprite;
         jackImg.type = Image.Type.Sliced;
         jackImg.color = new Color(1f, 1f, 1f, 0.6f);
@@ -670,7 +671,7 @@ public static class SetupAndBuild
 
         var jackLockGo = CreateUIObject("BukaButton", cardJackGo);
         var jackLockImg = jackLockGo.AddComponent<Image>();
-        jackLockImg.preserveAspect = true;
+        
         jackLockImg.sprite = btnSprite;
         jackLockImg.type = Image.Type.Sliced;
         jackLockImg.color = new Color(0.8f, 0.8f, 0.8f, 0.7f);
@@ -742,7 +743,7 @@ public static class SetupAndBuild
         // G09 BUKA PENGATURAN Button
         var settingsGo = CreateUIObject("SettingsButton", cameraErrorPanelGo);
         var settingsImg = settingsGo.AddComponent<Image>();
-        settingsImg.preserveAspect = true;
+        
         settingsImg.sprite = btnSprite;
         settingsImg.type = Image.Type.Sliced;
         settingsImg.color = ColorForestGreen;
@@ -932,35 +933,46 @@ public static class SetupAndBuild
         SetCenterPosition(scanFrameGo.GetComponent<RectTransform>(), 0f, 0f, 232.0f, 232.0f);
 
         // Helper to create L-brackets (30x30 outer boundaries)
-        System.Action<string, float, float, float, float> CreateCorner = (name, x, y, sx, sy) => {
+        System.Action<string, float, float, float, float> CreateCorner = (name, x, y, ax, ay) => {
             var c = CreateUIObject(name, scanFrameGo);
-            // Center anchors relative to the parent frame
             c.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
             c.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
             c.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
             c.GetComponent<RectTransform>().anchoredPosition = new Vector2(x, y);
             c.GetComponent<RectTransform>().sizeDelta = new Vector2(30f, 30f);
             
+            // Horizontal line
             var h = CreateUIObject(name + "H", c);
             var hImg = h.AddComponent<Image>();
             hImg.color = ColorCleanOffWhite;
-            SetAnchorLeft(h.GetComponent<RectTransform>(), sx > 0 ? 0f : 4f, sy > 0 ? 26f : 0f, 26f, 4f);
+            var hRT = h.GetComponent<RectTransform>();
+            hRT.anchorMin = new Vector2(ax, ay);
+            hRT.anchorMax = new Vector2(ax, ay);
+            hRT.pivot = new Vector2(ax, ay);
+            hRT.anchoredPosition = Vector2.zero;
+            hRT.sizeDelta = new Vector2(26f, 4f);
 
+            // Vertical line
             var v = CreateUIObject(name + "V", c);
             var vImg = v.AddComponent<Image>();
             vImg.color = ColorCleanOffWhite;
-            SetAnchorLeft(v.GetComponent<RectTransform>(), sx > 0 ? 0f : 26f, sy > 0 ? 4f : 0f, 4f, 26f);
+            var vRT = v.GetComponent<RectTransform>();
+            vRT.anchorMin = new Vector2(ax, ay);
+            vRT.anchorMax = new Vector2(ax, ay);
+            vRT.pivot = new Vector2(ax, ay);
+            vRT.anchoredPosition = Vector2.zero;
+            vRT.sizeDelta = new Vector2(4f, 26f);
         };
 
-        CreateCorner("TopLeft", -101f, 101f, 1f, 1f);
-        CreateCorner("TopRight", 101f, 101f, -1f, 1f);
-        CreateCorner("BottomLeft", -101f, -101f, 1f, -1f);
-        CreateCorner("BottomRight", 101f, -101f, -1f, -1f);
+        CreateCorner("TopLeft", -101f, 101f, 0f, 1f);      // Anchor top-left
+        CreateCorner("TopRight", 101f, 101f, 1f, 1f);       // Anchor top-right
+        CreateCorner("BottomLeft", -101f, -101f, 0f, 0f);   // Anchor bottom-left
+        CreateCorner("BottomRight", 101f, -101f, 1f, 0f);   // Anchor bottom-right
 
         // G03 Scan Laser Line
         var scanLineGo = CreateUIObject("ScanLaserLine", scanFrameGo);
         var scanLineImg = scanLineGo.AddComponent<Image>();
-        scanLineImg.preserveAspect = true;
+        
         scanLineImg.sprite = btnSprite;
         scanLineImg.type = Image.Type.Sliced;
         scanLineImg.color = new Color(0.66f, 0.745f, 0.635f, 0.7f); // Glowing Soft Sage
@@ -969,7 +981,7 @@ public static class SetupAndBuild
         // G03 Scan Target Pill Below Frame (corresponds to translate-y-[130px] from center)
         var scanPillGo = CreateUIObject("ScanTargetPill", scanGo);
         var scanPillImg = scanPillGo.AddComponent<Image>();
-        scanPillImg.preserveAspect = true;
+        
         scanPillImg.sprite = btnSprite;
         scanPillImg.type = Image.Type.Sliced;
         scanPillImg.color = new Color(0f, 0f, 0f, 0.45f); // Black 45%
@@ -990,7 +1002,7 @@ public static class SetupAndBuild
         // G03 Bottom Instruction Card (corresponds to bottom-[100px])
         var instructionCardGo = CreateUIObject("InstructionCard", scanGo);
         var instCardImg = instructionCardGo.AddComponent<Image>();
-        instCardImg.preserveAspect = true;
+        
         instCardImg.sprite = btnSprite;
         instCardImg.type = Image.Type.Sliced;
         instCardImg.color = ColorCleanOffWhite;
@@ -1049,7 +1061,7 @@ public static class SetupAndBuild
         // 2. Detection Toast Panel (G04) - Centered success card
         var toastGo = CreateUIObject("DetectionToast", canvasGo);
         var toastImg = toastGo.AddComponent<Image>();
-        toastImg.preserveAspect = true;
+        
         toastImg.sprite = btnSprite;
         toastImg.type = Image.Type.Sliced;
         toastImg.color = ColorCleanOffWhite;
@@ -1088,7 +1100,7 @@ public static class SetupAndBuild
 
         var toastPillGo = CreateUIObject("MovementPill", toastGo);
         var toastPillImg = toastPillGo.AddComponent<Image>();
-        toastPillImg.preserveAspect = true;
+        
         toastPillImg.sprite = btnSprite;
         toastPillImg.type = Image.Type.Sliced;
         toastPillImg.color = new Color(0.72f, 0.4f, 0.29f, 0.1f); // Terracotta 10%
@@ -1143,7 +1155,7 @@ public static class SetupAndBuild
         // FAB 1: Audio Play/Pause Button
         var playPauseGo = CreateUIObject("PlayPauseButton", fabColumnGo);
         var playPauseImg = playPauseGo.AddComponent<Image>();
-        playPauseImg.preserveAspect = true;
+        
         playPauseImg.sprite = btnSprite;
         playPauseImg.type = Image.Type.Sliced;
         playPauseImg.color = ColorDeepForest;
@@ -1174,7 +1186,7 @@ public static class SetupAndBuild
         // FAB 2: Open Material Detail Button
         var matBtnGo = CreateUIObject("MaterialButton", fabColumnGo);
         var matBtnImg = matBtnGo.AddComponent<Image>();
-        matBtnImg.preserveAspect = true;
+        
         matBtnImg.sprite = btnSprite;
         matBtnImg.type = Image.Type.Sliced;
         matBtnImg.color = ColorForestGreen;
@@ -1193,7 +1205,7 @@ public static class SetupAndBuild
         // FAB 3: Close / Reset Scan Button
         var closeGo = CreateUIObject("CloseButton", fabColumnGo);
         var closeImg = closeGo.AddComponent<Image>();
-        closeImg.preserveAspect = true;
+        
         closeImg.sprite = btnSprite;
         closeImg.type = Image.Type.Sliced;
         closeImg.color = ColorDeepForest;
@@ -1214,7 +1226,7 @@ public static class SetupAndBuild
         // G05 Bottom Info & Timeline Slider Card
         var timelineRootGo = CreateUIObject("TimelineCard", arControlsGo);
         var tlCardImg = timelineRootGo.AddComponent<Image>();
-        tlCardImg.preserveAspect = true;
+        
         tlCardImg.sprite = btnSprite;
         tlCardImg.type = Image.Type.Sliced;
         tlCardImg.color = new Color(0.957f, 0.941f, 0.902f, 0.96f); // Warm Cream 96%
@@ -1226,7 +1238,7 @@ public static class SetupAndBuild
 
         var squatTagGo = CreateUIObject("SquatTag", tlInfoRowGo);
         var squatTagImg = squatTagGo.AddComponent<Image>();
-        squatTagImg.preserveAspect = true;
+        
         squatTagImg.sprite = btnSprite;
         squatTagImg.type = Image.Type.Sliced;
         squatTagImg.color = ColorCleanOffWhite;
@@ -1272,7 +1284,7 @@ public static class SetupAndBuild
         // Customized Slider Visuals
         var sliderBgGo = CreateUIObject("Background", sliderGo);
         var slBgImg = sliderBgGo.AddComponent<Image>();
-        slBgImg.preserveAspect = true;
+        
         slBgImg.sprite = btnSprite;
         slBgImg.type = Image.Type.Sliced;
         slBgImg.color = ColorSoftSage;
@@ -1284,7 +1296,7 @@ public static class SetupAndBuild
 
         var handleVisGo = CreateUIObject("Handle", handleAreaGo);
         var handleVisImg = handleVisGo.AddComponent<Image>();
-        handleVisImg.preserveAspect = true;
+        
         handleVisImg.sprite = btnSprite;
         handleVisImg.type = Image.Type.Sliced;
         handleVisImg.color = ColorForestGreen;
@@ -1338,7 +1350,7 @@ public static class SetupAndBuild
         // 4. Bottom Sheet Panel (G06 & G07) - Pulls up to 94% height
         var sheetGo = CreateUIObject("BottomSheet", canvasGo);
         var sheetImg = sheetGo.AddComponent<Image>();
-        sheetImg.preserveAspect = true;
+        
         sheetImg.sprite = roundTopSprite;
         sheetImg.type = Image.Type.Sliced;
         sheetImg.color = ColorCleanOffWhite;
@@ -1352,7 +1364,7 @@ public static class SetupAndBuild
         // Grab Handle
         var handleGo = CreateUIObject("GrabHandle", sheetGo);
         var handleImg = handleGo.AddComponent<Image>();
-        handleImg.preserveAspect = true;
+        
         handleImg.sprite = btnSprite;
         handleImg.type = Image.Type.Sliced;
         handleImg.color = ColorSoftSage;
@@ -1386,7 +1398,7 @@ public static class SetupAndBuild
         // Back to primary button (G07 -> G06)
         var backBtnGo = CreateUIObject("BackToPrimaryButton", sheetGo);
         var backBtnImg = backBtnGo.AddComponent<Image>();
-        backBtnImg.preserveAspect = true;
+        
         backBtnImg.sprite = btnSprite;
         backBtnImg.type = Image.Type.Sliced;
         backBtnImg.color = ColorDeepForest;
@@ -1409,7 +1421,7 @@ public static class SetupAndBuild
         // Close Bottom Sheet Button
         var sheetCloseGo = CreateUIObject("SheetCloseX", sheetGo);
         var sheetCloseImg = sheetCloseGo.AddComponent<Image>();
-        sheetCloseImg.preserveAspect = true;
+        
         sheetCloseImg.sprite = btnSprite;
         sheetCloseImg.type = Image.Type.Sliced;
         sheetCloseImg.color = new Color(0f, 0f, 0f, 0.05f); // Light transparent gray
@@ -1514,7 +1526,7 @@ public static class SetupAndBuild
         // 3. Safety Tip Box
         var safetyTipCardGo = CreateUIObject("SafetyTipCard", contentGo);
         var safetyImg = safetyTipCardGo.AddComponent<Image>();
-        safetyImg.preserveAspect = true;
+        
         safetyImg.sprite = btnSprite;
         safetyImg.type = Image.Type.Sliced;
         safetyImg.color = new Color(0.66f, 0.745f, 0.635f, 0.25f); // Soft Sage 25%
@@ -1620,7 +1632,7 @@ public static class SetupAndBuild
         // Sheet Controller & Scrim
         var scrimGo = CreateUIObject("Scrim", canvasGo);
         var scrimImg = scrimGo.AddComponent<Image>();
-        scrimImg.preserveAspect = true;
+        
         scrimImg.color = new Color(0, 0, 0, 0.32f); // Camera Scrim opacity G06
         StretchRect(scrimGo.GetComponent<RectTransform>());
         scrimGo.AddComponent<Button>(); // Tap triggers close
@@ -1757,6 +1769,24 @@ public static class SetupAndBuild
         rt.anchorMin = new Vector2(0f, 0.5f);
         rt.anchorMax = new Vector2(0f, 0.5f);
         rt.pivot = new Vector2(0f, 0.5f);
+        rt.anchoredPosition = new Vector2(x, y);
+        rt.sizeDelta = new Vector2(w, h);
+    }
+
+    private static void SetAnchorTopLeft(RectTransform rt, float x, float y, float w, float h)
+    {
+        rt.anchorMin = new Vector2(0f, 1f);
+        rt.anchorMax = new Vector2(0f, 1f);
+        rt.pivot = new Vector2(0f, 1f);
+        rt.anchoredPosition = new Vector2(x, y);
+        rt.sizeDelta = new Vector2(w, h);
+    }
+
+    private static void SetAnchorTopRight(RectTransform rt, float x, float y, float w, float h)
+    {
+        rt.anchorMin = new Vector2(1f, 1f);
+        rt.anchorMax = new Vector2(1f, 1f);
+        rt.pivot = new Vector2(1f, 1f);
         rt.anchoredPosition = new Vector2(x, y);
         rt.sizeDelta = new Vector2(w, h);
     }
