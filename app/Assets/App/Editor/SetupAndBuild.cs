@@ -193,13 +193,36 @@ public static class SetupAndBuild
         // XR Origin & Camera setup
         var originGo = new GameObject("XR Origin");
         var origin = originGo.AddComponent<Unity.XR.CoreUtils.XROrigin>();
+
+        // CameraOffset GameObject (required by XROrigin for floor offset)
+        var cameraOffsetGo = new GameObject("Camera Offset");
+        cameraOffsetGo.transform.SetParent(originGo.transform, false);
+
+        // AR Camera sebagai child dari CameraOffset
         var camGo = new GameObject("AR Camera");
-        camGo.transform.SetParent(originGo.transform, false);
+        camGo.transform.SetParent(cameraOffsetGo.transform, false);
         var cam = camGo.AddComponent<Camera>();
         camGo.AddComponent<ARCameraManager>();
         camGo.AddComponent<ARCameraBackground>();
         camGo.tag = "MainCamera";
-        origin.Camera = cam;
+
+        // TrackedPoseDriver (Input System) - WAJIB agar kamera bisa tracking AR
+        var tpd = camGo.AddComponent<UnityEngine.InputSystem.XR.TrackedPoseDriver>();
+        var serialTPD = new SerializedObject(tpd);
+        // positionInput = <XRController>/devicePosition binding
+        var posAction = new UnityEngine.InputSystem.InputAction();
+        posAction.AddBinding("<XRHMD>/centerEyePosition");
+        var rotAction = new UnityEngine.InputSystem.InputAction();
+        rotAction.AddBinding("<XRHMD>/centerEyeRotation");
+        serialTPD.FindProperty("m_PositionInput.m_UseReference").boolValue = false;
+        serialTPD.FindProperty("m_RotationInput.m_UseReference").boolValue = false;
+        serialTPD.ApplyModifiedProperties();
+
+        // Link XROrigin ke camera dan offset
+        var serialOrigin = new SerializedObject(origin);
+        serialOrigin.FindProperty("m_Camera").objectReferenceValue = cam;
+        serialOrigin.FindProperty("m_CameraFloorOffsetObject").objectReferenceValue = cameraOffsetGo;
+        serialOrigin.ApplyModifiedProperties();
 
         // AR Session
         var sessionGo = new GameObject("AR Session");
