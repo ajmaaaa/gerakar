@@ -16,7 +16,7 @@ namespace GerakAR.Core
     /// Checks and requests camera permission on Android.
     /// On other platforms (Editor, iOS) it assumes permission is granted.
     /// Transitions: RequestingPermission → CheckingAR (granted)
-    ///                                   → Unsupported (permanently denied)
+    ///                                   → CameraDenied (denied/permanently denied)
     /// </summary>
     public class PermissionController : MonoBehaviour
     {
@@ -58,11 +58,11 @@ namespace GerakAR.Core
             }
             else
             {
-                _stateMgr.TransitionTo(AppState.CheckingAR);
+                _stateMgr.TransitionTo(AppState.LoadingARScene);
             }
 #else
             // Non-Android platforms
-            _stateMgr.TransitionTo(AppState.CheckingAR);
+            _stateMgr.TransitionTo(AppState.LoadingARScene);
 #endif
         }
 
@@ -72,14 +72,14 @@ namespace GerakAR.Core
         {
             CameraPermissionDenied = false;
             if (_stateMgr != null)
-                _stateMgr.TransitionTo(AppState.CheckingAR);
+                _stateMgr.TransitionTo(AppState.LoadingARScene);
         }
 
         private void OnPermissionDenied(string permissionName)
         {
             CameraPermissionDenied = true;
             if (_stateMgr != null)
-                _stateMgr.TransitionTo(AppState.Unsupported);
+                _stateMgr.TransitionTo(AppState.CameraDenied);
         }
     }
 }
