@@ -1,7 +1,9 @@
 // ============================================================
 // GerakAR – ARAvailabilityChecker.cs
 // Checks whether ARCore is available on this device using the
-// AR Foundation ARSession API and handles the Unsupported state.
+// AR Foundation ARSession API and routes appropriately.
+// Transitions: CheckingAR → LoadingARScene (Ready + permission granted)
+//                         → UnsupportedNotice (Unsupported/InstallFailed)
 // ============================================================
 using System.Collections;
 using UnityEngine;
@@ -11,25 +13,13 @@ using GerakAR.Core;
 namespace GerakAR.Core
 {
     /// <summary>
-    /// Checks AR availability after camera permission is granted.
-    /// Transitions: CheckingAR → Scanning (available)
-    ///                         → Unsupported (not available / not installed)
-    /// The <see cref="unsupportedPanel"/> is shown with a friendly message
-    /// when ARCore is not supported.
+    /// Checks AR availability and handles proper routing for:
+    /// - AR-supported devices → proceed to MainAR scene
+    /// - AR-unsupported devices → route to Non-AR fallback experience
+    /// Does NOT show panels directly; reports results to state machine.
     /// </summary>
     public class ARAvailabilityChecker : MonoBehaviour
     {
-        // ── Inspector ─────────────────────────────────────────────────
-
-        [Header("UI")]
-        [Tooltip("Panel shown when the device does not support AR.")]
-        [SerializeField] private GameObject unsupportedPanel;
-
-        [Tooltip("Optional: message text component to show reason.")]
-        [SerializeField] private TMPro.TextMeshProUGUI unsupportedMessageText;
-
-        // ── Private ───────────────────────────────────────────────────
-
         private AppStateManager _stateMgr;
 
         // ── Unity lifecycle ───────────────────────────────────────────
@@ -38,9 +28,6 @@ namespace GerakAR.Core
         {
             _stateMgr = AppStateManager.Instance;
             AppStateManager.OnStateChanged += OnStateChanged;
-
-            if (unsupportedPanel != null)
-                unsupportedPanel.SetActive(false);
         }
 
         private void OnDestroy() =>
@@ -50,56 +37,70 @@ namespace GerakAR.Core
         {
             if (next == AppState.CheckingAR)
                 StartCoroutine(CheckAvailability());
-
-            if (next == AppState.Unsupported)
-                ShowUnsupported();
         }
 
         // ── AR availability ───────────────────────────────────────────
 
         private IEnumerator CheckAvailability()
         {
+            // Forced Non-AR mode for testing/debugging
+            if (AppStateManager.RunInNonARMode)
+            {
+                Debug.Log("[ARAvailabilityChecker] Forced Non-AR mode active.");
+                yield return new WaitForSeconds(0.3f);
+                _stateMgr.TransitionTo(AppState.UnsupportedNotice);
+                yield break;
+            }
+
 #if UNITY_EDITOR
-            // Always supported in Editor for development
+            // Editor: simulate AR-supported for development
+            Debug.Log("[ARAvailabilityChecker] Editor detected; simulating AR support.");
             yield return null;
-            _stateMgr.TransitionTo(AppState.Scanning);
+            _stateMgr.TransitionTo(AppState.LoadingARScene);
             yield break;
 #endif
-            // Start the AR check
+
+            Debug.Log("[ARAvailabilityChecker] Checking AR availability...");
             yield return ARSession.CheckAvailability();
 
-            switch (ARSession.state)
+            ARSessionState state = ARSession.state;
+            Debug.Log($"[ARAvailabilityChecker] AR session state: {state}");
+
+            switch (state)
             {
                 case ARSessionState.Ready:
                 case ARSessionState.SessionInitializing:
                 case ARSessionState.SessionTracking:
-                    _stateMgr.TransitionTo(AppState.Scanning);
+                    // Device supports AR and services are ready
+                    _stateMgr.TransitionTo(AppState.LoadingARScene);
                     break;
 
                 case ARSessionState.NeedsInstall:
+                    // Device supports AR but needs Google Play Services for AR
+                    Debug.Log("[ARAvailabilityChecker] AR services need installation. Installing...");
                     yield return ARSession.Install();
-                    if (ARSession.state == ARSessionState.Ready)
-                        _stateMgr.TransitionTo(AppState.Scanning);
+                    
+                    // Check result after installation attempt
+                    if (ARSession.state == ARSessionState.Ready ||
+                        ARSession.state == ARSessionState.SessionInitializing)
+                    {
+                        Debug.Log("[ARAvailabilityChecker] AR services installed successfully.");
+                        _stateMgr.TransitionTo(AppState.LoadingARScene);
+                    }
                     else
-                        _stateMgr.TransitionTo(AppState.Unsupported);
+                    {
+                        Debug.LogWarning("[ARAvailabilityChecker] AR service installation failed.");
+                        _stateMgr.TransitionTo(AppState.ARInstallFailed);
+                    }
                     break;
 
+                case ARSessionState.Unsupported:
                 default:
-                    _stateMgr.TransitionTo(AppState.Unsupported);
+                    // Device does not support AR
+                    Debug.LogWarning($"[ARAvailabilityChecker] AR not supported. State: {state}");
+                    _stateMgr.TransitionTo(AppState.UnsupportedNotice);
                     break;
             }
-        }
-
-        private void ShowUnsupported()
-        {
-            if (unsupportedPanel != null)
-                unsupportedPanel.SetActive(true);
-
-            string msg = "Perangkat ini tidak mendukung AR.\nMinta guru atau orang tua untuk membantu.";
-            if (unsupportedMessageText != null)
-                unsupportedMessageText.text = msg;
-            else
-                Debug.LogWarning($"[ARAvailabilityChecker] Unsupported: {msg}");
         }
     }
 }

@@ -23,6 +23,9 @@ namespace GerakAR.Core
         /// <summary>Current application state.</summary>
         public AppState CurrentState { get; private set; } = AppState.Intro;
 
+        /// <summary>Flag to force application to run in Non-AR 3D Mode.</summary>
+        public static bool RunInNonARMode { get; set; } = false;
+
         /// <summary>
         /// Fired whenever the state changes.
         /// Args: (previousState, newState).

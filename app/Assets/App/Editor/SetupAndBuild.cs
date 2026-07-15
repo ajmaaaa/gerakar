@@ -722,6 +722,8 @@ public static class SetupAndBuild
         var camGo = new GameObject("AR Camera");
         camGo.transform.SetParent(cameraOffsetGo.transform, false);
         var cam = camGo.AddComponent<Camera>();
+        cam.clearFlags = CameraClearFlags.SolidColor;
+        cam.backgroundColor = new Color(0f, 0f, 0f, 0f);
         camGo.AddComponent<ARCameraManager>();
         camGo.AddComponent<ARCameraBackground>();
         camGo.tag = "MainCamera";
@@ -824,8 +826,7 @@ public static class SetupAndBuild
         // G03 Central Scan Guide Frame
         var scanFrameGo = CreateUIObject("ScanFrame", scanGo);
         var scanFrameImg = scanFrameGo.AddComponent<Image>();
-        var frameSpriteAsset = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Samples/XR Interaction Toolkit/3.3.0/Starter Assets/DemoSceneAssets/Sprites/Round Radius 4 Outline.png");
-        if (frameSpriteAsset != null) scanFrameImg.sprite = frameSpriteAsset;
+        if (frameSprite != null) scanFrameImg.sprite = frameSprite;
         scanFrameImg.type = Image.Type.Sliced;
         scanFrameImg.color = ColorCleanOffWhite;
         SetCenterPosition(scanFrameGo.GetComponent<RectTransform>(), 0f, 80f, 480f, 480f);
@@ -862,14 +863,14 @@ public static class SetupAndBuild
         instCardImg.sprite = btnSprite;
         instCardImg.type = Image.Type.Sliced;
         instCardImg.color = ColorCleanOffWhite;
-        SetCenterPosition(instructionCardGo.GetComponent<RectTransform>(), 0f, -540f, 720f, 130f);
+        SetCenterPosition(instructionCardGo.GetComponent<RectTransform>(), 0f, -420f, 600f, 110f);
 
         var instIconCircleGo = CreateUIObject("IconCircle", instructionCardGo);
         var instIconCircleImg = instIconCircleGo.AddComponent<Image>();
         instIconCircleImg.sprite = btnSprite;
         instIconCircleImg.type = Image.Type.Sliced;
         instIconCircleImg.color = new Color(0.66f, 0.745f, 0.635f, 0.2f); // Soft Sage 20%
-        SetCenterPosition(instIconCircleGo.GetComponent<RectTransform>(), -280f, 0f, 70f, 70f);
+        SetCenterPosition(instIconCircleGo.GetComponent<RectTransform>(), -230f, 0f, 70f, 70f);
 
         var instIconTextGo = CreateUIObject("Text", instIconCircleGo);
         var instIconText = instIconTextGo.AddComponent<TextMeshProUGUI>();
@@ -886,7 +887,7 @@ public static class SetupAndBuild
         hintText.color = ColorCharcoal;
         hintText.alignment = TextAlignmentOptions.Left;
         if (interFont != null) hintText.font = interFont;
-        SetCenterPosition(hintGo.GetComponent<RectTransform>(), 70f, 0f, 540f, 60f);
+        SetCenterPosition(hintGo.GetComponent<RectTransform>(), 40f, 0f, 440f, 60f);
 
         var instSubtitleGo = CreateUIObject("InstructionSubtitle", scanGo);
         var instSubtitle = instSubtitleGo.AddComponent<TextMeshProUGUI>();
@@ -895,7 +896,7 @@ public static class SetupAndBuild
         instSubtitle.color = ColorCleanOffWhite;
         instSubtitle.alignment = TextAlignmentOptions.Center;
         if (interFont != null) instSubtitle.font = interFont;
-        SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 0f, -620f, 700f, 40f);
+        SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 0f, -500f, 700f, 40f);
 
         // 2. Detection Toast Panel (G04) - Centered success card
         var toastGo = CreateUIObject("DetectionToast", canvasGo);
@@ -976,7 +977,7 @@ public static class SetupAndBuild
 
         // G05 Right Column of Floating Circular FABs
         var fabColumnGo = CreateUIObject("FABColumn", arControlsGo);
-        SetAnchorRight(fabColumnGo.GetComponent<RectTransform>(), -40f, 150f, 120f, 380f);
+        SetAnchorRight(fabColumnGo.GetComponent<RectTransform>(), -40f, -400f, 120f, 380f);
 
         // FAB 1: Audio Play/Pause Button
         var playPauseGo = CreateUIObject("PlayPauseButton", fabColumnGo);
@@ -1042,10 +1043,10 @@ public static class SetupAndBuild
         // G05 Bottom Info & Timeline Slider Card
         var timelineRootGo = CreateUIObject("TimelineCard", arControlsGo);
         var tlCardImg = timelineRootGo.AddComponent<Image>();
-        tlCardImg.sprite = roundTopSprite;
+        tlCardImg.sprite = btnSprite;
         tlCardImg.type = Image.Type.Sliced;
         tlCardImg.color = new Color(0.957f, 0.941f, 0.902f, 0.96f); // Warm Cream 96%
-        SetCenterPosition(timelineRootGo.GetComponent<RectTransform>(), 0f, -620f, 960f, 240f);
+        SetCenterPosition(timelineRootGo.GetComponent<RectTransform>(), 0f, -800f, 960f, 240f);
 
         // G05 Info tags inside bottom card
         var tlInfoRowGo = CreateUIObject("InfoRow", timelineRootGo);
