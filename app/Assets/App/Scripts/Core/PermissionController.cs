@@ -31,9 +31,9 @@ namespace GerakAR.Core
 
             AppStateManager.OnStateChanged += OnStateChanged;
 
-            // If we start in RequestingPermission (Bootstrap sets this), begin immediately
+            // Begin check immediately if we start in RequestingPermission
             if (_stateMgr.Is(AppState.RequestingPermission))
-                StartCoroutine(RequestCamera());
+                CheckAndRequestPermission();
         }
 
         private void OnDestroy() =>
@@ -42,27 +42,40 @@ namespace GerakAR.Core
         private void OnStateChanged(AppState prev, AppState next)
         {
             if (next == AppState.RequestingPermission)
-                StartCoroutine(RequestCamera());
+                CheckAndRequestPermission();
         }
 
-        private IEnumerator RequestCamera()
+        private void CheckAndRequestPermission()
         {
 #if UNITY_ANDROID && !UNITY_EDITOR
             if (!Permission.HasUserAuthorizedPermission(Permission.Camera))
             {
-                Permission.RequestUserPermission(Permission.Camera);
-                yield return new WaitForSeconds(dialogWaitSeconds);
+                var callbacks = new PermissionCallbacks();
+                callbacks.PermissionGranted += OnPermissionGranted;
+                callbacks.PermissionDenied += OnPermissionDenied;
+                callbacks.PermissionDeniedAndDontAskAgain += OnPermissionDenied;
+                Permission.RequestUserPermission(Permission.Camera, callbacks);
             }
-
-            if (Permission.HasUserAuthorizedPermission(Permission.Camera))
-                _stateMgr.TransitionTo(AppState.CheckingAR);
             else
-                _stateMgr.TransitionTo(AppState.Unsupported);
+            {
+                _stateMgr.TransitionTo(AppState.CheckingAR);
+            }
 #else
-            // Editor / non-Android: always granted
-            yield return null;
+            // Non-Android platforms
             _stateMgr.TransitionTo(AppState.CheckingAR);
 #endif
+        }
+
+        private void OnPermissionGranted(string permissionName)
+        {
+            if (_stateMgr != null)
+                _stateMgr.TransitionTo(AppState.CheckingAR);
+        }
+
+        private void OnPermissionDenied(string permissionName)
+        {
+            if (_stateMgr != null)
+                _stateMgr.TransitionTo(AppState.Unsupported);
         }
     }
 }
