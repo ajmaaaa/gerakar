@@ -10,6 +10,7 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using GerakAR.Core;
 using GerakAR.Content;
+using GerakAR.UI;
 
 namespace GerakAR.AR
 {
