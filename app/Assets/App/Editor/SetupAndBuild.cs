@@ -207,16 +207,8 @@ public static class SetupAndBuild
         camGo.tag = "MainCamera";
 
         // TrackedPoseDriver (Input System) - WAJIB agar kamera bisa tracking AR
-        var tpd = camGo.AddComponent<UnityEngine.InputSystem.XR.TrackedPoseDriver>();
-        var serialTPD = new SerializedObject(tpd);
-        // positionInput = <XRController>/devicePosition binding
-        var posAction = new UnityEngine.InputSystem.InputAction();
-        posAction.AddBinding("<XRHMD>/centerEyePosition");
-        var rotAction = new UnityEngine.InputSystem.InputAction();
-        rotAction.AddBinding("<XRHMD>/centerEyeRotation");
-        serialTPD.FindProperty("m_PositionInput.m_UseReference").boolValue = false;
-        serialTPD.FindProperty("m_RotationInput.m_UseReference").boolValue = false;
-        serialTPD.ApplyModifiedProperties();
+        // AR Foundation akan mengisi binding secara otomatis saat runtime
+        camGo.AddComponent<UnityEngine.InputSystem.XR.TrackedPoseDriver>();
 
         // Link XROrigin ke camera dan offset
         var serialOrigin = new SerializedObject(origin);
