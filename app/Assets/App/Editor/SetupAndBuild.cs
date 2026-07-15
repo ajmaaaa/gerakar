@@ -12,6 +12,7 @@ using GerakAR.Audio;
 using GerakAR.Content;
 using System.Collections.Generic;
 using UnityEditor.Build;
+using UnityEngine.InputSystem.UI;
 
 public static class SetupAndBuild
 {
@@ -61,10 +62,10 @@ public static class SetupAndBuild
         scaler.matchWidthOrHeight = 0.5f;
         canvasGo.AddComponent<GraphicRaycaster>();
 
-        // Event System
+        // Event System - pakai InputSystemUIInputModule karena project menggunakan New Input System
         var eventSystemGo = new GameObject("EventSystem");
         eventSystemGo.AddComponent<UnityEngine.EventSystems.EventSystem>();
-        eventSystemGo.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+        eventSystemGo.AddComponent<InputSystemUIInputModule>();
 
         // 1. Intro Panel
         var introGo = CreateUIObject("IntroPanel", canvasGo);
@@ -248,10 +249,10 @@ public static class SetupAndBuild
         scaler.matchWidthOrHeight = 0.5f;
         canvasGo.AddComponent<GraphicRaycaster>();
 
-        // Event System
+        // Event System - pakai InputSystemUIInputModule karena project menggunakan New Input System
         var eventSystemGo = new GameObject("EventSystem");
         eventSystemGo.AddComponent<UnityEngine.EventSystems.EventSystem>();
-        eventSystemGo.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+        eventSystemGo.AddComponent<InputSystemUIInputModule>();
 
         // Load premium UI assets
         var interFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/MobileARTemplateAssets/UI/Fonts/Inter-Regular_SDF.asset");
