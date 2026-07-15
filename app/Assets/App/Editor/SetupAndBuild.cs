@@ -46,7 +46,9 @@ public static class SetupAndBuild
         // 1. StepItem prefab
         var stepGo = new GameObject("StepItem", typeof(RectTransform));
         var stepText = stepGo.AddComponent<TextMeshProUGUI>();
-        stepText.fontSize = 24;
+        stepText.enableWordWrapping = true;
+        stepText.overflowMode = TMPro.TextOverflowModes.Overflow;
+        stepText.fontSize = 8.0f;
         stepText.color = ColorCharcoal;
         if (interFont != null) stepText.font = interFont;
         stepGo.GetComponent<RectTransform>().sizeDelta = new Vector2(880f, 60f);
@@ -56,7 +58,9 @@ public static class SetupAndBuild
         // 2. BulletItem prefab
         var bulletGo = new GameObject("BulletItem", typeof(RectTransform));
         var bulletText = bulletGo.AddComponent<TextMeshProUGUI>();
-        bulletText.fontSize = 22;
+        bulletText.enableWordWrapping = true;
+        bulletText.overflowMode = TMPro.TextOverflowModes.Overflow;
+        bulletText.fontSize = 7.3f;
         bulletText.color = ColorCharcoal;
         if (interFont != null) bulletText.font = interFont;
         bulletGo.GetComponent<RectTransform>().sizeDelta = new Vector2(880f, 50f);
@@ -66,6 +70,7 @@ public static class SetupAndBuild
         // 3. RelatedCard prefab
         var cardGo = new GameObject("RelatedCard", typeof(RectTransform));
         var cardImg = cardGo.AddComponent<Image>();
+        cardImg.preserveAspect = true;
         cardImg.sprite = btnSprite;
         cardImg.type = Image.Type.Sliced;
         cardImg.color = Color.white;
@@ -75,18 +80,21 @@ public static class SetupAndBuild
 
         var thumbGo = CreateUIObject("Thumbnail", cardGo);
         var thumbImg = thumbGo.AddComponent<Image>();
+        thumbImg.preserveAspect = true;
         thumbImg.color = ColorSoftSage;
-        SetCenterPosition(thumbGo.GetComponent<RectTransform>(), 0f, 25f, 200f, 100f);
+        SetCenterPosition(thumbGo.GetComponent<RectTransform>(), 0f, 8.3f, 66.7f, 33.3f);
 
         var titleGo = CreateUIObject("Title", cardGo);
         var titleText = titleGo.AddComponent<TextMeshProUGUI>();
+        titleText.enableWordWrapping = true;
+        titleText.overflowMode = TMPro.TextOverflowModes.Overflow;
         titleText.text = "Related";
-        titleText.fontSize = 18;
+        titleText.fontSize = 6.0f;
         titleText.fontStyle = FontStyles.Bold;
         titleText.color = ColorCharcoal;
         titleText.alignment = TextAlignmentOptions.Center;
         if (interFont != null) titleText.font = interFont;
-        SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, -50f, 200f, 40f);
+        SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, -16.7f, 66.7f, 13.3f);
 
         PrefabUtility.SaveAsPrefabAsset(cardGo, "Assets/App/Prefabs/RelatedCard.prefab");
         Object.DestroyImmediate(cardGo);
@@ -117,7 +125,7 @@ public static class SetupAndBuild
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         var scaler = canvasGo.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1080f, 1920f);
+        scaler.referenceResolution = new Vector2(360f, 800f);
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
         scaler.matchWidthOrHeight = 0.5f;
         canvasGo.AddComponent<GraphicRaycaster>();
@@ -134,6 +142,7 @@ public static class SetupAndBuild
         // 1. Intro Panel (G01) - Hijau Tua Hutan
         var introGo = CreateUIObject("IntroPanel", canvasGo);
         var introImg = introGo.AddComponent<Image>();
+        introImg.preserveAspect = true;
         introImg.color = ColorDeepForest;
         StretchRect(introGo.GetComponent<RectTransform>());
         var introCanvasGroup = introGo.AddComponent<CanvasGroup>();
@@ -144,25 +153,30 @@ public static class SetupAndBuild
         // G01 Header Kiri - Media Pembelajaran Text
         var introMetaGo = CreateUIObject("MetadataText", introGo);
         var introMetaText = introMetaGo.AddComponent<TextMeshProUGUI>();
+        introMetaText.enableWordWrapping = true;
+        introMetaText.overflowMode = TMPro.TextOverflowModes.Overflow;
         introMetaText.text = "<b>Media Pembelajaran</b>\n<color=#A9BEA2>Skripsi Pendidikan SD</color>";
-        introMetaText.fontSize = 28;
+        introMetaText.fontSize = 9.3f;
         introMetaText.color = Color.white;
         introMetaText.alignment = TextAlignmentOptions.Left;
         if (interFont != null) introMetaText.font = interFont;
-        SetCenterPosition(introMetaGo.GetComponent<RectTransform>(), -260f, 780f, 480f, 100f);
+        SetCenterPosition(introMetaGo.GetComponent<RectTransform>(), -86.7f, 260.0f, 160.0f, 33.3f);
 
         // G01 Header Kanan - Stylized UNP Logo Badge (Gold Circle with UNP text)
         var unpBadgeGo = CreateUIObject("UNPBadge", introGo);
         var unpBadgeImg = unpBadgeGo.AddComponent<Image>();
+        unpBadgeImg.preserveAspect = true;
         unpBadgeImg.sprite = btnSprite;
         unpBadgeImg.type = Image.Type.Sliced;
         unpBadgeImg.color = new Color(0.957f, 0.729f, 0.094f, 1f); // Gold #F4BA18
-        SetCenterPosition(unpBadgeGo.GetComponent<RectTransform>(), 400f, 780f, 100f, 100f);
+        SetCenterPosition(unpBadgeGo.GetComponent<RectTransform>(), 133.3f, 260.0f, 33.3f, 33.3f);
 
         var unpTextGo = CreateUIObject("Text", unpBadgeGo);
         var unpText = unpTextGo.AddComponent<TextMeshProUGUI>();
+        unpText.enableWordWrapping = true;
+        unpText.overflowMode = TMPro.TextOverflowModes.Overflow;
         unpText.text = "<b>UNP</b>";
-        unpText.fontSize = 24;
+        unpText.fontSize = 8.0f;
         unpText.color = new Color(0.05f, 0.29f, 0.54f, 1f); // Blue #0D4B8A
         unpText.alignment = TextAlignmentOptions.Center;
         if (interFont != null) unpText.font = interFont;
@@ -171,44 +185,51 @@ public static class SetupAndBuild
         // G01 Middle Graphic - Soft Sage Cube/Silhouette
         var introCenterGo = CreateUIObject("CenterGraphic", introGo);
         var centerImg = introCenterGo.AddComponent<Image>();
+        centerImg.preserveAspect = true;
         var cubeSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/MobileARTemplateAssets/UI/Sprites/Icon-Cube.png");
         if (cubeSprite != null) centerImg.sprite = cubeSprite;
         centerImg.color = ColorSoftSage;
-        SetCenterPosition(introCenterGo.GetComponent<RectTransform>(), 0f, 150f, 220f, 220f);
+        SetCenterPosition(introCenterGo.GetComponent<RectTransform>(), 0f, 50.0f, 73.3f, 73.3f);
 
         // G01 Bottom Brand - Title & Progress Bar
         var brandGroupGo = CreateUIObject("BrandGroup", introGo);
-        SetCenterPosition(brandGroupGo.GetComponent<RectTransform>(), 0f, -500f, 900f, 320f);
+        SetCenterPosition(brandGroupGo.GetComponent<RectTransform>(), 0f, -166.7f, 300.0f, 106.7f);
 
         var titleGo = CreateUIObject("TitleText", brandGroupGo);
         var titleText = titleGo.AddComponent<TextMeshProUGUI>();
+        titleText.enableWordWrapping = true;
+        titleText.overflowMode = TMPro.TextOverflowModes.Overflow;
         titleText.text = "GerakAR";
-        titleText.fontSize = 72;
+        titleText.fontSize = 24.0f;
         titleText.fontStyle = FontStyles.Bold;
         titleText.color = Color.white;
         titleText.alignment = TextAlignmentOptions.Center;
         if (interFont != null) titleText.font = interFont;
-        SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, 120f, 800f, 100f);
+        SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, 40.0f, 266.7f, 33.3f);
 
         var subtitleGo = CreateUIObject("SubtitleText", brandGroupGo);
         var subtitleText = subtitleGo.AddComponent<TextMeshProUGUI>();
+        subtitleText.enableWordWrapping = true;
+        subtitleText.overflowMode = TMPro.TextOverflowModes.Overflow;
         subtitleText.text = "Belajar Gerak Jadi Seru";
-        subtitleText.fontSize = 28;
+        subtitleText.fontSize = 9.3f;
         subtitleText.color = ColorSoftSage;
         subtitleText.alignment = TextAlignmentOptions.Center;
         if (interFont != null) subtitleText.font = interFont;
-        SetCenterPosition(subtitleGo.GetComponent<RectTransform>(), 0f, 40f, 800f, 50f);
+        SetCenterPosition(subtitleGo.GetComponent<RectTransform>(), 0f, 13.3f, 266.7f, 16.7f);
 
         // G01 Loading progress bar
         var progressTrackGo = CreateUIObject("ProgressTrack", brandGroupGo);
         var trackImg = progressTrackGo.AddComponent<Image>();
+        trackImg.preserveAspect = true;
         trackImg.sprite = btnSprite;
         trackImg.type = Image.Type.Sliced;
         trackImg.color = new Color(0.12f, 0.365f, 0.259f, 0.3f); // #1F5D42 with 30% opacity
-        SetCenterPosition(progressTrackGo.GetComponent<RectTransform>(), 0f, -80f, 400f, 12f);
+        SetCenterPosition(progressTrackGo.GetComponent<RectTransform>(), 0f, -26.7f, 133.3f, 4.0f);
 
         var progressFillGo = CreateUIObject("ProgressFill", progressTrackGo);
         var fillImg = progressFillGo.AddComponent<Image>();
+        fillImg.preserveAspect = true;
         fillImg.sprite = btnSprite;
         fillImg.type = Image.Type.Filled;
         fillImg.fillMethod = Image.FillMethod.Horizontal;
@@ -224,25 +245,29 @@ public static class SetupAndBuild
         // 2. Onboarding Panel (G02) - Warm Cream
         var onboardGo = CreateUIObject("OnboardingPanel", canvasGo);
         var onboardImg = onboardGo.AddComponent<Image>();
+        onboardImg.preserveAspect = true;
         onboardImg.color = new Color(0.957f, 0.941f, 0.902f, 1f); // Warm Cream #F4F0E6
         StretchRect(onboardGo.GetComponent<RectTransform>());
         onboardGo.SetActive(false);
 
         // G02 Header - Shield Check Circle & Teks
         var safetyHeaderGo = CreateUIObject("SafetyHeader", onboardGo);
-        SetCenterPosition(safetyHeaderGo.GetComponent<RectTransform>(), 0f, 600f, 900f, 320f);
+        SetCenterPosition(safetyHeaderGo.GetComponent<RectTransform>(), 0f, 200.0f, 300.0f, 106.7f);
 
         var checkIconCircleGo = CreateUIObject("CheckCircle", safetyHeaderGo);
         var circleImg = checkIconCircleGo.AddComponent<Image>();
+        circleImg.preserveAspect = true;
         circleImg.sprite = btnSprite;
         circleImg.type = Image.Type.Sliced;
         circleImg.color = new Color(0.66f, 0.745f, 0.635f, 0.3f); // Soft Sage 30%
-        SetCenterPosition(checkIconCircleGo.GetComponent<RectTransform>(), 0f, 100f, 120f, 120f);
+        SetCenterPosition(checkIconCircleGo.GetComponent<RectTransform>(), 0f, 33.3f, 40.0f, 40.0f);
 
         var checkIconTextGo = CreateUIObject("Text", checkIconCircleGo);
         var checkIconText = checkIconTextGo.AddComponent<TextMeshProUGUI>();
+        checkIconText.enableWordWrapping = true;
+        checkIconText.overflowMode = TMPro.TextOverflowModes.Overflow;
         checkIconText.text = "✔";
-        checkIconText.fontSize = 44;
+        checkIconText.fontSize = 14.7f;
         checkIconText.color = ColorDeepForest;
         checkIconText.alignment = TextAlignmentOptions.Center;
         if (interFont != null) checkIconText.font = interFont;
@@ -250,46 +275,54 @@ public static class SetupAndBuild
 
         var obTitleGo = CreateUIObject("OnboardingTitle", safetyHeaderGo);
         var obTitle = obTitleGo.AddComponent<TextMeshProUGUI>();
+        obTitle.enableWordWrapping = true;
+        obTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         obTitle.text = "Sebelum Mulai";
-        obTitle.fontSize = 48;
+        obTitle.fontSize = 16.0f;
         obTitle.fontStyle = FontStyles.Bold;
         obTitle.color = ColorDeepForest;
         obTitle.alignment = TextAlignmentOptions.Center;
         if (interFont != null) obTitle.font = interFont;
-        SetCenterPosition(obTitleGo.GetComponent<RectTransform>(), 0f, -10f, 800f, 60f);
+        SetCenterPosition(obTitleGo.GetComponent<RectTransform>(), 0f, -3.3f, 266.7f, 20.0f);
 
         var obSubtitleGo = CreateUIObject("OnboardingSubtitle", safetyHeaderGo);
         var obSubtitle = obSubtitleGo.AddComponent<TextMeshProUGUI>();
+        obSubtitle.enableWordWrapping = true;
+        obSubtitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         obSubtitle.text = "Ayo bergerak dengan aman dan nyaman.";
-        obSubtitle.fontSize = 24;
+        obSubtitle.fontSize = 8.0f;
         obSubtitle.color = ColorCharcoal;
         obSubtitle.alignment = TextAlignmentOptions.Center;
         if (interFont != null) obSubtitle.font = interFont;
-        SetCenterPosition(obSubtitleGo.GetComponent<RectTransform>(), 0f, -70f, 800f, 50f);
+        SetCenterPosition(obSubtitleGo.GetComponent<RectTransform>(), 0f, -23.3f, 266.7f, 16.7f);
 
         // G02 List Cards (1, 2, 3)
         var obListGo = CreateUIObject("InstructionList", onboardGo);
-        SetCenterPosition(obListGo.GetComponent<RectTransform>(), 0f, 20f, 960f, 520f);
+        SetCenterPosition(obListGo.GetComponent<RectTransform>(), 0f, 6.7f, 320.0f, 173.3f);
 
         // Card 1
         var card1Go = CreateUIObject("Card1", obListGo);
         var card1Img = card1Go.AddComponent<Image>();
+        card1Img.preserveAspect = true;
         card1Img.sprite = btnSprite;
         card1Img.type = Image.Type.Sliced;
         card1Img.color = Color.white;
-        SetCenterPosition(card1Go.GetComponent<RectTransform>(), 0f, 160f, 920f, 140f);
+        SetCenterPosition(card1Go.GetComponent<RectTransform>(), 0f, 53.3f, 306.7f, 46.7f);
 
         var num1CircleGo = CreateUIObject("NumCircle", card1Go);
         var num1CircleImg = num1CircleGo.AddComponent<Image>();
+        num1CircleImg.preserveAspect = true;
         num1CircleImg.sprite = btnSprite;
         num1CircleImg.type = Image.Type.Sliced;
         num1CircleImg.color = ColorForestGreen;
-        SetCenterPosition(num1CircleGo.GetComponent<RectTransform>(), -380f, 0f, 64f, 64f);
+        SetCenterPosition(num1CircleGo.GetComponent<RectTransform>(), -126.7f, 0f, 21.3f, 21.3f);
 
         var num1TextGo = CreateUIObject("Text", num1CircleGo);
         var num1Text = num1TextGo.AddComponent<TextMeshProUGUI>();
+        num1Text.enableWordWrapping = true;
+        num1Text.overflowMode = TMPro.TextOverflowModes.Overflow;
         num1Text.text = "1";
-        num1Text.fontSize = 28;
+        num1Text.fontSize = 9.3f;
         num1Text.fontStyle = FontStyles.Bold;
         num1Text.color = Color.white;
         num1Text.alignment = TextAlignmentOptions.Center;
@@ -298,32 +331,38 @@ public static class SetupAndBuild
 
         var desc1Go = CreateUIObject("Desc", card1Go);
         var desc1 = desc1Go.AddComponent<TextMeshProUGUI>();
+        desc1.enableWordWrapping = true;
+        desc1.overflowMode = TMPro.TextOverflowModes.Overflow;
         desc1.text = "Gunakan di tempat yang cukup luas.";
-        desc1.fontSize = 28;
+        desc1.fontSize = 9.3f;
         desc1.color = ColorCharcoal;
         desc1.alignment = TextAlignmentOptions.Left;
         if (interFont != null) desc1.font = interFont;
-        SetCenterPosition(desc1Go.GetComponent<RectTransform>(), 90f, 0f, 720f, 80f);
+        SetCenterPosition(desc1Go.GetComponent<RectTransform>(), 30.0f, 0f, 240.0f, 26.7f);
 
         // Card 2
         var card2Go = CreateUIObject("Card2", obListGo);
         var card2Img = card2Go.AddComponent<Image>();
+        card2Img.preserveAspect = true;
         card2Img.sprite = btnSprite;
         card2Img.type = Image.Type.Sliced;
         card2Img.color = Color.white;
-        SetCenterPosition(card2Go.GetComponent<RectTransform>(), 0f, 0f, 920f, 140f);
+        SetCenterPosition(card2Go.GetComponent<RectTransform>(), 0f, 0f, 306.7f, 46.7f);
 
         var num2CircleGo = CreateUIObject("NumCircle", card2Go);
         var num2CircleImg = num2CircleGo.AddComponent<Image>();
+        num2CircleImg.preserveAspect = true;
         num2CircleImg.sprite = btnSprite;
         num2CircleImg.type = Image.Type.Sliced;
         num2CircleImg.color = ColorForestGreen;
-        SetCenterPosition(num2CircleGo.GetComponent<RectTransform>(), -380f, 0f, 64f, 64f);
+        SetCenterPosition(num2CircleGo.GetComponent<RectTransform>(), -126.7f, 0f, 21.3f, 21.3f);
 
         var num2TextGo = CreateUIObject("Text", num2CircleGo);
         var num2Text = num2TextGo.AddComponent<TextMeshProUGUI>();
+        num2Text.enableWordWrapping = true;
+        num2Text.overflowMode = TMPro.TextOverflowModes.Overflow;
         num2Text.text = "2";
-        num2Text.fontSize = 28;
+        num2Text.fontSize = 9.3f;
         num2Text.fontStyle = FontStyles.Bold;
         num2Text.color = Color.white;
         num2Text.alignment = TextAlignmentOptions.Center;
@@ -332,32 +371,38 @@ public static class SetupAndBuild
 
         var desc2Go = CreateUIObject("Desc", card2Go);
         var desc2 = desc2Go.AddComponent<TextMeshProUGUI>();
+        desc2.enableWordWrapping = true;
+        desc2.overflowMode = TMPro.TextOverflowModes.Overflow;
         desc2.text = "Minta guru atau orang tua mendampingi.";
-        desc2.fontSize = 28;
+        desc2.fontSize = 9.3f;
         desc2.color = ColorCharcoal;
         desc2.alignment = TextAlignmentOptions.Left;
         if (interFont != null) desc2.font = interFont;
-        SetCenterPosition(desc2Go.GetComponent<RectTransform>(), 90f, 0f, 720f, 80f);
+        SetCenterPosition(desc2Go.GetComponent<RectTransform>(), 30.0f, 0f, 240.0f, 26.7f);
 
         // Card 3
         var card3Go = CreateUIObject("Card3", obListGo);
         var card3Img = card3Go.AddComponent<Image>();
+        card3Img.preserveAspect = true;
         card3Img.sprite = btnSprite;
         card3Img.type = Image.Type.Sliced;
         card3Img.color = Color.white;
-        SetCenterPosition(card3Go.GetComponent<RectTransform>(), 0f, -160f, 920f, 140f);
+        SetCenterPosition(card3Go.GetComponent<RectTransform>(), 0f, -53.3f, 306.7f, 46.7f);
 
         var num3CircleGo = CreateUIObject("NumCircle", card3Go);
         var num3CircleImg = num3CircleGo.AddComponent<Image>();
+        num3CircleImg.preserveAspect = true;
         num3CircleImg.sprite = btnSprite;
         num3CircleImg.type = Image.Type.Sliced;
         num3CircleImg.color = ColorForestGreen;
-        SetCenterPosition(num3CircleGo.GetComponent<RectTransform>(), -380f, 0f, 64f, 64f);
+        SetCenterPosition(num3CircleGo.GetComponent<RectTransform>(), -126.7f, 0f, 21.3f, 21.3f);
 
         var num3TextGo = CreateUIObject("Text", num3CircleGo);
         var num3Text = num3TextGo.AddComponent<TextMeshProUGUI>();
+        num3Text.enableWordWrapping = true;
+        num3Text.overflowMode = TMPro.TextOverflowModes.Overflow;
         num3Text.text = "3";
-        num3Text.fontSize = 28;
+        num3Text.fontSize = 9.3f;
         num3Text.fontStyle = FontStyles.Bold;
         num3Text.color = Color.white;
         num3Text.alignment = TextAlignmentOptions.Center;
@@ -366,31 +411,36 @@ public static class SetupAndBuild
 
         var desc3Go = CreateUIObject("Desc", card3Go);
         var desc3 = desc3Go.AddComponent<TextMeshProUGUI>();
+        desc3.enableWordWrapping = true;
+        desc3.overflowMode = TMPro.TextOverflowModes.Overflow;
         desc3.text = "Izinkan kamera untuk melihat gerakan.";
-        desc3.fontSize = 28;
+        desc3.fontSize = 9.3f;
         desc3.color = ColorCharcoal;
         desc3.alignment = TextAlignmentOptions.Left;
         if (interFont != null) desc3.font = interFont;
-        SetCenterPosition(desc3Go.GetComponent<RectTransform>(), 90f, 0f, 720f, 80f);
+        SetCenterPosition(desc3Go.GetComponent<RectTransform>(), 30.0f, 0f, 240.0f, 26.7f);
 
         // G02 Bottom Buttons Group
         var btnGroupGo = CreateUIObject("ButtonGroup", onboardGo);
-        SetCenterPosition(btnGroupGo.GetComponent<RectTransform>(), 0f, -500f, 960f, 320f);
+        SetCenterPosition(btnGroupGo.GetComponent<RectTransform>(), 0f, -166.7f, 320.0f, 106.7f);
 
         // Tombol MULAI
         var startBtnGo = CreateUIObject("MulaiButton", btnGroupGo);
         var startBtnImg = startBtnGo.AddComponent<Image>();
+        startBtnImg.preserveAspect = true;
         startBtnImg.sprite = btnSprite;
         startBtnImg.type = Image.Type.Sliced;
         startBtnImg.color = ColorForestGreen;
         var startBtn = startBtnGo.AddComponent<Button>();
         startBtnGo.AddComponent<GerakAR.UI.OnboardingButtonWirer>();
-        SetCenterPosition(startBtnGo.GetComponent<RectTransform>(), 0f, 60f, 920f, 100f);
+        SetCenterPosition(startBtnGo.GetComponent<RectTransform>(), 0f, 20.0f, 306.7f, 33.3f);
 
         var btnTextGo = CreateUIObject("Text", startBtnGo);
         var btnText = btnTextGo.AddComponent<TextMeshProUGUI>();
+        btnText.enableWordWrapping = true;
+        btnText.overflowMode = TMPro.TextOverflowModes.Overflow;
         btnText.text = "MULAI";
-        btnText.fontSize = 36;
+        btnText.fontSize = 12.0f;
         btnText.fontStyle = FontStyles.Bold;
         btnText.color = Color.white;
         btnText.alignment = TextAlignmentOptions.Center;
@@ -399,27 +449,31 @@ public static class SetupAndBuild
 
         // Fallback Simulasi Links
         var fallbackLinksGo = CreateUIObject("FallbackLinks", btnGroupGo);
-        SetCenterPosition(fallbackLinksGo.GetComponent<RectTransform>(), 0f, -60f, 920f, 50f);
+        SetCenterPosition(fallbackLinksGo.GetComponent<RectTransform>(), 0f, -20.0f, 306.7f, 16.7f);
 
         var nonARLinkGo = CreateUIObject("NonARLink", fallbackLinksGo);
         var nonARLinkText = nonARLinkGo.AddComponent<TextMeshProUGUI>();
+        nonARLinkText.enableWordWrapping = true;
+        nonARLinkText.overflowMode = TMPro.TextOverflowModes.Overflow;
         nonARLinkText.text = "<u>Simulasi Non-AR</u>";
-        nonARLinkText.fontSize = 22;
+        nonARLinkText.fontSize = 7.3f;
         nonARLinkText.color = ColorForestGreen;
         nonARLinkText.alignment = TextAlignmentOptions.Center;
         if (interFont != null) nonARLinkText.font = interFont;
         var nonARBtn = nonARLinkGo.AddComponent<Button>();
-        SetCenterPosition(nonARLinkGo.GetComponent<RectTransform>(), -220f, 0f, 340f, 50f);
+        SetCenterPosition(nonARLinkGo.GetComponent<RectTransform>(), -73.3f, 0f, 113.3f, 16.7f);
 
         var camErrorLinkGo = CreateUIObject("CameraErrorLink", fallbackLinksGo);
         var camErrorLinkText = camErrorLinkGo.AddComponent<TextMeshProUGUI>();
+        camErrorLinkText.enableWordWrapping = true;
+        camErrorLinkText.overflowMode = TMPro.TextOverflowModes.Overflow;
         camErrorLinkText.text = "<u>Simulasi Kendala Kamera</u>";
-        camErrorLinkText.fontSize = 22;
+        camErrorLinkText.fontSize = 7.3f;
         camErrorLinkText.color = ColorDeepForest;
         camErrorLinkText.alignment = TextAlignmentOptions.Center;
         if (interFont != null) camErrorLinkText.font = interFont;
         var camErrorBtn = camErrorLinkGo.AddComponent<Button>();
-        SetCenterPosition(camErrorLinkGo.GetComponent<RectTransform>(), 220f, 0f, 340f, 50f);
+        SetCenterPosition(camErrorLinkGo.GetComponent<RectTransform>(), 73.3f, 0f, 113.3f, 16.7f);
 
         var serialOnboard = new SerializedObject(onboardingController);
         serialOnboard.FindProperty("onboardingPanel").objectReferenceValue = onboardGo;
@@ -428,6 +482,7 @@ public static class SetupAndBuild
         // 3. Unsupported Panel (Parent for G08 & G09 Fallbacks)
         var unsupGo = CreateUIObject("UnsupportedPanel", canvasGo);
         var unsupImg = unsupGo.AddComponent<Image>();
+        unsupImg.preserveAspect = true;
         unsupImg.color = new Color(0.957f, 0.941f, 0.902f, 1f); // Warm Cream #F4F0E6
         StretchRect(unsupGo.GetComponent<RectTransform>());
         unsupGo.SetActive(false);
@@ -438,39 +493,46 @@ public static class SetupAndBuild
 
         // G08 Brand Header
         var nonARHeaderGo = CreateUIObject("Header", nonARModePanelGo);
-        SetCenterPosition(nonARHeaderGo.GetComponent<RectTransform>(), 0f, 750f, 960f, 160f);
+        SetCenterPosition(nonARHeaderGo.GetComponent<RectTransform>(), 0f, 250.0f, 320.0f, 53.3f);
 
         var nonARTitleGo = CreateUIObject("Title", nonARHeaderGo);
         var nonARTitle = nonARTitleGo.AddComponent<TextMeshProUGUI>();
+        nonARTitle.enableWordWrapping = true;
+        nonARTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         nonARTitle.text = "GerakAR";
-        nonARTitle.fontSize = 44;
+        nonARTitle.fontSize = 14.7f;
         nonARTitle.fontStyle = FontStyles.Bold;
         nonARTitle.color = ColorDeepForest;
         nonARTitle.alignment = TextAlignmentOptions.Left;
         if (interFont != null) nonARTitle.font = interFont;
-        SetCenterPosition(nonARTitleGo.GetComponent<RectTransform>(), -220f, 10f, 440f, 60f);
+        SetCenterPosition(nonARTitleGo.GetComponent<RectTransform>(), -73.3f, 3.3f, 146.7f, 20.0f);
 
         var nonARSubGo = CreateUIObject("Sub", nonARHeaderGo);
         var nonARSub = nonARSubGo.AddComponent<TextMeshProUGUI>();
+        nonARSub.enableWordWrapping = true;
+        nonARSub.overflowMode = TMPro.TextOverflowModes.Overflow;
         nonARSub.text = "MODE PEMBELAJARAN MANDIRI";
-        nonARSub.fontSize = 18;
+        nonARSub.fontSize = 6.0f;
         nonARSub.fontStyle = FontStyles.Bold;
         nonARSub.color = ColorForestGreen;
         nonARSub.alignment = TextAlignmentOptions.Left;
         if (interFont != null) nonARSub.font = interFont;
-        SetCenterPosition(nonARSubGo.GetComponent<RectTransform>(), -220f, -40f, 440f, 30f);
+        SetCenterPosition(nonARSubGo.GetComponent<RectTransform>(), -73.3f, -13.3f, 146.7f, 10.0f);
 
         var nonARBadgeGo = CreateUIObject("Badge", nonARHeaderGo);
         var badgeImg = nonARBadgeGo.AddComponent<Image>();
+        badgeImg.preserveAspect = true;
         badgeImg.sprite = btnSprite;
         badgeImg.type = Image.Type.Sliced;
         badgeImg.color = new Color(0.72f, 0.4f, 0.29f, 0.1f); // Light Terracotta/Amber
-        SetCenterPosition(nonARBadgeGo.GetComponent<RectTransform>(), 320f, 0f, 240f, 70f);
+        SetCenterPosition(nonARBadgeGo.GetComponent<RectTransform>(), 106.7f, 0f, 80.0f, 23.3f);
 
         var badgeTextGo = CreateUIObject("Text", nonARBadgeGo);
         var badgeText = badgeTextGo.AddComponent<TextMeshProUGUI>();
+        badgeText.enableWordWrapping = true;
+        badgeText.overflowMode = TMPro.TextOverflowModes.Overflow;
         badgeText.text = "NON-AR MODE";
-        badgeText.fontSize = 20;
+        badgeText.fontSize = 6.7f;
         badgeText.fontStyle = FontStyles.Bold;
         badgeText.color = new Color(0.72f, 0.4f, 0.29f, 1f); // Terracotta
         badgeText.alignment = TextAlignmentOptions.Center;
@@ -480,77 +542,92 @@ public static class SetupAndBuild
         // G08 Terracotta Warning Banner
         var warnBannerGo = CreateUIObject("WarningBanner", nonARModePanelGo);
         var warnImg = warnBannerGo.AddComponent<Image>();
+        warnImg.preserveAspect = true;
         warnImg.sprite = btnSprite;
         warnImg.type = Image.Type.Sliced;
         warnImg.color = new Color(0.72f, 0.4f, 0.29f, 0.08f); // Terracotta 8%
-        SetCenterPosition(warnBannerGo.GetComponent<RectTransform>(), 0f, 540f, 920f, 180f);
+        SetCenterPosition(warnBannerGo.GetComponent<RectTransform>(), 0f, 180.0f, 306.7f, 60.0f);
 
         var warnIconGo = CreateUIObject("Icon", warnBannerGo);
         var warnIcon = warnIconGo.AddComponent<TextMeshProUGUI>();
+        warnIcon.enableWordWrapping = true;
+        warnIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
         warnIcon.text = "⚠️";
-        warnIcon.fontSize = 48;
+        warnIcon.fontSize = 16.0f;
         warnIcon.alignment = TextAlignmentOptions.Center;
-        SetCenterPosition(warnIconGo.GetComponent<RectTransform>(), -380f, 0f, 100f, 100f);
+        SetCenterPosition(warnIconGo.GetComponent<RectTransform>(), -126.7f, 0f, 33.3f, 33.3f);
 
         var warnTextGo = CreateUIObject("Text", warnBannerGo);
         var warnText = warnTextGo.AddComponent<TextMeshProUGUI>();
+        warnText.enableWordWrapping = true;
+        warnText.overflowMode = TMPro.TextOverflowModes.Overflow;
         warnText.text = "<b>Perangkat Belum Mendukung AR</b>\n<size=22>Kamu diarahkan langsung untuk membaca modul materi edukasi secara lengkap tanpa fitur kamera.</size>";
-        warnText.fontSize = 26;
+        warnText.fontSize = 8.7f;
         warnText.color = new Color(0.72f, 0.4f, 0.29f, 1f); // Terracotta
         warnText.alignment = TextAlignmentOptions.Left;
         if (interFont != null) warnText.font = interFont;
-        SetCenterPosition(warnTextGo.GetComponent<RectTransform>(), 70f, 0f, 720f, 120f);
+        SetCenterPosition(warnTextGo.GetComponent<RectTransform>(), 23.3f, 0f, 240.0f, 40.0f);
 
         // G08 Catalog Content
         var catalogCatalogGo = CreateUIObject("CatalogCatalog", nonARModePanelGo);
-        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, 40f, 920f, 620f);
+        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, 13.3f, 306.7f, 206.7f);
 
         var catTitleGo = CreateUIObject("CatTitleText", catalogCatalogGo);
         var catTitle = catTitleGo.AddComponent<TextMeshProUGUI>();
+        catTitle.enableWordWrapping = true;
+        catTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         catTitle.text = "KATALOG GERAKAN SISWA";
-        catTitle.fontSize = 20;
+        catTitle.fontSize = 6.7f;
         catTitle.fontStyle = FontStyles.Bold;
         catTitle.color = ColorDeepForest;
         catTitle.alignment = TextAlignmentOptions.Left;
         if (interFont != null) catTitle.font = interFont;
-        SetCenterPosition(catTitleGo.GetComponent<RectTransform>(), 0f, 260f, 900f, 40f);
+        SetCenterPosition(catTitleGo.GetComponent<RectTransform>(), 0f, 86.7f, 300.0f, 13.3f);
 
         // Catalogue Card Squat
         var cardSquatGo = CreateUIObject("CardSquat", catalogCatalogGo);
         var squatImg = cardSquatGo.AddComponent<Image>();
+        squatImg.preserveAspect = true;
         squatImg.sprite = btnSprite;
         squatImg.type = Image.Type.Sliced;
         squatImg.color = Color.white;
-        SetCenterPosition(cardSquatGo.GetComponent<RectTransform>(), 0f, 120f, 900f, 160f);
+        SetCenterPosition(cardSquatGo.GetComponent<RectTransform>(), 0f, 40.0f, 300.0f, 53.3f);
 
         var squatIconGo = CreateUIObject("Icon", cardSquatGo);
         var squatIcon = squatIconGo.AddComponent<TextMeshProUGUI>();
+        squatIcon.enableWordWrapping = true;
+        squatIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
         squatIcon.text = "🦵";
-        squatIcon.fontSize = 44;
+        squatIcon.fontSize = 14.7f;
         squatIcon.alignment = TextAlignmentOptions.Center;
-        SetCenterPosition(squatIconGo.GetComponent<RectTransform>(), -380f, 0f, 80f, 80f);
+        SetCenterPosition(squatIconGo.GetComponent<RectTransform>(), -126.7f, 0f, 26.7f, 26.7f);
 
         var squatTitleGo = CreateUIObject("TitleText", cardSquatGo);
         var squatTitle = squatTitleGo.AddComponent<TextMeshProUGUI>();
+        squatTitle.enableWordWrapping = true;
+        squatTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         squatTitle.text = "<b>Gerakan Squat</b>\n<size=20><color=#607D4F>Melatih otot paha dan sendi lutut</color></size>";
-        squatTitle.fontSize = 28;
+        squatTitle.fontSize = 9.3f;
         squatTitle.color = ColorDeepForest;
         squatTitle.alignment = TextAlignmentOptions.Left;
         if (interFont != null) squatTitle.font = interFont;
-        SetCenterPosition(squatTitleGo.GetComponent<RectTransform>(), 80f, 0f, 540f, 100f);
+        SetCenterPosition(squatTitleGo.GetComponent<RectTransform>(), 26.7f, 0f, 180.0f, 33.3f);
 
         var squatBukaGo = CreateUIObject("BukaButton", cardSquatGo);
         var squatBukaImg = squatBukaGo.AddComponent<Image>();
+        squatBukaImg.preserveAspect = true;
         squatBukaImg.sprite = btnSprite;
         squatBukaImg.type = Image.Type.Sliced;
         squatBukaImg.color = ColorForestGreen;
         var squatBukaBtn = squatBukaGo.AddComponent<Button>();
-        SetCenterPosition(squatBukaGo.GetComponent<RectTransform>(), 360f, 0f, 140f, 70f);
+        SetCenterPosition(squatBukaGo.GetComponent<RectTransform>(), 120.0f, 0f, 46.7f, 23.3f);
 
         var squatBukaTextGo = CreateUIObject("Text", squatBukaGo);
         var squatBukaText = squatBukaTextGo.AddComponent<TextMeshProUGUI>();
+        squatBukaText.enableWordWrapping = true;
+        squatBukaText.overflowMode = TMPro.TextOverflowModes.Overflow;
         squatBukaText.text = "Buka";
-        squatBukaText.fontSize = 22;
+        squatBukaText.fontSize = 7.3f;
         squatBukaText.fontStyle = FontStyles.Bold;
         squatBukaText.color = Color.white;
         squatBukaText.alignment = TextAlignmentOptions.Center;
@@ -560,38 +637,46 @@ public static class SetupAndBuild
         // Card Jumping Jack (Locked)
         var cardJackGo = CreateUIObject("CardJacks", catalogCatalogGo);
         var jackImg = cardJackGo.AddComponent<Image>();
+        jackImg.preserveAspect = true;
         jackImg.sprite = btnSprite;
         jackImg.type = Image.Type.Sliced;
         jackImg.color = new Color(1f, 1f, 1f, 0.6f);
-        SetCenterPosition(cardJackGo.GetComponent<RectTransform>(), 0f, -50f, 900f, 160f);
+        SetCenterPosition(cardJackGo.GetComponent<RectTransform>(), 0f, -16.7f, 300.0f, 53.3f);
 
         var jackIconGo = CreateUIObject("Icon", cardJackGo);
         var jackIcon = jackIconGo.AddComponent<TextMeshProUGUI>();
+        jackIcon.enableWordWrapping = true;
+        jackIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
         jackIcon.text = "🤸";
-        jackIcon.fontSize = 44;
+        jackIcon.fontSize = 14.7f;
         jackIcon.alignment = TextAlignmentOptions.Center;
-        SetCenterPosition(jackIconGo.GetComponent<RectTransform>(), -380f, 0f, 80f, 80f);
+        SetCenterPosition(jackIconGo.GetComponent<RectTransform>(), -126.7f, 0f, 26.7f, 26.7f);
 
         var jackTitleGo = CreateUIObject("TitleText", cardJackGo);
         var jackTitle = jackTitleGo.AddComponent<TextMeshProUGUI>();
+        jackTitle.enableWordWrapping = true;
+        jackTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         jackTitle.text = "<b>Jumping Jacks</b>\n<size=20><color=#607D4F>Melatih kardio & koordinasi tubuh</color></size>";
-        jackTitle.fontSize = 28;
+        jackTitle.fontSize = 9.3f;
         jackTitle.color = new Color(0.07f, 0.216f, 0.165f, 0.8f);
         jackTitle.alignment = TextAlignmentOptions.Left;
         if (interFont != null) jackTitle.font = interFont;
-        SetCenterPosition(jackTitleGo.GetComponent<RectTransform>(), 80f, 0f, 540f, 100f);
+        SetCenterPosition(jackTitleGo.GetComponent<RectTransform>(), 26.7f, 0f, 180.0f, 33.3f);
 
         var jackLockGo = CreateUIObject("BukaButton", cardJackGo);
         var jackLockImg = jackLockGo.AddComponent<Image>();
+        jackLockImg.preserveAspect = true;
         jackLockImg.sprite = btnSprite;
         jackLockImg.type = Image.Type.Sliced;
         jackLockImg.color = new Color(0.8f, 0.8f, 0.8f, 0.7f);
-        SetCenterPosition(jackLockGo.GetComponent<RectTransform>(), 360f, 0f, 140f, 70f);
+        SetCenterPosition(jackLockGo.GetComponent<RectTransform>(), 120.0f, 0f, 46.7f, 23.3f);
 
         var jackLockTextGo = CreateUIObject("Text", jackLockGo);
         var jackLockText = jackLockTextGo.AddComponent<TextMeshProUGUI>();
+        jackLockText.enableWordWrapping = true;
+        jackLockText.overflowMode = TMPro.TextOverflowModes.Overflow;
         jackLockText.text = "Kunci";
-        jackLockText.fontSize = 22;
+        jackLockText.fontSize = 7.3f;
         jackLockText.fontStyle = FontStyles.Bold;
         jackLockText.color = Color.white;
         jackLockText.alignment = TextAlignmentOptions.Center;
@@ -601,14 +686,16 @@ public static class SetupAndBuild
         // G08 Back Button
         var catalogBackGo = CreateUIObject("CatalogBackButton", nonARModePanelGo);
         var catalogBackText = catalogBackGo.AddComponent<TextMeshProUGUI>();
+        catalogBackText.enableWordWrapping = true;
+        catalogBackText.overflowMode = TMPro.TextOverflowModes.Overflow;
         catalogBackText.text = "← Petunjuk";
-        catalogBackText.fontSize = 24;
+        catalogBackText.fontSize = 8.0f;
         catalogBackText.fontStyle = FontStyles.Bold;
         catalogBackText.color = ColorForestGreen;
         catalogBackText.alignment = TextAlignmentOptions.Center;
         if (interFont != null) catalogBackText.font = interFont;
         var catalogBackBtn = catalogBackGo.AddComponent<Button>();
-        SetCenterPosition(catalogBackGo.GetComponent<RectTransform>(), -320f, -800f, 220f, 60f);
+        SetCenterPosition(catalogBackGo.GetComponent<RectTransform>(), -106.7f, -266.7f, 73.3f, 20.0f);
 
         // G09 view (Kamera Belum Aktif)
         var cameraErrorPanelGo = CreateUIObject("CameraErrorPanel", unsupGo);
@@ -617,43 +704,52 @@ public static class SetupAndBuild
 
         var camOffIconGo = CreateUIObject("CamOffIcon", cameraErrorPanelGo);
         var camOffIcon = camOffIconGo.AddComponent<TextMeshProUGUI>();
+        camOffIcon.enableWordWrapping = true;
+        camOffIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
         camOffIcon.text = "📷🚫";
-        camOffIcon.fontSize = 90;
+        camOffIcon.fontSize = 30.0f;
         camOffIcon.alignment = TextAlignmentOptions.Center;
-        SetCenterPosition(camOffIconGo.GetComponent<RectTransform>(), 0f, 220f, 200f, 200f);
+        SetCenterPosition(camOffIconGo.GetComponent<RectTransform>(), 0f, 73.3f, 66.7f, 66.7f);
 
         var camErrorTitleGo = CreateUIObject("Title", cameraErrorPanelGo);
         var camErrorTitle = camErrorTitleGo.AddComponent<TextMeshProUGUI>();
+        camErrorTitle.enableWordWrapping = true;
+        camErrorTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         camErrorTitle.text = "Kamera Belum Aktif";
-        camErrorTitle.fontSize = 44;
+        camErrorTitle.fontSize = 14.7f;
         camErrorTitle.fontStyle = FontStyles.Bold;
         camErrorTitle.color = ColorDeepForest;
         camErrorTitle.alignment = TextAlignmentOptions.Center;
         if (interFont != null) camErrorTitle.font = interFont;
-        SetCenterPosition(camErrorTitleGo.GetComponent<RectTransform>(), 0f, 80f, 800f, 60f);
+        SetCenterPosition(camErrorTitleGo.GetComponent<RectTransform>(), 0f, 26.7f, 266.7f, 20.0f);
 
         var camErrorDescGo = CreateUIObject("Desc", cameraErrorPanelGo);
         var camErrorDesc = camErrorDescGo.AddComponent<TextMeshProUGUI>();
+        camErrorDesc.enableWordWrapping = true;
+        camErrorDesc.overflowMode = TMPro.TextOverflowModes.Overflow;
         camErrorDesc.text = "Izinkan akses kamera agar GerakAR dapat melihat gambar gerakan.";
-        camErrorDesc.fontSize = 26;
+        camErrorDesc.fontSize = 8.7f;
         camErrorDesc.color = ColorCharcoal;
         camErrorDesc.alignment = TextAlignmentOptions.Center;
         if (interFont != null) camErrorDesc.font = interFont;
-        SetCenterPosition(camErrorDescGo.GetComponent<RectTransform>(), 0f, -20f, 760f, 120f);
+        SetCenterPosition(camErrorDescGo.GetComponent<RectTransform>(), 0f, -6.7f, 253.3f, 40.0f);
 
         // G09 BUKA PENGATURAN Button
         var settingsGo = CreateUIObject("SettingsButton", cameraErrorPanelGo);
         var settingsImg = settingsGo.AddComponent<Image>();
+        settingsImg.preserveAspect = true;
         settingsImg.sprite = btnSprite;
         settingsImg.type = Image.Type.Sliced;
         settingsImg.color = ColorForestGreen;
         var settingsBtn = settingsGo.AddComponent<Button>();
-        SetCenterPosition(settingsGo.GetComponent<RectTransform>(), 0f, -200f, 800f, 100f);
+        SetCenterPosition(settingsGo.GetComponent<RectTransform>(), 0f, -66.7f, 266.7f, 33.3f);
 
         var settingsTextGo = CreateUIObject("Text", settingsGo);
         var settingsText = settingsTextGo.AddComponent<TextMeshProUGUI>();
+        settingsText.enableWordWrapping = true;
+        settingsText.overflowMode = TMPro.TextOverflowModes.Overflow;
         settingsText.text = "BUKA PENGATURAN";
-        settingsText.fontSize = 30;
+        settingsText.fontSize = 10.0f;
         settingsText.fontStyle = FontStyles.Bold;
         settingsText.color = Color.white;
         settingsText.alignment = TextAlignmentOptions.Center;
@@ -663,12 +759,14 @@ public static class SetupAndBuild
         // G09 Coba Lagi Button
         var retryGo = CreateUIObject("RetryButton", cameraErrorPanelGo);
         var retryBtn = retryGo.AddComponent<Button>();
-        SetCenterPosition(retryGo.GetComponent<RectTransform>(), 0f, -320f, 800f, 80f);
+        SetCenterPosition(retryGo.GetComponent<RectTransform>(), 0f, -106.7f, 266.7f, 26.7f);
 
         var retryTextGo = CreateUIObject("Text", retryGo);
         var retryText = retryTextGo.AddComponent<TextMeshProUGUI>();
+        retryText.enableWordWrapping = true;
+        retryText.overflowMode = TMPro.TextOverflowModes.Overflow;
         retryText.text = "Coba Lagi";
-        retryText.fontSize = 28;
+        retryText.fontSize = 9.3f;
         retryText.fontStyle = FontStyles.Bold;
         retryText.color = ColorDeepForest;
         retryText.alignment = TextAlignmentOptions.Center;
@@ -696,10 +794,7 @@ public static class SetupAndBuild
         serialBtn.FindProperty("retryBtn").objectReferenceValue = retryBtn;
         serialBtn.ApplyModifiedProperties();
 
-        var serialChecker = new SerializedObject(arChecker);
-        serialChecker.FindProperty("unsupportedPanel").objectReferenceValue = unsupGo;
-        serialChecker.FindProperty("unsupportedMessageText").objectReferenceValue = null; // Controlled by BootstrapUIController
-        serialChecker.ApplyModifiedProperties();
+
 
         EditorSceneManager.SaveScene(scene, "Assets/App/Scenes/Bootstrap.unity");
         Debug.Log("[GerakAR] Scene Bootstrap selesai dibuat.");
@@ -722,6 +817,8 @@ public static class SetupAndBuild
         var camGo = new GameObject("AR Camera");
         camGo.transform.SetParent(cameraOffsetGo.transform, false);
         var cam = camGo.AddComponent<Camera>();
+        cam.clearFlags = CameraClearFlags.SolidColor;
+        cam.backgroundColor = new Color(0f, 0f, 0f, 0f);
         camGo.AddComponent<ARCameraManager>();
         camGo.AddComponent<ARCameraBackground>();
         camGo.tag = "MainCamera";
@@ -779,7 +876,7 @@ public static class SetupAndBuild
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         var scaler = canvasGo.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1080f, 1920f);
+        scaler.referenceResolution = new Vector2(360f, 800f);
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
         scaler.matchWidthOrHeight = 0.5f;
         canvasGo.AddComponent<GraphicRaycaster>();
@@ -804,52 +901,76 @@ public static class SetupAndBuild
         // G03 Header Title
         var scanTitleGo = CreateUIObject("HeaderTitle", scanGo);
         var scanTitle = scanTitleGo.AddComponent<TextMeshProUGUI>();
+        scanTitle.enableWordWrapping = true;
+        scanTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         scanTitle.text = "GerakAR";
-        scanTitle.fontSize = 44;
+        scanTitle.fontSize = 14.7f;
         scanTitle.fontStyle = FontStyles.Bold;
         scanTitle.color = Color.white;
         scanTitle.alignment = TextAlignmentOptions.Center;
         if (interFont != null) scanTitle.font = interFont;
-        SetCenterPosition(scanTitleGo.GetComponent<RectTransform>(), 0f, 750f, 600f, 60f);
+        SetCenterPosition(scanTitleGo.GetComponent<RectTransform>(), 0f, 250.0f, 200.0f, 20.0f);
 
         var scanSubGo = CreateUIObject("HeaderSub", scanGo);
         var scanSub = scanSubGo.AddComponent<TextMeshProUGUI>();
+        scanSub.enableWordWrapping = true;
+        scanSub.overflowMode = TMPro.TextOverflowModes.Overflow;
         scanSub.text = "Belajar Gerak Jadi Seru";
-        scanSub.fontSize = 22;
+        scanSub.fontSize = 7.3f;
         scanSub.color = ColorSoftSage;
         scanSub.alignment = TextAlignmentOptions.Center;
         if (interFont != null) scanSub.font = interFont;
-        SetCenterPosition(scanSubGo.GetComponent<RectTransform>(), 0f, 700f, 600f, 40f);
+        SetCenterPosition(scanSubGo.GetComponent<RectTransform>(), 0f, 233.3f, 200.0f, 13.3f);
 
         // G03 Central Scan Guide Frame
         var scanFrameGo = CreateUIObject("ScanFrame", scanGo);
-        var scanFrameImg = scanFrameGo.AddComponent<Image>();
-        var frameSpriteAsset = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Samples/XR Interaction Toolkit/3.3.0/Starter Assets/DemoSceneAssets/Sprites/Round Radius 4 Outline.png");
-        if (frameSpriteAsset != null) scanFrameImg.sprite = frameSpriteAsset;
-        scanFrameImg.type = Image.Type.Sliced;
-        scanFrameImg.color = ColorCleanOffWhite;
-        SetCenterPosition(scanFrameGo.GetComponent<RectTransform>(), 0f, 80f, 480f, 480f);
+        SetCenterPosition(scanFrameGo.GetComponent<RectTransform>(), 0f, 26.7f, 232.0f, 232.0f);
+
+        // Helper to create L-brackets
+        System.Action<string, float, float, float, float> CreateCorner = (name, x, y, sx, sy) => {
+            var c = CreateUIObject(name, scanFrameGo);
+            SetCenterPosition(c.GetComponent<RectTransform>(), x, y, 30f, 30f);
+            
+            var h = CreateUIObject(name + "H", c);
+            var hImg = h.AddComponent<Image>();
+            hImg.color = ColorCleanOffWhite;
+            SetAnchorLeft(h.GetComponent<RectTransform>(), sx > 0 ? 0f : 4f, sy > 0 ? 30f : 0f, 26f, 4f);
+
+            var v = CreateUIObject(name + "V", c);
+            var vImg = v.AddComponent<Image>();
+            vImg.color = ColorCleanOffWhite;
+            SetAnchorLeft(v.GetComponent<RectTransform>(), sx > 0 ? 0f : 26f, sy > 0 ? 4f : 0f, 4f, 26f);
+        };
+
+        CreateCorner("TopLeft", -101f, 101f, 1f, 1f);
+        CreateCorner("TopRight", 101f, 101f, -1f, 1f);
+        CreateCorner("BottomLeft", -101f, -101f, 1f, -1f);
+        CreateCorner("BottomRight", 101f, -101f, -1f, -1f);
 
         // G03 Scan Laser Line
         var scanLineGo = CreateUIObject("ScanLaserLine", scanFrameGo);
         var scanLineImg = scanLineGo.AddComponent<Image>();
+        scanLineImg.preserveAspect = true;
         scanLineImg.sprite = btnSprite;
         scanLineImg.type = Image.Type.Sliced;
         scanLineImg.color = new Color(0.66f, 0.745f, 0.635f, 0.7f); // Glowing Soft Sage
-        SetCenterPosition(scanLineGo.GetComponent<RectTransform>(), 0f, 0f, 440f, 8f);
+        SetCenterPosition(scanLineGo.GetComponent<RectTransform>(), 0f, 0f, 146.7f, 2.7f);
 
         // G03 Scan Target Pill Below Frame
         var scanPillGo = CreateUIObject("ScanTargetPill", scanGo);
         var scanPillImg = scanPillGo.AddComponent<Image>();
+        scanPillImg.preserveAspect = true;
         scanPillImg.sprite = btnSprite;
         scanPillImg.type = Image.Type.Sliced;
         scanPillImg.color = new Color(0f, 0f, 0f, 0.45f); // Black 45%
-        SetCenterPosition(scanPillGo.GetComponent<RectTransform>(), 0f, -220f, 420f, 70f);
+        SetCenterPosition(scanPillGo.GetComponent<RectTransform>(), 0f, -73.3f, 140.0f, 23.3f);
 
         var scanPillTextGo = CreateUIObject("Text", scanPillGo);
         var scanPillText = scanPillTextGo.AddComponent<TextMeshProUGUI>();
+        scanPillText.enableWordWrapping = true;
+        scanPillText.overflowMode = TMPro.TextOverflowModes.Overflow;
         scanPillText.text = "Pindai Target Gambar";
-        scanPillText.fontSize = 22;
+        scanPillText.fontSize = 7.3f;
         scanPillText.fontStyle = FontStyles.Bold;
         scanPillText.color = ColorCleanOffWhite;
         scanPillText.alignment = TextAlignmentOptions.Center;
@@ -859,63 +980,75 @@ public static class SetupAndBuild
         // G03 Bottom Instruction Card
         var instructionCardGo = CreateUIObject("InstructionCard", scanGo);
         var instCardImg = instructionCardGo.AddComponent<Image>();
+        instCardImg.preserveAspect = true;
         instCardImg.sprite = btnSprite;
         instCardImg.type = Image.Type.Sliced;
         instCardImg.color = ColorCleanOffWhite;
-        SetCenterPosition(instructionCardGo.GetComponent<RectTransform>(), 0f, -540f, 720f, 130f);
+        SetCenterPosition(instructionCardGo.GetComponent<RectTransform>(), 0f, -140.0f, 200.0f, 36.7f);
 
         var instIconCircleGo = CreateUIObject("IconCircle", instructionCardGo);
         var instIconCircleImg = instIconCircleGo.AddComponent<Image>();
+        instIconCircleImg.preserveAspect = true;
         instIconCircleImg.sprite = btnSprite;
         instIconCircleImg.type = Image.Type.Sliced;
         instIconCircleImg.color = new Color(0.66f, 0.745f, 0.635f, 0.2f); // Soft Sage 20%
-        SetCenterPosition(instIconCircleGo.GetComponent<RectTransform>(), -280f, 0f, 70f, 70f);
+        SetCenterPosition(instIconCircleGo.GetComponent<RectTransform>(), -76.7f, 0f, 23.3f, 23.3f);
 
         var instIconTextGo = CreateUIObject("Text", instIconCircleGo);
         var instIconText = instIconTextGo.AddComponent<TextMeshProUGUI>();
+        instIconText.enableWordWrapping = true;
+        instIconText.overflowMode = TMPro.TextOverflowModes.Overflow;
         instIconText.text = "📷";
-        instIconText.fontSize = 28;
+        instIconText.fontSize = 9.3f;
         instIconText.alignment = TextAlignmentOptions.Center;
         StretchRect(instIconTextGo.GetComponent<RectTransform>());
 
         var hintGo = CreateUIObject("HintText", instructionCardGo);
         var hintText = hintGo.AddComponent<TextMeshProUGUI>();
+        hintText.enableWordWrapping = true;
+        hintText.overflowMode = TMPro.TextOverflowModes.Overflow;
         hintText.text = "Arahkan kamera ke gambar gerakan";
-        hintText.fontSize = 24;
+        hintText.fontSize = 8.0f;
         hintText.fontStyle = FontStyles.Bold;
         hintText.color = ColorCharcoal;
         hintText.alignment = TextAlignmentOptions.Left;
         if (interFont != null) hintText.font = interFont;
-        SetCenterPosition(hintGo.GetComponent<RectTransform>(), 70f, 0f, 540f, 60f);
+        SetCenterPosition(hintGo.GetComponent<RectTransform>(), 13.3f, 0f, 146.7f, 20.0f);
 
         var instSubtitleGo = CreateUIObject("InstructionSubtitle", scanGo);
         var instSubtitle = instSubtitleGo.AddComponent<TextMeshProUGUI>();
+        instSubtitle.enableWordWrapping = true;
+        instSubtitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         instSubtitle.text = "Pastikan seluruh gambar terlihat";
-        instSubtitle.fontSize = 22;
+        instSubtitle.fontSize = 7.3f;
         instSubtitle.color = ColorCleanOffWhite;
         instSubtitle.alignment = TextAlignmentOptions.Center;
         if (interFont != null) instSubtitle.font = interFont;
-        SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 0f, -620f, 700f, 40f);
+        SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 0f, -166.7f, 233.3f, 13.3f);
 
         // 2. Detection Toast Panel (G04) - Centered success card
         var toastGo = CreateUIObject("DetectionToast", canvasGo);
         var toastImg = toastGo.AddComponent<Image>();
+        toastImg.preserveAspect = true;
         toastImg.sprite = btnSprite;
         toastImg.type = Image.Type.Sliced;
         toastImg.color = ColorCleanOffWhite;
-        SetCenterPosition(toastGo.GetComponent<RectTransform>(), 0f, 0f, 540f, 360f);
+        SetCenterPosition(toastGo.GetComponent<RectTransform>(), 0f, 0f, 180.0f, 120.0f);
 
         var toastCircleGo = CreateUIObject("SuccessCircle", toastGo);
         var toastCircleImg = toastCircleGo.AddComponent<Image>();
+        toastCircleImg.preserveAspect = true;
         toastCircleImg.sprite = btnSprite;
         toastCircleImg.type = Image.Type.Sliced;
         toastCircleImg.color = ColorForestGreen;
-        SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 80f, 130f, 130f);
+        SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 26.7f, 43.3f, 43.3f);
 
         var toastCheckGo = CreateUIObject("Text", toastCircleGo);
         var toastCheck = toastCheckGo.AddComponent<TextMeshProUGUI>();
+        toastCheck.enableWordWrapping = true;
+        toastCheck.overflowMode = TMPro.TextOverflowModes.Overflow;
         toastCheck.text = "✔";
-        toastCheck.fontSize = 58;
+        toastCheck.fontSize = 19.3f;
         toastCheck.color = Color.white;
         toastCheck.alignment = TextAlignmentOptions.Center;
         if (interFont != null) toastCheck.font = interFont;
@@ -923,25 +1056,30 @@ public static class SetupAndBuild
 
         var toastTextGo = CreateUIObject("TitleText", toastGo);
         var toastText = toastTextGo.AddComponent<TextMeshProUGUI>();
+        toastText.enableWordWrapping = true;
+        toastText.overflowMode = TMPro.TextOverflowModes.Overflow;
         toastText.text = "Gerakan Ditemukan!";
-        toastText.fontSize = 32;
+        toastText.fontSize = 10.7f;
         toastText.fontStyle = FontStyles.Bold;
         toastText.color = ColorDeepForest;
         toastText.alignment = TextAlignmentOptions.Center;
         if (interFont != null) toastText.font = interFont;
-        SetCenterPosition(toastTextGo.GetComponent<RectTransform>(), 0f, -50f, 480f, 50f);
+        SetCenterPosition(toastTextGo.GetComponent<RectTransform>(), 0f, -16.7f, 160.0f, 16.7f);
 
         var toastPillGo = CreateUIObject("MovementPill", toastGo);
         var toastPillImg = toastPillGo.AddComponent<Image>();
+        toastPillImg.preserveAspect = true;
         toastPillImg.sprite = btnSprite;
         toastPillImg.type = Image.Type.Sliced;
         toastPillImg.color = new Color(0.72f, 0.4f, 0.29f, 0.1f); // Terracotta 10%
-        SetCenterPosition(toastPillGo.GetComponent<RectTransform>(), 0f, -110f, 220f, 50f);
+        SetCenterPosition(toastPillGo.GetComponent<RectTransform>(), 0f, -36.7f, 73.3f, 16.7f);
 
         var toastPillTextGo = CreateUIObject("Text", toastPillGo);
         var toastPillText = toastPillTextGo.AddComponent<TextMeshProUGUI>();
+        toastPillText.enableWordWrapping = true;
+        toastPillText.overflowMode = TMPro.TextOverflowModes.Overflow;
         toastPillText.text = "SQUAT";
-        toastPillText.fontSize = 20;
+        toastPillText.fontSize = 6.7f;
         toastPillText.fontStyle = FontStyles.Bold;
         toastPillText.color = new Color(0.72f, 0.4f, 0.29f, 1f); // Terracotta
         toastPillText.alignment = TextAlignmentOptions.Center;
@@ -957,83 +1095,97 @@ public static class SetupAndBuild
         // AR View Header Title (transparent background)
         var arHeaderTitleGo = CreateUIObject("HeaderTitle", arControlsGo);
         var arHeaderTitle = arHeaderTitleGo.AddComponent<TextMeshProUGUI>();
+        arHeaderTitle.enableWordWrapping = true;
+        arHeaderTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         arHeaderTitle.text = "GerakAR";
-        arHeaderTitle.fontSize = 44;
+        arHeaderTitle.fontSize = 14.7f;
         arHeaderTitle.fontStyle = FontStyles.Bold;
         arHeaderTitle.color = Color.white;
         arHeaderTitle.alignment = TextAlignmentOptions.Center;
         if (interFont != null) arHeaderTitle.font = interFont;
-        SetCenterPosition(arHeaderTitleGo.GetComponent<RectTransform>(), 0f, 750f, 600f, 60f);
+        SetCenterPosition(arHeaderTitleGo.GetComponent<RectTransform>(), 0f, 250.0f, 200.0f, 20.0f);
 
         var arHeaderSubGo = CreateUIObject("HeaderSub", arControlsGo);
         var arHeaderSub = arHeaderSubGo.AddComponent<TextMeshProUGUI>();
+        arHeaderSub.enableWordWrapping = true;
+        arHeaderSub.overflowMode = TMPro.TextOverflowModes.Overflow;
         arHeaderSub.text = "Belajar Gerak Jadi Seru";
-        arHeaderSub.fontSize = 22;
+        arHeaderSub.fontSize = 7.3f;
         arHeaderSub.color = ColorSoftSage;
         arHeaderSub.alignment = TextAlignmentOptions.Center;
         if (interFont != null) arHeaderSub.font = interFont;
-        SetCenterPosition(arHeaderSubGo.GetComponent<RectTransform>(), 0f, 700f, 600f, 40f);
+        SetCenterPosition(arHeaderSubGo.GetComponent<RectTransform>(), 0f, 233.3f, 200.0f, 13.3f);
 
         // G05 Right Column of Floating Circular FABs
         var fabColumnGo = CreateUIObject("FABColumn", arControlsGo);
-        SetAnchorRight(fabColumnGo.GetComponent<RectTransform>(), -40f, 150f, 120f, 380f);
+        SetAnchorRight(fabColumnGo.GetComponent<RectTransform>(), -13.3f, -133.3f, 40.0f, 126.7f);
 
         // FAB 1: Audio Play/Pause Button
         var playPauseGo = CreateUIObject("PlayPauseButton", fabColumnGo);
         var playPauseImg = playPauseGo.AddComponent<Image>();
+        playPauseImg.preserveAspect = true;
         playPauseImg.sprite = btnSprite;
         playPauseImg.type = Image.Type.Sliced;
         playPauseImg.color = ColorDeepForest;
         var playPauseBtn = playPauseGo.AddComponent<Button>();
-        SetCenterPosition(playPauseGo.GetComponent<RectTransform>(), 0f, 120f, 100f, 100f);
+        SetCenterPosition(playPauseGo.GetComponent<RectTransform>(), 0f, 40.0f, 33.3f, 33.3f);
 
         var playPauseImgGo = CreateUIObject("Icon", playPauseGo);
         var playPauseImgComp = playPauseImgGo.AddComponent<Image>();
+        playPauseImgComp.preserveAspect = true;
         var pauseSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Samples/XR Interaction Toolkit/3.3.0/Starter Assets/DemoSceneAssets/Sprites/Circle_60x60_Horizontal.png");
         var playSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Samples/XR Interaction Toolkit/3.3.0/Starter Assets/DemoSceneAssets/Sprites/Forward.png");
         if (pauseSprite != null) playPauseImgComp.sprite = pauseSprite;
         playPauseImgComp.color = ColorSoftSage;
-        SetCenterPosition(playPauseImgGo.GetComponent<RectTransform>(), 0f, 12f, 44f, 44f);
+        SetCenterPosition(playPauseImgGo.GetComponent<RectTransform>(), 0f, 4.0f, 14.7f, 14.7f);
 
         var playPauseLabelGo = CreateUIObject("Text", playPauseGo);
         var playPauseLabel = playPauseLabelGo.AddComponent<TextMeshProUGUI>();
+        playPauseLabel.enableWordWrapping = true;
+        playPauseLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
         playPauseLabel.text = "PLAY";
-        playPauseLabel.fontSize = 14;
+        playPauseLabel.fontSize = 4.7f;
         playPauseLabel.fontStyle = FontStyles.Bold;
         playPauseLabel.color = Color.white;
         playPauseLabel.alignment = TextAlignmentOptions.Center;
         if (interFont != null) playPauseLabel.font = interFont;
-        SetCenterPosition(playPauseLabelGo.GetComponent<RectTransform>(), 0f, -28f, 90f, 25f);
+        SetCenterPosition(playPauseLabelGo.GetComponent<RectTransform>(), 0f, -9.3f, 30.0f, 8.3f);
 
         // FAB 2: Open Material Detail Button
         var matBtnGo = CreateUIObject("MaterialButton", fabColumnGo);
         var matBtnImg = matBtnGo.AddComponent<Image>();
+        matBtnImg.preserveAspect = true;
         matBtnImg.sprite = btnSprite;
         matBtnImg.type = Image.Type.Sliced;
         matBtnImg.color = ColorForestGreen;
         var matBtn = matBtnGo.AddComponent<Button>();
-        SetCenterPosition(matBtnGo.GetComponent<RectTransform>(), 0f, 0f, 100f, 100f);
+        SetCenterPosition(matBtnGo.GetComponent<RectTransform>(), 0f, 0f, 33.3f, 33.3f);
 
         var matIconGo = CreateUIObject("IconText", matBtnGo);
         var matIcon = matIconGo.AddComponent<TextMeshProUGUI>();
+        matIcon.enableWordWrapping = true;
+        matIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
         matIcon.text = "📖";
-        matIcon.fontSize = 36;
+        matIcon.fontSize = 12.0f;
         matIcon.alignment = TextAlignmentOptions.Center;
         StretchRect(matIconGo.GetComponent<RectTransform>());
 
         // FAB 3: Close / Reset Scan Button
         var closeGo = CreateUIObject("CloseButton", fabColumnGo);
         var closeImg = closeGo.AddComponent<Image>();
+        closeImg.preserveAspect = true;
         closeImg.sprite = btnSprite;
         closeImg.type = Image.Type.Sliced;
         closeImg.color = ColorDeepForest;
         var closeBtn = closeGo.AddComponent<Button>();
-        SetCenterPosition(closeGo.GetComponent<RectTransform>(), 0f, -120f, 100f, 100f);
+        SetCenterPosition(closeGo.GetComponent<RectTransform>(), 0f, -40.0f, 33.3f, 33.3f);
 
         var closeIconGo = CreateUIObject("IconText", closeGo);
         var closeIcon = closeIconGo.AddComponent<TextMeshProUGUI>();
+        closeIcon.enableWordWrapping = true;
+        closeIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
         closeIcon.text = "✕";
-        closeIcon.fontSize = 36;
+        closeIcon.fontSize = 12.0f;
         closeIcon.color = Color.white;
         closeIcon.alignment = TextAlignmentOptions.Center;
         if (interFont != null) closeIcon.font = interFont;
@@ -1042,61 +1194,69 @@ public static class SetupAndBuild
         // G05 Bottom Info & Timeline Slider Card
         var timelineRootGo = CreateUIObject("TimelineCard", arControlsGo);
         var tlCardImg = timelineRootGo.AddComponent<Image>();
-        tlCardImg.sprite = roundTopSprite;
+        tlCardImg.preserveAspect = true;
+        tlCardImg.sprite = btnSprite;
         tlCardImg.type = Image.Type.Sliced;
         tlCardImg.color = new Color(0.957f, 0.941f, 0.902f, 0.96f); // Warm Cream 96%
-        SetCenterPosition(timelineRootGo.GetComponent<RectTransform>(), 0f, -620f, 960f, 240f);
+        SetCenterPosition(timelineRootGo.GetComponent<RectTransform>(), 0f, -266.7f, 320.0f, 80.0f);
 
         // G05 Info tags inside bottom card
         var tlInfoRowGo = CreateUIObject("InfoRow", timelineRootGo);
-        SetCenterPosition(tlInfoRowGo.GetComponent<RectTransform>(), 0f, 75f, 900f, 60f);
+        SetCenterPosition(tlInfoRowGo.GetComponent<RectTransform>(), 0f, 25.0f, 300.0f, 20.0f);
 
         var squatTagGo = CreateUIObject("SquatTag", tlInfoRowGo);
         var squatTagImg = squatTagGo.AddComponent<Image>();
+        squatTagImg.preserveAspect = true;
         squatTagImg.sprite = btnSprite;
         squatTagImg.type = Image.Type.Sliced;
         squatTagImg.color = ColorCleanOffWhite;
-        SetCenterPosition(squatTagGo.GetComponent<RectTransform>(), -330f, 0f, 180f, 50f);
+        SetCenterPosition(squatTagGo.GetComponent<RectTransform>(), -110.0f, 0f, 60.0f, 16.7f);
 
         var squatDotGo = CreateUIObject("Dot", squatTagGo);
         var squatDotImg = squatDotGo.AddComponent<Image>();
+        squatDotImg.preserveAspect = true;
         squatDotImg.sprite = btnSprite;
         squatDotImg.type = Image.Type.Sliced;
         squatDotImg.color = new Color(0.72f, 0.4f, 0.29f, 1f); // Terracotta dot
-        SetCenterPosition(squatDotGo.GetComponent<RectTransform>(), -60f, 0f, 20f, 20f);
+        SetCenterPosition(squatDotGo.GetComponent<RectTransform>(), -20.0f, 0f, 6.7f, 6.7f);
 
         var nameLabelGo = CreateUIObject("Name", squatTagGo);
         var nameLabel = nameLabelGo.AddComponent<TextMeshProUGUI>();
+        nameLabel.enableWordWrapping = true;
+        nameLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
         nameLabel.text = "Squat";
-        nameLabel.fontSize = 24;
+        nameLabel.fontSize = 8.0f;
         nameLabel.fontStyle = FontStyles.Bold;
         nameLabel.color = ColorDeepForest;
         nameLabel.alignment = TextAlignmentOptions.Left;
         if (interFont != null) nameLabel.font = interFont;
-        SetCenterPosition(nameLabelGo.GetComponent<RectTransform>(), 20f, 0f, 110f, 40f);
+        SetCenterPosition(nameLabelGo.GetComponent<RectTransform>(), 6.7f, 0f, 36.7f, 13.3f);
 
         var statusTagGo = CreateUIObject("StatusTag", tlInfoRowGo);
         var statusTag = statusTagGo.AddComponent<TextMeshProUGUI>();
+        statusTag.enableWordWrapping = true;
+        statusTag.overflowMode = TMPro.TextOverflowModes.Overflow;
         statusTag.text = "Status: Loop";
-        statusTag.fontSize = 20;
+        statusTag.fontSize = 6.7f;
         statusTag.fontStyle = FontStyles.Bold;
         statusTag.color = ColorForestGreen;
         statusTag.alignment = TextAlignmentOptions.Right;
         if (interFont != null) statusTag.font = interFont;
-        SetCenterPosition(statusTagGo.GetComponent<RectTransform>(), 310f, 0f, 220f, 40f);
+        SetCenterPosition(statusTagGo.GetComponent<RectTransform>(), 103.3f, 0f, 73.3f, 13.3f);
 
         // Timeline Slider Control
         var sliderGo = CreateUIObject("Slider", timelineRootGo);
         var slider = sliderGo.AddComponent<Slider>();
-        SetCenterPosition(sliderGo.GetComponent<RectTransform>(), 0f, 5f, 880f, 40f);
+        SetCenterPosition(sliderGo.GetComponent<RectTransform>(), 0f, 1.7f, 293.3f, 13.3f);
 
         // Customized Slider Visuals
         var sliderBgGo = CreateUIObject("Background", sliderGo);
         var slBgImg = sliderBgGo.AddComponent<Image>();
+        slBgImg.preserveAspect = true;
         slBgImg.sprite = btnSprite;
         slBgImg.type = Image.Type.Sliced;
         slBgImg.color = ColorSoftSage;
-        SetCenterPosition(sliderBgGo.GetComponent<RectTransform>(), 0f, 0f, 880f, 10f);
+        SetCenterPosition(sliderBgGo.GetComponent<RectTransform>(), 0f, 0f, 293.3f, 3.3f);
 
         // Slider Handle Area
         var handleAreaGo = CreateUIObject("Handle Area", sliderGo);
@@ -1104,42 +1264,49 @@ public static class SetupAndBuild
 
         var handleVisGo = CreateUIObject("Handle", handleAreaGo);
         var handleVisImg = handleVisGo.AddComponent<Image>();
+        handleVisImg.preserveAspect = true;
         handleVisImg.sprite = btnSprite;
         handleVisImg.type = Image.Type.Sliced;
         handleVisImg.color = ColorForestGreen;
-        SetCenterPosition(handleVisGo.GetComponent<RectTransform>(), 0f, 0f, 44f, 44f);
+        SetCenterPosition(handleVisGo.GetComponent<RectTransform>(), 0f, 0f, 14.7f, 14.7f);
         slider.handleRect = handleVisGo.GetComponent<RectTransform>();
 
         // Under-slider info labels
         var tlBottomLabelsGo = CreateUIObject("BottomLabels", timelineRootGo);
-        SetCenterPosition(tlBottomLabelsGo.GetComponent<RectTransform>(), 0f, -55f, 880f, 40f);
+        SetCenterPosition(tlBottomLabelsGo.GetComponent<RectTransform>(), 0f, -18.3f, 293.3f, 13.3f);
 
         var startLabelGo = CreateUIObject("Mulai", tlBottomLabelsGo);
         var startLabel = startLabelGo.AddComponent<TextMeshProUGUI>();
+        startLabel.enableWordWrapping = true;
+        startLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
         startLabel.text = "Mulai";
-        startLabel.fontSize = 20;
+        startLabel.fontSize = 6.7f;
         startLabel.color = ColorMossGreen;
         startLabel.alignment = TextAlignmentOptions.Left;
         if (interFont != null) startLabel.font = interFont;
-        SetCenterPosition(startLabelGo.GetComponent<RectTransform>(), -380f, 0f, 120f, 35f);
+        SetCenterPosition(startLabelGo.GetComponent<RectTransform>(), -126.7f, 0f, 40.0f, 11.7f);
 
         var midLabelGo = CreateUIObject("Petunjuk", tlBottomLabelsGo);
         var midLabel = midLabelGo.AddComponent<TextMeshProUGUI>();
+        midLabel.enableWordWrapping = true;
+        midLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
         midLabel.text = "Geser untuk memeriksa pose";
-        midLabel.fontSize = 20;
+        midLabel.fontSize = 6.7f;
         midLabel.color = ColorMossGreen;
         midLabel.alignment = TextAlignmentOptions.Center;
         if (interFont != null) midLabel.font = interFont;
-        SetCenterPosition(midLabelGo.GetComponent<RectTransform>(), 0f, 0f, 400f, 35f);
+        SetCenterPosition(midLabelGo.GetComponent<RectTransform>(), 0f, 0f, 133.3f, 11.7f);
 
         var endLabelGo = CreateUIObject("Selesai", tlBottomLabelsGo);
         var endLabel = endLabelGo.AddComponent<TextMeshProUGUI>();
+        endLabel.enableWordWrapping = true;
+        endLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
         endLabel.text = "Selesai";
-        endLabel.fontSize = 20;
+        endLabel.fontSize = 6.7f;
         endLabel.color = ColorMossGreen;
         endLabel.alignment = TextAlignmentOptions.Right;
         if (interFont != null) endLabel.font = interFont;
-        SetCenterPosition(endLabelGo.GetComponent<RectTransform>(), 380f, 0f, 120f, 35f);
+        SetCenterPosition(endLabelGo.GetComponent<RectTransform>(), 126.7f, 0f, 40.0f, 11.7f);
 
         // Timeline Controller setup
         var timelineCtrl = timelineRootGo.AddComponent<PoseTimelineController>();
@@ -1151,6 +1318,7 @@ public static class SetupAndBuild
         // 4. Bottom Sheet Panel (G06 & G07) - Pulls up to 94% height
         var sheetGo = CreateUIObject("BottomSheet", canvasGo);
         var sheetImg = sheetGo.AddComponent<Image>();
+        sheetImg.preserveAspect = true;
         sheetImg.sprite = roundTopSprite;
         sheetImg.type = Image.Type.Sliced;
         sheetImg.color = ColorCleanOffWhite;
@@ -1164,46 +1332,54 @@ public static class SetupAndBuild
         // Grab Handle
         var handleGo = CreateUIObject("GrabHandle", sheetGo);
         var handleImg = handleGo.AddComponent<Image>();
+        handleImg.preserveAspect = true;
         handleImg.sprite = btnSprite;
         handleImg.type = Image.Type.Sliced;
         handleImg.color = ColorSoftSage;
-        SetCenterPosition(handleGo.GetComponent<RectTransform>(), 0f, sheetRT.sizeDelta.y - 20f, 100f, 10f);
+        SetCenterPosition(handleGo.GetComponent<RectTransform>(), 0f, sheetRT.sizeDelta.y - 6.7f, 33.3f, 3.3f);
 
         // Sheet Header Area (Utama / Tambahan)
         var categoryGo = CreateUIObject("CategoryTypeLabel", sheetGo);
         var categoryTxt = categoryGo.AddComponent<TextMeshProUGUI>();
+        categoryTxt.enableWordWrapping = true;
+        categoryTxt.overflowMode = TMPro.TextOverflowModes.Overflow;
         categoryTxt.text = "GERAKAN UTAMA";
-        categoryTxt.fontSize = 22;
+        categoryTxt.fontSize = 7.3f;
         categoryTxt.fontStyle = FontStyles.Bold;
         categoryTxt.color = new Color(0.72f, 0.4f, 0.29f, 1f); // Terracotta
         if (interFont != null) categoryTxt.font = interFont;
-        SetCenterPosition(categoryGo.GetComponent<RectTransform>(), -260f, sheetRT.sizeDelta.y - 70f, 400f, 40f);
+        SetCenterPosition(categoryGo.GetComponent<RectTransform>(), -86.7f, sheetRT.sizeDelta.y - 23.3f, 133.3f, 13.3f);
 
         // Dedicated Sheet Movement Name Text
         var sheetTitleGo = CreateUIObject("MovementTitle", sheetGo);
         var sheetTitleText = sheetTitleGo.AddComponent<TextMeshProUGUI>();
+        sheetTitleText.enableWordWrapping = true;
+        sheetTitleText.overflowMode = TMPro.TextOverflowModes.Overflow;
         sheetTitleText.text = "SQUAT";
-        sheetTitleText.fontSize = 40;
+        sheetTitleText.fontSize = 13.3f;
         sheetTitleText.fontStyle = FontStyles.Bold;
         sheetTitleText.color = ColorDeepForest;
         sheetTitleText.alignment = TextAlignmentOptions.Left;
         if (interFont != null) sheetTitleText.font = interFont;
-        SetCenterPosition(sheetTitleGo.GetComponent<RectTransform>(), -220f, sheetRT.sizeDelta.y - 120f, 480f, 60f);
+        SetCenterPosition(sheetTitleGo.GetComponent<RectTransform>(), -73.3f, sheetRT.sizeDelta.y - 40.0f, 160.0f, 20.0f);
 
         // Back to primary button (G07 -> G06)
         var backBtnGo = CreateUIObject("BackToPrimaryButton", sheetGo);
         var backBtnImg = backBtnGo.AddComponent<Image>();
+        backBtnImg.preserveAspect = true;
         backBtnImg.sprite = btnSprite;
         backBtnImg.type = Image.Type.Sliced;
         backBtnImg.color = ColorDeepForest;
         var backBtn = backBtnGo.AddComponent<Button>();
-        SetCenterPosition(backBtnGo.GetComponent<RectTransform>(), 360f, sheetRT.sizeDelta.y - 90f, 160f, 70f);
+        SetCenterPosition(backBtnGo.GetComponent<RectTransform>(), 120.0f, sheetRT.sizeDelta.y - 30.0f, 53.3f, 23.3f);
 
         // Back Button Text
         var backBtnTextGo = CreateUIObject("Text", backBtnGo);
         var backBtnText = backBtnTextGo.AddComponent<TextMeshProUGUI>();
+        backBtnText.enableWordWrapping = true;
+        backBtnText.overflowMode = TMPro.TextOverflowModes.Overflow;
         backBtnText.text = "Kembali";
-        backBtnText.fontSize = 22;
+        backBtnText.fontSize = 7.3f;
         backBtnText.fontStyle = FontStyles.Bold;
         backBtnText.color = Color.white;
         backBtnText.alignment = TextAlignmentOptions.Center;
@@ -1213,16 +1389,19 @@ public static class SetupAndBuild
         // Close Bottom Sheet Button
         var sheetCloseGo = CreateUIObject("SheetCloseX", sheetGo);
         var sheetCloseImg = sheetCloseGo.AddComponent<Image>();
+        sheetCloseImg.preserveAspect = true;
         sheetCloseImg.sprite = btnSprite;
         sheetCloseImg.type = Image.Type.Sliced;
         sheetCloseImg.color = new Color(0f, 0f, 0f, 0.05f); // Light transparent gray
         var sheetCloseBtn = sheetCloseGo.AddComponent<Button>();
-        SetCenterPosition(sheetCloseGo.GetComponent<RectTransform>(), 410f, sheetRT.sizeDelta.y - 90f, 70f, 70f);
+        SetCenterPosition(sheetCloseGo.GetComponent<RectTransform>(), 136.7f, sheetRT.sizeDelta.y - 30.0f, 23.3f, 23.3f);
 
         var sheetCloseTxtGo = CreateUIObject("Text", sheetCloseGo);
         var sheetCloseTxt = sheetCloseTxtGo.AddComponent<TextMeshProUGUI>();
+        sheetCloseTxt.enableWordWrapping = true;
+        sheetCloseTxt.overflowMode = TMPro.TextOverflowModes.Overflow;
         sheetCloseTxt.text = "✕";
-        sheetCloseTxt.fontSize = 28;
+        sheetCloseTxt.fontSize = 9.3f;
         sheetCloseTxt.color = ColorCharcoal;
         sheetCloseTxt.alignment = TextAlignmentOptions.Center;
         if (interFont != null) sheetCloseTxt.font = interFont;
@@ -1233,7 +1412,7 @@ public static class SetupAndBuild
         var scrollRect = scrollViewGo.AddComponent<ScrollRect>();
         scrollRect.horizontal = false;
         scrollRect.vertical = true;
-        SetCenterPosition(scrollViewGo.GetComponent<RectTransform>(), 0f, -110f, 960f, sheetRT.sizeDelta.y - 220f);
+        SetCenterPosition(scrollViewGo.GetComponent<RectTransform>(), 0f, -36.7f, 320.0f, sheetRT.sizeDelta.y - 73.3f);
 
         // Viewport
         var viewportGo = CreateUIObject("Viewport", scrollViewGo);
@@ -1273,15 +1452,19 @@ public static class SetupAndBuild
 
         var aboutTitleGo = CreateUIObject("Title", aboutGroupGo);
         var aboutTitle = aboutTitleGo.AddComponent<TextMeshProUGUI>();
+        aboutTitle.enableWordWrapping = true;
+        aboutTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         aboutTitle.text = "TENTANG GERAKAN";
-        aboutTitle.fontSize = 20;
+        aboutTitle.fontSize = 6.7f;
         aboutTitle.fontStyle = FontStyles.Bold;
         aboutTitle.color = new Color(0.72f, 0.4f, 0.29f, 1f); // Terracotta
         if (interFont != null) aboutTitle.font = interFont;
 
         var descGo = CreateUIObject("Description", aboutGroupGo);
         var descText = descGo.AddComponent<TextMeshProUGUI>();
-        descText.fontSize = 26;
+        descText.enableWordWrapping = true;
+        descText.overflowMode = TMPro.TextOverflowModes.Overflow;
+        descText.fontSize = 8.7f;
         descText.color = ColorCharcoal;
         if (interFont != null) descText.font = interFont;
 
@@ -1294,8 +1477,10 @@ public static class SetupAndBuild
 
         var stepsTitleGo = CreateUIObject("Title", stepsGroupGo);
         var stepsTitle = stepsTitleGo.AddComponent<TextMeshProUGUI>();
+        stepsTitle.enableWordWrapping = true;
+        stepsTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         stepsTitle.text = "CARA MELAKUKAN";
-        stepsTitle.fontSize = 20;
+        stepsTitle.fontSize = 6.7f;
         stepsTitle.fontStyle = FontStyles.Bold;
         stepsTitle.color = new Color(0.72f, 0.4f, 0.29f, 1f); // Terracotta
         if (interFont != null) stepsTitle.font = interFont;
@@ -1309,6 +1494,7 @@ public static class SetupAndBuild
         // 3. Safety Tip Box
         var safetyTipCardGo = CreateUIObject("SafetyTipCard", contentGo);
         var safetyImg = safetyTipCardGo.AddComponent<Image>();
+        safetyImg.preserveAspect = true;
         safetyImg.sprite = btnSprite;
         safetyImg.type = Image.Type.Sliced;
         safetyImg.color = new Color(0.66f, 0.745f, 0.635f, 0.25f); // Soft Sage 25%
@@ -1317,7 +1503,9 @@ public static class SetupAndBuild
 
         var safetyTextGo = CreateUIObject("Text", safetyTipCardGo);
         var safetyText = safetyTextGo.AddComponent<TextMeshProUGUI>();
-        safetyText.fontSize = 24;
+        safetyText.enableWordWrapping = true;
+        safetyText.overflowMode = TMPro.TextOverflowModes.Overflow;
+        safetyText.fontSize = 8.0f;
         safetyText.color = ColorDeepForest;
         if (interFont != null) safetyText.font = interFont;
 
@@ -1331,8 +1519,10 @@ public static class SetupAndBuild
         // Common Mistakes
         var mistakesTitleGo = CreateUIObject("MistakesTitle", fullExtrasGo);
         var mistakesTitle = mistakesTitleGo.AddComponent<TextMeshProUGUI>();
+        mistakesTitle.enableWordWrapping = true;
+        mistakesTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         mistakesTitle.text = "HINDARI INI";
-        mistakesTitle.fontSize = 20;
+        mistakesTitle.fontSize = 6.7f;
         mistakesTitle.fontStyle = FontStyles.Bold;
         mistakesTitle.color = new Color(0.72f, 0.4f, 0.29f, 1f); // Terracotta
         if (interFont != null) mistakesTitle.font = interFont;
@@ -1346,8 +1536,10 @@ public static class SetupAndBuild
         // Trained Areas
         var trainedTitleGo = CreateUIObject("TrainedTitle", fullExtrasGo);
         var trainedTitle = trainedTitleGo.AddComponent<TextMeshProUGUI>();
+        trainedTitle.enableWordWrapping = true;
+        trainedTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         trainedTitle.text = "OTOT YANG TERLATIH";
-        trainedTitle.fontSize = 20;
+        trainedTitle.fontSize = 6.7f;
         trainedTitle.fontStyle = FontStyles.Bold;
         trainedTitle.color = new Color(0.72f, 0.4f, 0.29f, 1f); // Terracotta
         if (interFont != null) trainedTitle.font = interFont;
@@ -1367,8 +1559,10 @@ public static class SetupAndBuild
 
         var relatedTitleGo = CreateUIObject("Title", relatedGroupGo);
         var relatedTitle = relatedTitleGo.AddComponent<TextMeshProUGUI>();
+        relatedTitle.enableWordWrapping = true;
+        relatedTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
         relatedTitle.text = "GERAKAN SERUPA";
-        relatedTitle.fontSize = 20;
+        relatedTitle.fontSize = 6.7f;
         relatedTitle.fontStyle = FontStyles.Bold;
         relatedTitle.color = new Color(0.72f, 0.4f, 0.29f, 1f); // Terracotta
         if (interFont != null) relatedTitle.font = interFont;
@@ -1406,6 +1600,7 @@ public static class SetupAndBuild
         // Sheet Controller & Scrim
         var scrimGo = CreateUIObject("Scrim", canvasGo);
         var scrimImg = scrimGo.AddComponent<Image>();
+        scrimImg.preserveAspect = true;
         scrimImg.color = new Color(0, 0, 0, 0.32f); // Camera Scrim opacity G06
         StretchRect(scrimGo.GetComponent<RectTransform>());
         scrimGo.AddComponent<Button>(); // Tap triggers close
