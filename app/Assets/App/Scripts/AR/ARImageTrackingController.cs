@@ -57,6 +57,45 @@ namespace GerakAR.AR
         private void Start()
         {
             _stateMgr = AppStateManager.Instance;
+            
+            if (AppStateManager.RunInNonARMode)
+            {
+                var session = FindAnyObjectByType<ARSession>();
+                if (session != null) session.enabled = false;
+                if (_manager != null) _manager.enabled = false;
+
+                var cam = Camera.main;
+                if (cam != null)
+                {
+                    cam.clearFlags = CameraClearFlags.SolidColor;
+                    cam.backgroundColor = new Color(0.12f, 0.17f, 0.15f, 1f); // #1E2B26 (Solid dark teal)
+                }
+
+                StartCoroutine(SpawnNonARModelDelayed());
+            }
+        }
+
+        private IEnumerator SpawnNonARModelDelayed()
+        {
+            yield return new WaitForSeconds(0.5f);
+            if (movementDatabase != null && movementDatabase.movements != null && movementDatabase.movements.Count > 0)
+            {
+                var squatData = movementDatabase.movements[0];
+                GameObject model = modelPool.Activate(squatData);
+                if (model != null)
+                {
+                    model.transform.position = new Vector3(0f, -0.6f, 1.8f);
+                    model.transform.rotation = Quaternion.Euler(0f, 180f, 0f); // Face the camera
+                }
+                
+                _stateMgr.TransitionTo(AppState.TrackingLoop);
+                
+                var uiCtrl = FindAnyObjectByType<ARUIController>();
+                if (uiCtrl != null)
+                {
+                    uiCtrl.SetMovementName(squatData.displayName);
+                }
+            }
         }
 
         private void OnEnable()

@@ -66,14 +66,18 @@ namespace GerakAR.Core
 #endif
         }
 
+        public static bool CameraPermissionDenied { get; private set; } = false;
+
         private void OnPermissionGranted(string permissionName)
         {
+            CameraPermissionDenied = false;
             if (_stateMgr != null)
                 _stateMgr.TransitionTo(AppState.CheckingAR);
         }
 
         private void OnPermissionDenied(string permissionName)
         {
+            CameraPermissionDenied = true;
             if (_stateMgr != null)
                 _stateMgr.TransitionTo(AppState.Unsupported);
         }
