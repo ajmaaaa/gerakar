@@ -56,13 +56,13 @@ public static class SetupAndBuild
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvasGo.AddComponent<CanvasScaler>();
         canvasGo.AddComponent<GraphicRaycaster>();
-        var canvasGroup = canvasGo.AddComponent<CanvasGroup>();
 
         // 1. Intro Panel
         var introGo = CreateUIObject("IntroPanel", canvasGo);
         var introImg = introGo.AddComponent<Image>();
         introImg.color = ColorCleanOffWhite;
         StretchRect(introGo.GetComponent<RectTransform>());
+        var introCanvasGroup = introGo.AddComponent<CanvasGroup>();
         var introController = managersGo.AddComponent<IntroController>();
 
         // Intro Logo / Title Text
@@ -130,7 +130,7 @@ public static class SetupAndBuild
 
         // Link script fields
         var serialIntro = new SerializedObject(introController);
-        serialIntro.FindProperty("introCanvasGroup").objectReferenceValue = canvasGroup;
+        serialIntro.FindProperty("introCanvasGroup").objectReferenceValue = introCanvasGroup;
         serialIntro.ApplyModifiedProperties();
 
         var serialOnboard = new SerializedObject(onboardingController);
