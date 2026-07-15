@@ -70,13 +70,19 @@ public static class SetupAndBuild
         var introCanvasGroup = introGo.AddComponent<CanvasGroup>();
         var introController = managersGo.AddComponent<IntroController>();
 
+        // Load premium UI assets
+        var interFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/MobileARTemplateAssets/UI/Fonts/Inter-Regular_SDF.asset");
+        var btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/MobileARTemplateAssets/UI/Sprites/ActivationButtonOpaque.png");
+
         // Intro Logo / Title Text
         var titleGo = CreateUIObject("TitleText", introGo);
         var titleText = titleGo.AddComponent<TextMeshProUGUI>();
         titleText.text = "GerakAR";
-        titleText.fontSize = 48;
+        titleText.fontSize = 54;
+        titleText.fontStyle = FontStyles.Bold;
         titleText.color = ColorDeepForest;
         titleText.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) titleText.font = interFont;
         SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, 0f, 300f, 100f);
 
         // 2. Onboarding Panel
@@ -86,37 +92,52 @@ public static class SetupAndBuild
         StretchRect(onboardGo.GetComponent<RectTransform>());
         onboardGo.SetActive(false);
 
-        // Onboarding Title
-        var obTitleGo = CreateUIObject("OnboardingTitle", onboardGo);
+        // Instruction Card container (white box with rounded corners)
+        var cardGo = CreateUIObject("InstructionCard", onboardGo);
+        var cardImg = cardGo.AddComponent<Image>();
+        cardImg.sprite = btnSprite;
+        cardImg.type = Image.Type.Sliced;
+        cardImg.color = Color.white;
+        SetCenterPosition(cardGo.GetComponent<RectTransform>(), 0f, 40f, 460f, 320f);
+
+        // Onboarding Title (inside the card)
+        var obTitleGo = CreateUIObject("OnboardingTitle", cardGo);
         var obTitle = obTitleGo.AddComponent<TextMeshProUGUI>();
         obTitle.text = "Sebelum Mulai";
-        obTitle.fontSize = 32;
+        obTitle.fontSize = 30;
+        obTitle.fontStyle = FontStyles.Bold;
         obTitle.color = ColorDeepForest;
         obTitle.alignment = TextAlignmentOptions.Center;
-        SetCenterPosition(obTitleGo.GetComponent<RectTransform>(), 0f, 150f, 400f, 60f);
+        if (interFont != null) obTitle.font = interFont;
+        SetCenterPosition(obTitleGo.GetComponent<RectTransform>(), 0f, 100f, 400f, 50f);
 
-        // Onboarding Instructions Text
-        var obTextGo = CreateUIObject("OnboardingText", onboardGo);
+        // Onboarding Instructions Text (inside the card)
+        var obTextGo = CreateUIObject("OnboardingText", cardGo);
         var obText = obTextGo.AddComponent<TextMeshProUGUI>();
-        obText.text = "• Gunakan di tempat yang cukup luas.\n• Minta guru atau orang tua mendampingi.\n• Izinkan kamera untuk melihat gerakan.";
-        obText.fontSize = 18;
+        obText.text = "• Gunakan di tempat yang cukup luas.\n\n• Minta guru atau orang tua mendampingi.\n\n• Izinkan kamera untuk melihat gerakan.";
+        obText.fontSize = 16;
         obText.color = ColorCharcoal;
         obText.alignment = TextAlignmentOptions.Left;
-        SetCenterPosition(obTextGo.GetComponent<RectTransform>(), 0f, 0f, 500f, 180f);
+        if (interFont != null) obText.font = interFont;
+        SetCenterPosition(obTextGo.GetComponent<RectTransform>(), 0f, -30f, 400f, 180f);
 
-        // Onboarding Start Button
+        // Onboarding Start Button (below the card)
         var startBtnGo = CreateUIObject("MulaiButton", onboardGo);
         var startBtnImg = startBtnGo.AddComponent<Image>();
+        startBtnImg.sprite = btnSprite;
+        startBtnImg.type = Image.Type.Sliced;
         startBtnImg.color = ColorDeepForest;
         var startBtn = startBtnGo.AddComponent<Button>();
-        SetCenterPosition(startBtnGo.GetComponent<RectTransform>(), 0f, -150f, 200f, 60f);
+        SetCenterPosition(startBtnGo.GetComponent<RectTransform>(), 0f, -180f, 220f, 55f);
 
         var btnTextGo = CreateUIObject("Text", startBtnGo);
         var btnText = btnTextGo.AddComponent<TextMeshProUGUI>();
         btnText.text = "MULAI";
-        btnText.fontSize = 20;
+        btnText.fontSize = 18;
+        btnText.fontStyle = FontStyles.Bold;
         btnText.color = Color.white;
         btnText.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) btnText.font = interFont;
         StretchRect(btnTextGo.GetComponent<RectTransform>());
 
         // 3. Unsupported Panel
@@ -128,9 +149,11 @@ public static class SetupAndBuild
 
         var unsupTextGo = CreateUIObject("UnsupportedText", unsupGo);
         var unsupText = unsupTextGo.AddComponent<TextMeshProUGUI>();
-        unsupText.fontSize = 20;
+        unsupText.text = "HP Anda tidak mendukung AR.\nAplikasi akan berjalan dalam Mode 3D.";
+        unsupText.fontSize = 18;
         unsupText.color = ColorCharcoal;
         unsupText.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) unsupText.font = interFont;
         SetCenterPosition(unsupTextGo.GetComponent<RectTransform>(), 0f, 0f, 500f, 200f);
 
         // Link script fields
@@ -219,6 +242,12 @@ public static class SetupAndBuild
         eventSystemGo.AddComponent<UnityEngine.EventSystems.EventSystem>();
         eventSystemGo.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
 
+        // Load premium UI assets
+        var interFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/MobileARTemplateAssets/UI/Fonts/Inter-Regular_SDF.asset");
+        var btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/MobileARTemplateAssets/UI/Sprites/ActivationButtonOpaque.png");
+        var frameSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/MobileARTemplateAssets/UI/Sprites/MixedCorners.png");
+        var roundTopSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/MobileARTemplateAssets/UI/Sprites/RoundRadius_10_Top.png");
+
         var arUI = canvasGo.AddComponent<ARUIController>();
 
         // 1. Scan Overlay Panel
@@ -228,21 +257,27 @@ public static class SetupAndBuild
         // Corner Frame Image (Corner Only focuses)
         var scanFrameGo = CreateUIObject("ScanFrame", scanGo);
         var frameImg = scanFrameGo.AddComponent<Image>();
-        frameImg.color = Color.white; // Assign outline or transparent sprite here
+        frameImg.sprite = frameSprite;
+        frameImg.type = Image.Type.Simple;
+        frameImg.color = Color.white;
         SetCenterPosition(scanFrameGo.GetComponent<RectTransform>(), 0f, 0f, 220f, 220f);
 
         // Hint Text
         var hintGo = CreateUIObject("HintText", scanGo);
         var hintText = hintGo.AddComponent<TextMeshProUGUI>();
         hintText.text = "Arahkan kamera ke gambar gerakan";
-        hintText.fontSize = 16;
+        hintText.fontSize = 18;
+        hintText.fontStyle = FontStyles.Bold;
         hintText.color = Color.white;
         hintText.alignment = TextAlignmentOptions.Center;
-        SetCenterPosition(hintGo.GetComponent<RectTransform>(), 0f, -160f, 400f, 50f);
+        if (interFont != null) hintText.font = interFont;
+        SetCenterPosition(hintGo.GetComponent<RectTransform>(), 0f, -160f, 450f, 50f);
 
         // 2. Detection Toast Panel
         var toastGo = CreateUIObject("DetectionToast", canvasGo);
         var toastImg = toastGo.AddComponent<Image>();
+        toastImg.sprite = btnSprite;
+        toastImg.type = Image.Type.Sliced;
         toastImg.color = ColorCleanOffWhite;
         SetCenterPosition(toastGo.GetComponent<RectTransform>(), 0f, 50f, 280f, 80f);
 
@@ -250,8 +285,10 @@ public static class SetupAndBuild
         var toastText = toastTextGo.AddComponent<TextMeshProUGUI>();
         toastText.text = "✔ Gambar Terdeteksi";
         toastText.fontSize = 18;
+        toastText.fontStyle = FontStyles.Bold;
         toastText.color = ColorForestGreen;
         toastText.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) toastText.font = interFont;
         StretchRect(toastTextGo.GetComponent<RectTransform>());
         toastGo.SetActive(false);
 
@@ -264,24 +301,51 @@ public static class SetupAndBuild
         var nameLabelGo = CreateUIObject("MovementNameLabel", arControlsGo);
         var nameLabel = nameLabelGo.AddComponent<TextMeshProUGUI>();
         nameLabel.text = "SQUAT";
-        nameLabel.fontSize = 24;
+        nameLabel.fontSize = 26;
+        nameLabel.fontStyle = FontStyles.Bold;
         nameLabel.color = ColorDeepForest;
         nameLabel.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) nameLabel.font = interFont;
         SetCenterPosition(nameLabelGo.GetComponent<RectTransform>(), 0f, 300f, 300f, 60f);
 
         // Close Button FAB
         var closeGo = CreateUIObject("CloseButton", arControlsGo);
         var closeImg = closeGo.AddComponent<Image>();
+        closeImg.sprite = btnSprite;
+        closeImg.type = Image.Type.Sliced;
         closeImg.color = Color.white;
         var closeBtn = closeGo.AddComponent<Button>();
         SetAnchorRight(closeGo.GetComponent<RectTransform>(), -30f, 150f, 54f, 54f);
 
+        // Close Icon Text inside FAB
+        var closeTextGo = CreateUIObject("Text", closeGo);
+        var closeText = closeTextGo.AddComponent<TextMeshProUGUI>();
+        closeText.text = "✕";
+        closeText.fontSize = 20;
+        closeText.color = ColorDeepForest;
+        closeText.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) closeText.font = interFont;
+        StretchRect(closeTextGo.GetComponent<RectTransform>());
+
         // Material Button FAB
         var matBtnGo = CreateUIObject("MaterialButton", arControlsGo);
         var matBtnImg = matBtnGo.AddComponent<Image>();
+        matBtnImg.sprite = btnSprite;
+        matBtnImg.type = Image.Type.Sliced;
         matBtnImg.color = ColorDeepForest;
         var matBtn = matBtnGo.AddComponent<Button>();
         SetAnchorRight(matBtnGo.GetComponent<RectTransform>(), -30f, 80f, 54f, 54f);
+
+        // Material Button Icon / Text inside FAB
+        var matTextGo = CreateUIObject("Text", matBtnGo);
+        var matText = matTextGo.AddComponent<TextMeshProUGUI>();
+        matText.text = "Materi";
+        matText.fontSize = 11;
+        matText.fontStyle = FontStyles.Bold;
+        matText.color = Color.white;
+        matText.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) matText.font = interFont;
+        StretchRect(matTextGo.GetComponent<RectTransform>());
 
         // Timeline
         var timelineRootGo = CreateUIObject("Timeline", arControlsGo);
@@ -295,9 +359,21 @@ public static class SetupAndBuild
         // Play/Pause Button
         var playPauseGo = CreateUIObject("PlayPauseButton", timelineRootGo);
         var playPauseImg = playPauseGo.AddComponent<Image>();
+        playPauseImg.sprite = btnSprite;
+        playPauseImg.type = Image.Type.Sliced;
         playPauseImg.color = Color.white;
         var playPauseBtn = playPauseGo.AddComponent<Button>();
         SetAnchorLeft(playPauseGo.GetComponent<RectTransform>(), -40f, 0f, 36f, 36f);
+
+        // Play/Pause Icon Text inside button
+        var playPauseTextGo = CreateUIObject("Text", playPauseGo);
+        var playPauseText = playPauseTextGo.AddComponent<TextMeshProUGUI>();
+        playPauseText.text = "⏸";
+        playPauseText.fontSize = 16;
+        playPauseText.color = ColorDeepForest;
+        playPauseText.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) playPauseText.font = interFont;
+        StretchRect(playPauseTextGo.GetComponent<RectTransform>());
 
         // Timeline Controller setup
         var timelineCtrl = timelineRootGo.AddComponent<PoseTimelineController>();
@@ -309,6 +385,8 @@ public static class SetupAndBuild
         // 4. Bottom Sheet Panel
         var sheetGo = CreateUIObject("BottomSheet", canvasGo);
         var sheetImg = sheetGo.AddComponent<Image>();
+        sheetImg.sprite = roundTopSprite;
+        sheetImg.type = Image.Type.Sliced;
         sheetImg.color = ColorCleanOffWhite;
         var sheetRT = sheetGo.GetComponent<RectTransform>();
         sheetRT.anchorMin = new Vector2(0f, 0f);
@@ -320,23 +398,40 @@ public static class SetupAndBuild
         // Grab Handle
         var handleGo = CreateUIObject("GrabHandle", sheetGo);
         var handleImg = handleGo.AddComponent<Image>();
+        handleImg.sprite = btnSprite;
+        handleImg.type = Image.Type.Sliced;
         handleImg.color = ColorSoftSage;
-        SetCenterPosition(handleGo.GetComponent<RectTransform>(), 0f, sheetRT.sizeDelta.y - 15f, 80f, 60f);
+        SetCenterPosition(handleGo.GetComponent<RectTransform>(), 0f, sheetRT.sizeDelta.y - 15f, 80f, 8f);
 
         // Sheet Header Type (Utama / Tambahan)
         var categoryGo = CreateUIObject("CategoryTypeLabel", sheetGo);
         var categoryTxt = categoryGo.AddComponent<TextMeshProUGUI>();
         categoryTxt.text = "Gerakan Utama";
-        categoryTxt.fontSize = 14;
-        categoryTxt.color = ColorSoftSage;
-        SetCenterPosition(categoryGo.GetComponent<RectTransform>(), -150f, sheetRT.sizeDelta.y - 60f, 200f, 30f);
+        categoryTxt.fontSize = 16;
+        categoryTxt.fontStyle = FontStyles.Bold;
+        categoryTxt.color = ColorForestGreen;
+        if (interFont != null) categoryTxt.font = interFont;
+        SetCenterPosition(categoryGo.GetComponent<RectTransform>(), -120f, sheetRT.sizeDelta.y - 60f, 200f, 30f);
 
         // Back to primary button
         var backBtnGo = CreateUIObject("BackToPrimaryButton", sheetGo);
         var backBtnImg = backBtnGo.AddComponent<Image>();
+        backBtnImg.sprite = btnSprite;
+        backBtnImg.type = Image.Type.Sliced;
         backBtnImg.color = ColorDeepForest;
         var backBtn = backBtnGo.AddComponent<Button>();
         SetCenterPosition(backBtnGo.GetComponent<RectTransform>(), 150f, sheetRT.sizeDelta.y - 60f, 120f, 35f);
+
+        // Back Button Text
+        var backBtnTextGo = CreateUIObject("Text", backBtnGo);
+        var backBtnText = backBtnTextGo.AddComponent<TextMeshProUGUI>();
+        backBtnText.text = "Kembali";
+        backBtnText.fontSize = 14;
+        backBtnText.fontStyle = FontStyles.Bold;
+        backBtnText.color = Color.white;
+        backBtnText.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) backBtnText.font = interFont;
+        StretchRect(backBtnTextGo.GetComponent<RectTransform>());
 
         // Sheet Controller & Scrim
         var scrimGo = CreateUIObject("Scrim", canvasGo);
