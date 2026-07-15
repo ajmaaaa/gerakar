@@ -57,6 +57,11 @@ public static class SetupAndBuild
         canvasGo.AddComponent<CanvasScaler>();
         canvasGo.AddComponent<GraphicRaycaster>();
 
+        // Event System
+        var eventSystemGo = new GameObject("EventSystem");
+        eventSystemGo.AddComponent<UnityEngine.EventSystems.EventSystem>();
+        eventSystemGo.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+
         // 1. Intro Panel
         var introGo = CreateUIObject("IntroPanel", canvasGo);
         var introImg = introGo.AddComponent<Image>();
@@ -208,6 +213,11 @@ public static class SetupAndBuild
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvasGo.AddComponent<CanvasScaler>();
         canvasGo.AddComponent<GraphicRaycaster>();
+
+        // Event System
+        var eventSystemGo = new GameObject("EventSystem");
+        eventSystemGo.AddComponent<UnityEngine.EventSystems.EventSystem>();
+        eventSystemGo.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
 
         var arUI = canvasGo.AddComponent<ARUIController>();
 
