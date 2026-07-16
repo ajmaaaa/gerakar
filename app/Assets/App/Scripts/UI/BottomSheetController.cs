@@ -2,8 +2,8 @@
 // GerakAR – BottomSheetController.cs
 // Draggable bottom sheet with three snap points:
 //   Closed  → panel completely below screen
-//   Half    → ~48% of screen height (drag snap point)
-//   Full    → ~94% of screen height (default open state)
+//   Half    → ~48% of screen height (default material state)
+//   Full    → ~94% of screen height
 //
 // The sheet can be opened from the material FAB, dragged, and
 // closed by dragging down, tapping scrim, or pressing the close icon.
@@ -100,8 +100,8 @@ namespace GerakAR.UI
 
         // ── Public API ────────────────────────────────────────────────
 
-        /// <summary>Open material directly to the full 94% presentation.</summary>
-        public void Open() => SnapTo(SheetState.Full);
+        /// <summary>Open material to the half-height presentation.</summary>
+        public void Open() => SnapTo(SheetState.Half);
 
         /// <summary>Close the sheet.</summary>
         public void CloseSheet()
