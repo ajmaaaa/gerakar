@@ -1,4 +1,13 @@
 {
+  "scopedRegistries": [
+    {
+      "name": "OpenUPM",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "org.artoolkitx"
+      ]
+    }
+  ],
   "dependencies": {
     "com.unity.feature.development": "1.0.2",
     "com.unity.inputsystem": "1.19.0",
@@ -12,6 +21,7 @@
     "com.unity.xr.arkit": "6.5.0",
     "com.unity.xr.interaction.toolkit": "3.5.1",
     "com.unity.xr.management": "4.5.4",
+    "org.artoolkitx.artoolkitx-unity": "1.3.1",
     "com.unity.modules.accessibility": "1.0.0",
     "com.unity.modules.adaptiveperformance": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
