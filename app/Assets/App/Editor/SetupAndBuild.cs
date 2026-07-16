@@ -956,6 +956,7 @@ public static class SetupAndBuild
         var movementController = managersGo.AddComponent<MovementController>();
         var audioGuideController = managersGo.AddComponent<AudioGuideController>();
         var trackingController = managersGo.AddComponent<ARImageTrackingController>();
+        var backgroundPresenter = managersGo.AddComponent<ARUnityXURPBackgroundPresenter>();
         var sessionController = managersGo.AddComponent<ARUnityXSessionController>();
 
         // Standalone AppStateManager (so it does not destroy scene-specific Managers via DontDestroyOnLoad)
@@ -984,7 +985,12 @@ public static class SetupAndBuild
         serialSession.FindProperty("arCamera").objectReferenceValue = arCamera;
         serialSession.FindProperty("videoBackground").objectReferenceValue = videoBackground;
         serialSession.FindProperty("trackingController").objectReferenceValue = trackingController;
+        serialSession.FindProperty("backgroundPresenter").objectReferenceValue = backgroundPresenter;
         serialSession.ApplyModifiedProperties();
+
+        var serialBackgroundPresenter = new SerializedObject(backgroundPresenter);
+        serialBackgroundPresenter.FindProperty("foregroundCamera").objectReferenceValue = cam;
+        serialBackgroundPresenter.ApplyModifiedProperties();
 
         // Configure Audio Controller
         var serialAudio = new SerializedObject(audioGuideController);
@@ -1857,6 +1863,9 @@ public static class SetupAndBuild
 
         if (GameObject.Find("XR Origin") != null || GameObject.Find("AR Session") != null)
             throw new BuildFailedException("AR Foundation objects remain in MainAR.");
+
+        if (Object.FindFirstObjectByType<ARUnityXURPBackgroundPresenter>() == null)
+            throw new BuildFailedException("ARUnityX URP background presenter is missing.");
 
         Debug.Log("[GerakAR] ARUnityX scene validation passed.");
     }

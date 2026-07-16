@@ -25,6 +25,7 @@ namespace GerakAR.AR
 
         [Header("GerakAR")]
         [SerializeField] private ARImageTrackingController trackingController;
+        [SerializeField] private ARUnityXURPBackgroundPresenter backgroundPresenter;
         [SerializeField] [Range(4f, 15f)] private float startupTimeoutSeconds = 8f;
 
         private static readonly FieldInfo ErrorVisibleField = typeof(ARXController).GetField(
@@ -142,6 +143,13 @@ namespace GerakAR.AR
         private void OnVideoStarted()
         {
             _videoStarted = true;
+
+            if (backgroundPresenter == null || !backgroundPresenter.Present())
+            {
+                RouteToFallback("ARUnityX camera background failed to render.", false);
+                return;
+            }
+
             StartCoroutine(WaitForTargetReady());
         }
 
@@ -165,6 +173,7 @@ namespace GerakAR.AR
 
         private void OnVideoStopped()
         {
+            backgroundPresenter?.ResetPresentation();
             if (!_routingAway && !AppStateManager.RunInNonARMode && Application.isPlaying)
                 Debug.LogWarning("[ARUnityXSessionController] Camera stream stopped.");
         }
