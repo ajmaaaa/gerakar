@@ -16,6 +16,8 @@ namespace GerakAR.UI
 
         [Header("G08 Non-AR Catalogue Buttons")]
         [SerializeField] private Button squatBukaBtn;
+        [SerializeField] private Button dynamicStretchBukaBtn;
+        [SerializeField] private Button ladderDrillBukaBtn;
         [SerializeField] private Button catalogBackBtn;
 
         [Header("G09 Camera Error Buttons")]
@@ -28,6 +30,8 @@ namespace GerakAR.UI
             cameraErrorLink?.onClick.AddListener(OnCameraErrorLinkClicked);
             
             squatBukaBtn?.onClick.AddListener(OnSquatBukaClicked);
+            dynamicStretchBukaBtn?.onClick.AddListener(() => OpenNonARMovement("dynamic_stretch"));
+            ladderDrillBukaBtn?.onClick.AddListener(() => OpenNonARMovement("ladder_drill"));
             catalogBackBtn?.onClick.AddListener(OnCatalogBackClicked);
 
             settingsBtn?.onClick.AddListener(OnSettingsClicked);
@@ -42,26 +46,28 @@ namespace GerakAR.UI
 
         private void OnCameraErrorLinkClicked()
         {
-            // Force Camera Permission Denied to show G09 view
-            // We use reflection to set the private setter of CameraPermissionDenied
-            var deniedProp = typeof(PermissionController).GetProperty("CameraPermissionDenied");
-            if (deniedProp != null)
-            {
-                deniedProp.SetValue(null, true);
-            }
+            PermissionController.SetCameraPermissionDeniedForSimulation(true);
             AppStateManager.Instance?.TransitionTo(AppState.CameraDenied);
         }
 
         private void OnSquatBukaClicked()
         {
+            OpenNonARMovement("squat");
+        }
+
+        private static void OpenNonARMovement(string movementId)
+        {
             AppStateManager.RunInNonARMode = true;
+            ActiveMovementContext.ActiveId = movementId;
+            ActiveMovementContext.ActiveData = null;
             SceneManager.LoadScene("MainAR");
         }
 
         private void OnCatalogBackClicked()
         {
-            // Go back to onboarding / intro
-            AppStateManager.Instance?.TransitionTo(AppState.Scanning);
+            AppStateManager.RunInNonARMode = false;
+            ActiveMovementContext.Clear();
+            AppStateManager.Instance?.TransitionTo(AppState.Onboarding);
         }
 
         private void OnSettingsClicked()
@@ -95,12 +101,7 @@ namespace GerakAR.UI
 
         private void OnRetryClicked()
         {
-            // Reset permission state and retry from requesting permission
-            var deniedProp = typeof(PermissionController).GetProperty("CameraPermissionDenied");
-            if (deniedProp != null)
-            {
-                deniedProp.SetValue(null, false);
-            }
+            PermissionController.SetCameraPermissionDeniedForSimulation(false);
             AppStateManager.Instance?.TransitionTo(AppState.RequestingPermission);
         }
     }

@@ -1,315 +1,184 @@
-// ============================================================
-// GerakAR – ARImageTrackingController.cs
-// Listens to ARTrackedImageManager events and drives the
-// ModelPool, AppStateManager, and GerakAREvents accordingly.
-// ============================================================
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.XR.ARFoundation;
-using UnityEngine.XR.ARSubsystems;
-using GerakAR.Core;
+using GerakAR.Animation;
 using GerakAR.Content;
+using GerakAR.Core;
 using GerakAR.UI;
 
 namespace GerakAR.AR
 {
     /// <summary>
-    /// Receives Added / Updated / Removed events from
-    /// <see cref="ARTrackedImageManager"/> and maps them to
-    /// application state transitions and model lifecycle calls.
-    ///
-    /// Grace period: when tracking is lost or limited, the model
-    /// is NOT hidden immediately. A coroutine waits
-    /// <see cref="trackingLostGracePeriod"/> seconds before hiding.
-    /// If the target is re-found during that window the model stays.
+    /// Adapts ARUnityX tracked-object events to the provider-independent
+    /// GerakAR movement and UI lifecycle.
     /// </summary>
-    [RequireComponent(typeof(ARTrackedImageManager))]
-    public class ARImageTrackingController : MonoBehaviour
+    public sealed class ARImageTrackingController : MonoBehaviour
     {
-        // ── Inspector ─────────────────────────────────────────────────
+        [Header("ARUnityX Target")]
+        [SerializeField] private ARXTrackable imageTarget;
+        [SerializeField] private ARXTrackedObject trackedObject;
+        [SerializeField] private string referenceImageName = "squat_target";
 
-        [Header("References")]
+        [Header("Movement Presentation")]
         [SerializeField] private MovementDatabase movementDatabase;
         [SerializeField] private ModelPool modelPool;
+        [SerializeField] private MovementController movementController;
+        [SerializeField] private PoseTimelineController timelineController;
+        [SerializeField] private MaterialContentController materialController;
+        [SerializeField] private ARUIController uiController;
 
-        [Header("Tracking")]
-        [Tooltip("Seconds before hiding the model after tracking is lost/limited.")]
-        [SerializeField] [Range(0.2f, 2f)] private float trackingLostGracePeriod = 0.75f;
+        [Header("Detection Feedback")]
+        [SerializeField] [Range(0.6f, 3f)] private float confirmationDuration = 2.2f;
 
-        // ── Private state ─────────────────────────────────────────────
-
-        private ARTrackedImageManager _manager;
-        private AppStateManager _stateMgr;
-
-        // Key: tracking id → current ARTrackedImage
-        private readonly Dictionary<TrackableId, ARTrackedImage> _trackedImages = new();
-
-        // Grace coroutine handle (only one at a time; we track the single active model)
-        private Coroutine _graceCo;
-
-        // ── Unity lifecycle ───────────────────────────────────────────
-
-        private void Awake()
-        {
-            _manager = GetComponent<ARTrackedImageManager>();
-        }
-
-        private IEnumerator Start()
-        {
-            _stateMgr = AppStateManager.Instance;
-            
-            if (AppStateManager.RunInNonARMode)
-            {
-                var session = FindAnyObjectByType<ARSession>();
-                if (session != null) session.enabled = false;
-                if (_manager != null) _manager.enabled = false;
-
-                var cam = Camera.main;
-                if (cam != null)
-                {
-                    cam.clearFlags = CameraClearFlags.SolidColor;
-                    cam.backgroundColor = new Color(0.12f, 0.17f, 0.15f, 1f); // #1E2B26 (Solid dark teal)
-                }
-
-                StartCoroutine(SpawnNonARModelDelayed());
-            }
-            else
-            {
-                // Monitor AR Session state at runtime
-                float elapsed = 0f;
-                bool arSuccess = false;
-
-                while (elapsed < 6.0f)
-                {
-                    if (ARSession.state == ARSessionState.SessionTracking)
-                    {
-                        arSuccess = true;
-                        break;
-                    }
-                    if (ARSession.state == ARSessionState.Unsupported)
-                    {
-                        break;
-                    }
-                    elapsed += Time.deltaTime;
-                    yield return null;
-                }
-
-                if (!arSuccess)
-                {
-                    Debug.LogWarning("[ARImageTrackingController] AR Session failed or timed out. Redirecting to Non-AR Mode.");
-                    AppStateManager.RunInNonARMode = true;
-                    
-                    if (_stateMgr != null)
-                    {
-                        _stateMgr.TransitionTo(AppState.NonARCatalog);
-                    }
-                    SceneManager.LoadScene("Bootstrap");
-                }
-            }
-        }
-
-        private IEnumerator SpawnNonARModelDelayed()
-        {
-            yield return new WaitForSeconds(0.5f);
-            if (movementDatabase != null && movementDatabase.movements != null && movementDatabase.movements.Count > 0)
-            {
-                var squatData = movementDatabase.movements[0];
-                GameObject model = modelPool.Activate(squatData);
-                if (model != null)
-                {
-                    ActiveMovementContext.ActiveId = squatData.movementId;
-                    ActiveMovementContext.ActiveData = squatData;
-                    model.transform.position = new Vector3(0f, -0.6f, 1.8f);
-                    model.transform.rotation = Quaternion.Euler(0f, 180f, 0f); // Face the camera
-                }
-                
-                _stateMgr.TransitionTo(AppState.TrackingLoop);
-                
-                var uiCtrl = FindAnyObjectByType<ARUIController>();
-                if (uiCtrl != null)
-                {
-                    uiCtrl.SetMovementName(squatData.displayName);
-                }
-            }
-        }
+        private AppStateManager _stateManager;
+        private MovementData _targetMovement;
+        private Coroutine _detectionSequence;
+        private bool _targetVisible;
+        private bool _nonARPreviewStarted;
 
         private void OnEnable()
         {
-            _manager.trackablesChanged.AddListener(OnTrackablesChanged);
+            if (trackedObject != null)
+            {
+                trackedObject.OnTrackedObjectFound.AddListener(OnTargetFound);
+                trackedObject.OnTrackedObjectLost.AddListener(OnTargetLost);
+            }
+
+            AppStateManager.OnStateChanged += OnStateChanged;
+        }
+
+        private void Start()
+        {
+            _stateManager = AppStateManager.Instance;
+            _targetMovement = movementDatabase?.FindByReferenceImageName(referenceImageName);
         }
 
         private void OnDisable()
         {
-            _manager.trackablesChanged.RemoveListener(OnTrackablesChanged);
+            if (trackedObject != null)
+            {
+                trackedObject.OnTrackedObjectFound.RemoveListener(OnTargetFound);
+                trackedObject.OnTrackedObjectLost.RemoveListener(OnTargetLost);
+            }
+
+            AppStateManager.OnStateChanged -= OnStateChanged;
+            CancelDetection();
         }
 
-        // ── Event handler ─────────────────────────────────────────────
-
-        private void OnTrackablesChanged(ARTrackablesChangedEventArgs<ARTrackedImage> args)
+        public void StartNonARPreview()
         {
-            // Added
-            foreach (var img in args.added)
-            {
-                _trackedImages[img.trackableId] = img;
-                HandleImageActive(img);
-            }
-
-            // Updated
-            foreach (var img in args.updated)
-            {
-                _trackedImages[img.trackableId] = img;
-                if (img.trackingState == TrackingState.Tracking)
-                    HandleImageActive(img);
-                else
-                    HandleImageLost(img);
-            }
-
-            // Removed
-            foreach (var img in args.removed)
-            {
-                _trackedImages.Remove(img.Key);
-                HandleImageLost(img.Value);
-            }
+            if (_nonARPreviewStarted) return;
+            _nonARPreviewStarted = true;
+            StartCoroutine(StartNonARPreviewNextFrame());
         }
 
-        private Coroutine _detectionCo;
-
-        private void HandleImageActive(ARTrackedImage img)
+        private IEnumerator StartNonARPreviewNextFrame()
         {
-            // Cancel any pending hide
-            if (_graceCo != null)
+            yield return null;
+            _stateManager = AppStateManager.Instance;
+            string selectedMovementId = ActiveMovementContext.ActiveId;
+            _targetMovement = !string.IsNullOrEmpty(selectedMovementId)
+                ? movementDatabase?.FindById(selectedMovementId)
+                : movementDatabase?.FindByReferenceImageName(referenceImageName);
+            if (_targetMovement == null)
             {
-                StopCoroutine(_graceCo);
-                _graceCo = null;
+                Debug.LogError($"[ARImageTrackingController] Movement data '{referenceImageName}' is missing.");
+                _stateManager?.TransitionTo(AppState.NonARCatalog);
+                yield break;
             }
 
-            string imageName = img.referenceImage.name;
-            MovementData data = movementDatabase?.FindByReferenceImageName(imageName);
-
-            if (data == null)
+            if (trackedObject != null)
             {
-                Debug.LogWarning($"[ARImageTrackingController] No MovementData for '{imageName}'");
+                trackedObject.transform.SetPositionAndRotation(
+                    new Vector3(0f, -0.25f, 1.5f),
+                    Quaternion.Euler(0f, 180f, 0f));
+            }
+
+            modelPool?.SetRootActive(true);
+            PresentMovement(_targetMovement, AppState.NonARMovementPlayer);
+        }
+
+        private void OnTargetFound(Object trackedObjectEvent)
+        {
+            if (AppStateManager.RunInNonARMode || _targetVisible) return;
+            _targetVisible = true;
+            _targetMovement ??= movementDatabase?.FindByReferenceImageName(referenceImageName);
+
+            if (_targetMovement == null)
+            {
+                Debug.LogWarning($"[ARImageTrackingController] No movement maps to '{referenceImageName}'.");
                 return;
             }
 
-            // If this is a different target than what's active, close material sheet
-            bool isNewTarget = modelPool.ActiveMovementId != data.movementId;
-            if (isNewTarget && _stateMgr.Is(AppState.ShowingMaterial))
-            {
-                _stateMgr.TransitionTo(AppState.Scanning);
-            }
-
-            // Start detection flow if it is a new target or we were not in tracking loop
-            if (isNewTarget || _stateMgr.Is(AppState.Scanning) || _stateMgr.Is(AppState.TrackingLost))
-            {
-                if (_detectionCo == null)
-                {
-                    _detectionCo = StartCoroutine(DetectionSequence(img, data));
-                }
-            }
-            else
-            {
-                // Normal frame update only if not currently in detection toast
-                if (_detectionCo == null)
-                {
-                    modelPool.UpdateAnchor(img.transform);
-                }
-            }
+            CancelDetection();
+            _detectionSequence = StartCoroutine(ConfirmAndPresent(_targetMovement));
         }
 
-        private IEnumerator DetectionSequence(ARTrackedImage img, MovementData data)
+        private IEnumerator ConfirmAndPresent(MovementData movement)
         {
-            // Transition to TargetConfirmed state and notify UI
-            _stateMgr.TransitionTo(AppState.TargetConfirmed);
-            GerakAREvents.RaiseDetectionStarted(data.movementId);
-            modelPool.HideActive();
+            modelPool?.HideActive();
+            _stateManager?.TransitionTo(AppState.TargetConfirmed);
+            GerakAREvents.RaiseDetectionStarted(movement.movementId);
 
-            // Wait 2.2 seconds (1.2s of laser scanning + 1.0s of success checkmark pop-up)
-            yield return new WaitForSeconds(2.2f);
+            yield return new WaitForSeconds(confirmationDuration);
 
-            // Double check we are still in TargetConfirmed state (not canceled by tracking lost)
-            if (_stateMgr.Is(AppState.TargetConfirmed))
-            {
-                ActiveMovementContext.ActiveId = data.movementId;
-                ActiveMovementContext.ActiveData = data;
-                GameObject model = modelPool.Activate(data);
-                modelPool.UpdateAnchor(img.transform);
+            if (_targetVisible && _stateManager != null && _stateManager.Is(AppState.TargetConfirmed))
+                PresentMovement(movement, AppState.TrackingLoop);
 
-                GerakAREvents.RaiseMovementDetected(data.movementId);
-                _stateMgr.TransitionTo(AppState.TrackingLoop);
-            }
-
-            _detectionCo = null;
+            _detectionSequence = null;
         }
 
-        // ── Lost tracking ─────────────────────────────────────────────
-
-        private void HandleImageLost(ARTrackedImage img)
+        private void PresentMovement(MovementData movement, AppState presentationState)
         {
-            // Cancel active detection sequence
-            if (_detectionCo != null)
+            ActiveMovementContext.ActiveId = movement.movementId;
+            ActiveMovementContext.ActiveData = movement;
+
+            modelPool?.SetRootActive(true);
+            GameObject model = modelPool?.Activate(movement);
+            if (model != null)
             {
-                StopCoroutine(_detectionCo);
-                _detectionCo = null;
+                movementController?.Attach(model, movement);
+                movementController?.StartLoop();
             }
 
-            string imageName = img.referenceImage.name;
-            MovementData data = movementDatabase?.FindByReferenceImageName(imageName);
-            if (data == null) return;
+            timelineController?.SetMovementData(movement);
+            materialController?.SetMovement(movement);
+            uiController?.SetMovementName(movement.displayName);
 
-            // Only react if this is the currently active movement
-            if (modelPool.ActiveMovementId != data.movementId) return;
-
-            // Transition to TrackingLost if we are in a live state or detecting
-            if (_stateMgr.IsAny(AppState.TrackingLoop, AppState.InspectingPose, AppState.ShowingMaterial, AppState.TargetConfirmed))
-            {
-                _stateMgr.TransitionTo(AppState.TrackingLost);
-            }
-
-            // Start grace period if not already running
-            if (_graceCo == null)
-            {
-                _graceCo = StartCoroutine(TrackingLostGrace(data));
-            }
+            GerakAREvents.RaiseMovementDetected(movement.movementId);
+            _stateManager?.TransitionTo(presentationState);
         }
 
-        private IEnumerator TrackingLostGrace(MovementData data)
+        private void OnTargetLost(Object trackedObjectEvent)
         {
-            yield return new WaitForSeconds(trackingLostGracePeriod);
+            if (AppStateManager.RunInNonARMode) return;
+            _targetVisible = false;
+            CancelDetection();
 
-            // After grace period: if still not tracking, hide model
-            if (_stateMgr.Is(AppState.TrackingLost))
-            {
-                GerakAREvents.RaiseTrackingLost(data.movementId);
-                modelPool.HideActive();
-                ActiveMovementContext.Clear();
-                _stateMgr.TransitionTo(AppState.Scanning);
-            }
+            if (_targetMovement != null && modelPool?.ActiveMovementId == _targetMovement.movementId)
+                GerakAREvents.RaiseTrackingLost(_targetMovement.movementId);
 
-            _graceCo = null;
+            movementController?.CancelReturnTimer();
+            modelPool?.HideActive();
+            ActiveMovementContext.Clear();
+            _stateManager?.TransitionTo(AppState.Scanning);
         }
 
-        // ── Continuous anchor update ──────────────────────────────────
-
-        private void LateUpdate()
+        private void OnStateChanged(AppState previous, AppState next)
         {
-            // Keep active model locked to the image transform every frame
-            if (modelPool.ActiveMovementId == null) return;
+            if (next != AppState.Scanning || previous == AppState.TrackingLost)
+                return;
 
-            foreach (var kvp in _trackedImages)
-            {
-                var img = kvp.Value;
-                if (img.trackingState != TrackingState.Tracking) continue;
+            CancelDetection();
+            movementController?.CancelReturnTimer();
+            modelPool?.HideActive();
+            ActiveMovementContext.Clear();
+        }
 
-                MovementData data = movementDatabase?.FindByReferenceImageName(img.referenceImage.name);
-                if (data == null) continue;
-                if (data.movementId != modelPool.ActiveMovementId) continue;
-
-                modelPool.UpdateAnchor(img.transform);
-                break;
-            }
+        private void CancelDetection()
+        {
+            if (_detectionSequence == null) return;
+            StopCoroutine(_detectionSequence);
+            _detectionSequence = null;
         }
     }
 }

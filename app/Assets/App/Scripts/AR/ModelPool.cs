@@ -35,6 +35,12 @@ namespace GerakAR.AR
         /// <summary>Currently visible model GameObject, or null.</summary>
         public GameObject ActiveModel => _activeModel;
 
+        public void SetRootActive(bool active)
+        {
+            if (modelRoot != null)
+                modelRoot.gameObject.SetActive(active);
+        }
+
         /// <summary>
         /// Activate the model for <paramref name="data"/> and deactivate
         /// any previously active model. The model is instantiated from the
@@ -95,28 +101,25 @@ namespace GerakAR.AR
             else
             {
                 // ── Placeholder primitive ─────────────────────────────
-                // A coloured capsule labelled with the movement name.
+                // A coloured cube verifies pose and scale before final models arrive.
                 // Replace by assigning data.modelPrefab in the Inspector.
-                go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+                go = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 go.name = $"Placeholder_{data.movementId}";
                 go.transform.SetParent(modelRoot, false);
-                go.transform.localScale = new Vector3(0.15f, 0.25f, 0.15f);
+                go.transform.localPosition = new Vector3(0f, 0.05f, 0f);
+                go.transform.localScale = Vector3.one * 0.1f;
 
                 // Apply category color
                 var renderer = go.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    var mat = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-                    mat.color = data.categoryColor;
-                    renderer.sharedMaterial = mat;
+                    Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+                    if (shader != null)
+                    {
+                        var mat = new Material(shader) { color = data.categoryColor };
+                        renderer.sharedMaterial = mat;
+                    }
                 }
-
-                // Add a world-space label above the capsule
-                var labelGo = new GameObject("Label");
-                labelGo.transform.SetParent(go.transform, false);
-                labelGo.transform.localPosition = new Vector3(0f, 1.5f, 0f);
-                // TextMeshPro world-space would be set up in the prefab;
-                // for the placeholder we skip it to avoid TMP dependency here.
             }
 
             go.SetActive(false);

@@ -2,8 +2,8 @@
 // GerakAR – BottomSheetController.cs
 // Draggable bottom sheet with three snap points:
 //   Closed  → panel completely below screen
-//   Half    → ~45% of screen height (default open state)
-//   Full    → ~90% of screen height
+//   Half    → ~48% of screen height (drag snap point)
+//   Full    → ~94% of screen height (default open state)
 //
 // The sheet can be opened from the material FAB, dragged, and
 // closed by dragging down, tapping scrim, or pressing the close icon.
@@ -26,10 +26,10 @@ namespace GerakAR.UI
     {
         // ── Snap point config ─────────────────────────────────────────
 
-        public enum SheetState { Closed, Full }
+        public enum SheetState { Closed, Half, Full }
 
         [Header("Snap Heights (fraction of screen height, 0-1)")]
-        [SerializeField] [Range(0f, 0.1f)] private float closedFraction = 0f;
+        [SerializeField] [Range(0.3f, 0.7f)] private float halfFraction = 0.48f;
         [SerializeField] [Range(0.7f, 1f)] private float fullFraction  = 0.94f;
 
         [Header("Animation")]
@@ -53,10 +53,10 @@ namespace GerakAR.UI
         private float _screenHeight;
         private float _dragStartY;
         private float _sheetStartAnchoredY;
-        private bool _isSnapping;
 
         // Cache target Y positions (anchoredPosition.y of sheetRect)
-        private float _closedY, _fullY;
+        private float _closedY, _halfY, _fullY;
+        private AppState _returnState = AppState.TrackingLoop;
 
         // ── Unity lifecycle ───────────────────────────────────────────
 
@@ -94,19 +94,19 @@ namespace GerakAR.UI
             var parentRT = transform.parent as RectTransform;
             _screenHeight = parentRT != null ? parentRT.rect.height : Screen.height;
             _closedY = -(sheetRect != null ? sheetRect.rect.height : 0f);
+            _halfY   = _screenHeight * halfFraction;
             _fullY   = _screenHeight * fullFraction;
         }
 
         // ── Public API ────────────────────────────────────────────────
 
-        /// <summary>Open the sheet to the full position.</summary>
+        /// <summary>Open material directly to the full 94% presentation.</summary>
         public void Open() => SnapTo(SheetState.Full);
 
         /// <summary>Close the sheet.</summary>
         public void CloseSheet()
         {
             SnapTo(SheetState.Closed);
-            _stateMgr?.TransitionTo(AppState.TrackingLoop);
         }
 
         public SheetState State => _state;
@@ -115,7 +115,6 @@ namespace GerakAR.UI
 
         public void OnBeginDrag(PointerEventData e)
         {
-            _isSnapping = false;
             StopAllCoroutines();
             _dragStartY = e.position.y;
             _sheetStartAnchoredY = sheetRect.anchoredPosition.y;
@@ -137,17 +136,20 @@ namespace GerakAR.UI
 
             SheetState target;
             if (velocity < -50f) // fast downward flick → close
-                target = SheetState.Closed;
+                target = currentY > _halfY ? SheetState.Half : SheetState.Closed;
             else if (velocity > 50f) // fast upward flick → full
-                target = SheetState.Full;
+                target = currentY < _halfY ? SheetState.Half : SheetState.Full;
             else
             {
                 // Snap to nearest
                 float distClosed = Mathf.Abs(currentY - _closedY);
+                float distHalf   = Mathf.Abs(currentY - _halfY);
                 float distFull   = Mathf.Abs(currentY - _fullY);
 
-                if (distClosed <= distFull)
+                if (distClosed <= distHalf && distClosed <= distFull)
                     target = SheetState.Closed;
+                else if (distHalf <= distFull)
+                    target = SheetState.Half;
                 else
                     target = SheetState.Full;
             }
@@ -167,9 +169,12 @@ namespace GerakAR.UI
                 movementController.SetLoopPaused(state != SheetState.Closed);
 
             // Update AppState
-            if (state == SheetState.Closed && _stateMgr != null)
-                if (_stateMgr.Is(AppState.ShowingMaterial))
-                    _stateMgr.TransitionTo(AppState.TrackingLoop);
+            if (state == SheetState.Closed && _stateMgr != null &&
+                _stateMgr.IsAny(AppState.ShowingMaterial, AppState.ShowingRelatedMaterial))
+            {
+                _stateMgr.TransitionTo(_returnState);
+                movementController?.StartLoop();
+            }
 
             SetScrimVisible(state != SheetState.Closed);
             StartCoroutine(SnapCoroutine(TargetY(state)));
@@ -188,7 +193,6 @@ namespace GerakAR.UI
 
         private System.Collections.IEnumerator SnapCoroutine(float targetY)
         {
-            _isSnapping = true;
             float startY = sheetRect.anchoredPosition.y;
             float elapsed = 0f;
 
@@ -203,12 +207,12 @@ namespace GerakAR.UI
             }
 
             sheetRect.anchoredPosition = new Vector2(sheetRect.anchoredPosition.x, targetY);
-            _isSnapping = false;
         }
 
         private float TargetY(SheetState state) => state switch
         {
             SheetState.Closed => _closedY,
+            SheetState.Half   => _halfY,
             SheetState.Full   => _fullY,
             _ => _closedY
         };
@@ -238,7 +242,12 @@ namespace GerakAR.UI
         private void OnAppStateChanged(AppState prev, AppState next)
         {
             if (next == AppState.ShowingMaterial && _state == SheetState.Closed)
+            {
+                _returnState = prev == AppState.NonARMovementPlayer
+                    ? AppState.NonARMovementPlayer
+                    : AppState.TrackingLoop;
                 Open();
+            }
 
             if (next is AppState.Scanning or AppState.TrackingLost && _state != SheetState.Closed)
                 SnapImmediate(SheetState.Closed);

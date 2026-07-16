@@ -97,9 +97,9 @@ namespace GerakAR.UI
         private void OnStateChanged(AppState prev, AppState next)
         {
             // Disable interaction when material is open or tracking lost
-            bool interactive = next is AppState.TrackingLoop or AppState.InspectingPose;
+            bool interactive = next is AppState.TrackingLoop or AppState.InspectingPose or AppState.NonARMovementPlayer;
             if (timelineSlider != null)
-                timelineSlider.interactable = interactive;
+                timelineSlider.interactable = interactive && movementController != null && movementController.CanInspect;
 
             if (!interactive && _isDragging)
             {
@@ -114,9 +114,12 @@ namespace GerakAR.UI
         public void OnPointerDown(PointerEventData eventData)
         {
             if (!IsInteractive()) return;
+            AppState returnState = _stateMgr.Is(AppState.NonARMovementPlayer)
+                ? AppState.NonARMovementPlayer
+                : AppState.TrackingLoop;
             _isDragging = true;
             _stateMgr?.TransitionTo(AppState.InspectingPose);
-            movementController?.BeginInspect(timelineSlider?.value ?? 0f);
+            movementController?.BeginInspect(timelineSlider?.value ?? 0f, returnState);
 
             if (hintText != null)
             {
@@ -189,6 +192,7 @@ namespace GerakAR.UI
 
         private bool IsInteractive() =>
             _stateMgr != null &&
-            _stateMgr.IsAny(AppState.TrackingLoop, AppState.InspectingPose);
+            movementController != null && movementController.CanInspect &&
+            _stateMgr.IsAny(AppState.TrackingLoop, AppState.InspectingPose, AppState.NonARMovementPlayer);
     }
 }

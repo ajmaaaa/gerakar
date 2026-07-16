@@ -40,6 +40,9 @@ namespace GerakAR.Animation
         private int _stateHash;
         private float _currentNormalizedTime;
         private Coroutine _returnToLoopCo;
+        private AppState _inspectionReturnState = AppState.TrackingLoop;
+
+        public bool CanInspect => _animator != null;
 
         // ── Setup ─────────────────────────────────────────────────────
 
@@ -110,11 +113,12 @@ namespace GerakAR.Animation
         /// Called by <see cref="UI.PoseTimelineController"/> when the
         /// user first touches the slider handle.
         /// </summary>
-        public void BeginInspect(float normalizedTime)
+        public void BeginInspect(float normalizedTime, AppState returnState = AppState.TrackingLoop)
         {
             if (_animator == null) return;
 
             CancelReturnTimer();
+            _inspectionReturnState = returnState;
 
             _animator.speed = 0f;
             ScrubTo(normalizedTime);
@@ -189,7 +193,7 @@ namespace GerakAR.Animation
             if (!ShouldContinueReturn()) yield break;
 
             // 3. Resume loop
-            _stateMgr?.TransitionTo(AppState.TrackingLoop);
+            _stateMgr?.TransitionTo(_inspectionReturnState);
             StartLoop();
             _returnToLoopCo = null;
         }
@@ -200,7 +204,7 @@ namespace GerakAR.Animation
             // Abort if state changed away from InspectingPose
             // (e.g. tracking lost, material opened, new target)
             if (_stateMgr == null) return true;
-            return _stateMgr.IsAny(AppState.InspectingPose, AppState.TrackingLoop);
+            return _stateMgr.IsAny(AppState.InspectingPose, _inspectionReturnState);
         }
     }
 

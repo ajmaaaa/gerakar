@@ -60,7 +60,6 @@ namespace GerakAR.UI
         // ── Private state ─────────────────────────────────────────────
 
         private MovementData _currentMovement;
-        private bool _isViewingRelated;
         private readonly List<GameObject> _spawnedItems = new();
         private readonly List<GameObject> _spawnedCards = new();
 
@@ -93,7 +92,6 @@ namespace GerakAR.UI
         public void SetMovement(MovementData data)
         {
             _currentMovement = data;
-            _isViewingRelated = false;
             if (backToPrimaryButton != null)
                 backToPrimaryButton.gameObject.SetActive(false);
             if (categoryTypeLabel != null)
@@ -140,13 +138,13 @@ namespace GerakAR.UI
 
             // Safety tip (first one)
             if (safetyTipText != null && data.safetyTips?.Count > 0)
-                safetyTipText.text = $"⚠ {data.safetyTips[0]}";
+                safetyTipText.text = $"[!] {data.safetyTips[0]}";
 
             // Full-state extras
             foreach (var area in data.trainedAreas ?? new List<string>())
-                SpawnBullet(trainedAreasContainer, $"• {area}", bulletItemPrefab);
+                SpawnBullet(trainedAreasContainer, $"- {area}", bulletItemPrefab);
             foreach (var mistake in data.commonMistakes ?? new List<string>())
-                SpawnBullet(commonMistakesContainer, $"• {mistake}", bulletItemPrefab);
+                SpawnBullet(commonMistakesContainer, $"- {mistake}", bulletItemPrefab);
 
             // Related movement cards
             PopulateRelatedCards(data.relatedMovements);
@@ -181,7 +179,7 @@ namespace GerakAR.UI
 
         private void ViewRelatedMovement(RelatedMovementData rel)
         {
-            _isViewingRelated = true;
+            AppStateManager.Instance?.TransitionTo(AppState.ShowingRelatedMaterial);
             if (backToPrimaryButton != null)
                 backToPrimaryButton.gameObject.SetActive(true);
             if (categoryTypeLabel != null)
@@ -203,7 +201,7 @@ namespace GerakAR.UI
 
             // Safety tip
             if (safetyTipText != null && rel.safetyTips?.Count > 0)
-                safetyTipText.text = $"⚠ {rel.safetyTips[0]}";
+                safetyTipText.text = $"[!] {rel.safetyTips[0]}";
 
             // Related movements (in related detail view, let's keep the related list visible at the bottom so they can tap other ones!)
         }
@@ -213,6 +211,7 @@ namespace GerakAR.UI
             if (_currentMovement != null)
             {
                 SetMovement(_currentMovement);
+                AppStateManager.Instance?.TransitionTo(AppState.ShowingMaterial);
             }
         }
 

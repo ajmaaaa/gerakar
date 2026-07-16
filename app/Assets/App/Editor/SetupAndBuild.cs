@@ -3,7 +3,6 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.XR.ARFoundation;
 using GerakAR.Core;
 using GerakAR.AR;
 using GerakAR.Animation;
@@ -27,9 +26,14 @@ public static class SetupAndBuild
     [MenuItem("Build/Setup and Build APK")]
     public static void ExecuteSetupAndBuild()
     {
-        // Force OpenGL ES 3 to fix black camera screen on Vulkan
-        PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] { GraphicsDeviceType.OpenGLES3 });
+        ExecuteSetupOnly();
+        BuildAPK();
+    }
 
+    [MenuItem("Build/Setup Scenes Only")]
+    public static void ExecuteSetupOnly()
+    {
+        ConfigurePlayerSettings();
         Debug.Log("[GerakAR] Memulai setup scene...");
         
         // Generate dynamic UI prefabs for Bottom Sheet populating
@@ -40,7 +44,29 @@ public static class SetupAndBuild
         CreateBootstrapScene();
         CreateMainARScene();
         UpdateBuildSettings();
-        BuildAPK();
+        ValidateSetup();
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
+    private static void ConfigurePlayerSettings()
+    {
+        PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "id.ac.unp.gerakar");
+        PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] { GraphicsDeviceType.OpenGLES3 });
+        PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+        PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.ARM64;
+        PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
+        PlayerSettings.Android.applicationEntry = AndroidApplicationEntry.Activity;
+        PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
+        PlayerSettings.allowedAutorotateToPortrait = true;
+        PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
+        PlayerSettings.allowedAutorotateToLandscapeLeft = false;
+        PlayerSettings.allowedAutorotateToLandscapeRight = false;
+        PlayerSettings.Android.forceInternetPermission = false;
+
+        EditorUserBuildSettings.buildAppBundle = false;
+        EditorUserBuildSettings.development = false;
+        EditorUserBuildSettings.allowDebugging = false;
     }
 
     private static void GeneratePrefabs(TMP_FontAsset interFont, Sprite btnSprite)
@@ -274,7 +300,7 @@ public static class SetupAndBuild
         var checkIconText = checkIconTextGo.AddComponent<TextMeshProUGUI>();
         checkIconText.enableWordWrapping = true;
         checkIconText.overflowMode = TMPro.TextOverflowModes.Overflow;
-        checkIconText.text = "✔";
+        checkIconText.text = "OK";
         checkIconText.fontSize = 20.0f;
         checkIconText.color = ColorDeepForest;
         checkIconText.alignment = TextAlignmentOptions.Center;
@@ -561,7 +587,7 @@ public static class SetupAndBuild
         var warnIcon = warnIconGo.AddComponent<TextMeshProUGUI>();
         warnIcon.enableWordWrapping = true;
         warnIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
-        warnIcon.text = "⚠️";
+        warnIcon.text = "i";
         warnIcon.fontSize = 20.0f;
         warnIcon.alignment = TextAlignmentOptions.Center;
         SetCenterPosition(warnIconGo.GetComponent<RectTransform>(), -130.0f, 0f, 30.0f, 30.0f);
@@ -579,7 +605,7 @@ public static class SetupAndBuild
 
         // G08 Catalog Content
         var catalogCatalogGo = CreateUIObject("CatalogCatalog", nonARModePanelGo);
-        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, -30.0f, 320.0f, 210.0f);
+        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, -35.0f, 320.0f, 280.0f);
 
         var catTitleGo = CreateUIObject("CatTitleText", catalogCatalogGo);
         var catTitle = catTitleGo.AddComponent<TextMeshProUGUI>();
@@ -591,7 +617,7 @@ public static class SetupAndBuild
         catTitle.color = ColorDeepForest;
         catTitle.alignment = TextAlignmentOptions.Left;
         if (interFont != null) catTitle.font = interFont;
-        SetCenterPosition(catTitleGo.GetComponent<RectTransform>(), 0f, 96.0f, 300.0f, 14.0f);
+        SetCenterPosition(catTitleGo.GetComponent<RectTransform>(), 0f, 130.0f, 300.0f, 14.0f);
 
         // Catalogue Card Squat
         var cardSquatGo = CreateUIObject("CardSquat", catalogCatalogGo);
@@ -600,14 +626,16 @@ public static class SetupAndBuild
         squatImg.sprite = btnSprite;
         squatImg.type = Image.Type.Sliced;
         squatImg.color = Color.white;
-        SetCenterPosition(cardSquatGo.GetComponent<RectTransform>(), 0f, 44.0f, 300.0f, 56.0f);
+        SetCenterPosition(cardSquatGo.GetComponent<RectTransform>(), 0f, 88.0f, 300.0f, 56.0f);
 
         var squatIconGo = CreateUIObject("Icon", cardSquatGo);
         var squatIcon = squatIconGo.AddComponent<TextMeshProUGUI>();
         squatIcon.enableWordWrapping = true;
         squatIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
-        squatIcon.text = "🦵";
-        squatIcon.fontSize = 20.0f;
+        squatIcon.text = "SQ";
+        squatIcon.fontSize = 14.0f;
+        squatIcon.fontStyle = FontStyles.Bold;
+        squatIcon.color = new Color(0.72f, 0.4f, 0.29f, 1f);
         squatIcon.alignment = TextAlignmentOptions.Center;
         SetCenterPosition(squatIconGo.GetComponent<RectTransform>(), -120.0f, 0f, 30.0f, 30.0f);
 
@@ -643,21 +671,23 @@ public static class SetupAndBuild
         if (interFont != null) squatBukaText.font = interFont;
         StretchRect(squatBukaTextGo.GetComponent<RectTransform>());
 
-        // Card Jumping Jack (Locked)
-        var cardJackGo = CreateUIObject("CardJacks", catalogCatalogGo);
+        // Dynamic Stretching card
+        var cardJackGo = CreateUIObject("CardDynamicStretch", catalogCatalogGo);
         var jackImg = cardJackGo.AddComponent<Image>();
         
         jackImg.sprite = btnSprite;
         jackImg.type = Image.Type.Sliced;
-        jackImg.color = new Color(1f, 1f, 1f, 0.6f);
-        SetCenterPosition(cardJackGo.GetComponent<RectTransform>(), 0f, -20.0f, 300.0f, 56.0f);
+        jackImg.color = Color.white;
+        SetCenterPosition(cardJackGo.GetComponent<RectTransform>(), 0f, 24.0f, 300.0f, 56.0f);
 
         var jackIconGo = CreateUIObject("Icon", cardJackGo);
         var jackIcon = jackIconGo.AddComponent<TextMeshProUGUI>();
         jackIcon.enableWordWrapping = true;
         jackIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
-        jackIcon.text = "🤸";
-        jackIcon.fontSize = 20.0f;
+        jackIcon.text = "DS";
+        jackIcon.fontSize = 14.0f;
+        jackIcon.fontStyle = FontStyles.Bold;
+        jackIcon.color = new Color(0.247f, 0.486f, 0.471f, 1f);
         jackIcon.alignment = TextAlignmentOptions.Center;
         SetCenterPosition(jackIconGo.GetComponent<RectTransform>(), -120.0f, 0f, 30.0f, 30.0f);
 
@@ -665,9 +695,9 @@ public static class SetupAndBuild
         var jackTitle = jackTitleGo.AddComponent<TextMeshProUGUI>();
         jackTitle.enableWordWrapping = true;
         jackTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
-        jackTitle.text = "<b>Jumping Jacks</b>\n<size=10><color=#607D4F>Melatih kardio & koordinasi tubuh</color></size>";
+        jackTitle.text = "<b>Dynamic Stretching</b>\n<size=10><color=#607D4F>Peregangan aktif sebelum bergerak</color></size>";
         jackTitle.fontSize = 12.0f;
-        jackTitle.color = new Color(0.07f, 0.216f, 0.165f, 0.8f);
+        jackTitle.color = ColorDeepForest;
         jackTitle.alignment = TextAlignmentOptions.Left;
         if (interFont != null) jackTitle.font = interFont;
         SetCenterPosition(jackTitleGo.GetComponent<RectTransform>(), 20.0f, 0f, 180.0f, 36.0f);
@@ -677,14 +707,15 @@ public static class SetupAndBuild
         
         jackLockImg.sprite = btnSprite;
         jackLockImg.type = Image.Type.Sliced;
-        jackLockImg.color = new Color(0.8f, 0.8f, 0.8f, 0.7f);
+        jackLockImg.color = ColorForestGreen;
+        var dynamicStretchBukaBtn = jackLockGo.AddComponent<Button>();
         SetCenterPosition(jackLockGo.GetComponent<RectTransform>(), 110.0f, 0f, 52.0f, 28.0f);
 
         var jackLockTextGo = CreateUIObject("Text", jackLockGo);
         var jackLockText = jackLockTextGo.AddComponent<TextMeshProUGUI>();
         jackLockText.enableWordWrapping = true;
         jackLockText.overflowMode = TMPro.TextOverflowModes.Overflow;
-        jackLockText.text = "Kunci";
+        jackLockText.text = "Buka";
         jackLockText.fontSize = 11.0f;
         jackLockText.fontStyle = FontStyles.Bold;
         jackLockText.color = Color.white;
@@ -692,12 +723,59 @@ public static class SetupAndBuild
         if (interFont != null) jackLockText.font = interFont;
         StretchRect(jackLockTextGo.GetComponent<RectTransform>());
 
+        // Ladder Drill card
+        var cardLadderGo = CreateUIObject("CardLadderDrill", catalogCatalogGo);
+        var ladderImg = cardLadderGo.AddComponent<Image>();
+        ladderImg.sprite = btnSprite;
+        ladderImg.type = Image.Type.Sliced;
+        ladderImg.color = Color.white;
+        SetCenterPosition(cardLadderGo.GetComponent<RectTransform>(), 0f, -40.0f, 300.0f, 56.0f);
+
+        var ladderIconGo = CreateUIObject("Icon", cardLadderGo);
+        var ladderIcon = ladderIconGo.AddComponent<TextMeshProUGUI>();
+        ladderIcon.text = "LD";
+        ladderIcon.fontSize = 14.0f;
+        ladderIcon.fontStyle = FontStyles.Bold;
+        ladderIcon.color = new Color(0.765f, 0.635f, 0.294f, 1f);
+        ladderIcon.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) ladderIcon.font = interFont;
+        SetCenterPosition(ladderIconGo.GetComponent<RectTransform>(), -120.0f, 0f, 30.0f, 30.0f);
+
+        var ladderTitleGo = CreateUIObject("TitleText", cardLadderGo);
+        var ladderTitle = ladderTitleGo.AddComponent<TextMeshProUGUI>();
+        ladderTitle.enableWordWrapping = true;
+        ladderTitle.overflowMode = TMPro.TextOverflowModes.Overflow;
+        ladderTitle.text = "<b>Ladder Drill</b>\n<size=10><color=#607D4F>Melatih kelincahan dan langkah kaki</color></size>";
+        ladderTitle.fontSize = 12.0f;
+        ladderTitle.color = ColorDeepForest;
+        ladderTitle.alignment = TextAlignmentOptions.Left;
+        if (interFont != null) ladderTitle.font = interFont;
+        SetCenterPosition(ladderTitleGo.GetComponent<RectTransform>(), 20.0f, 0f, 180.0f, 36.0f);
+
+        var ladderBukaGo = CreateUIObject("BukaButton", cardLadderGo);
+        var ladderBukaImg = ladderBukaGo.AddComponent<Image>();
+        ladderBukaImg.sprite = btnSprite;
+        ladderBukaImg.type = Image.Type.Sliced;
+        ladderBukaImg.color = ColorForestGreen;
+        var ladderDrillBukaBtn = ladderBukaGo.AddComponent<Button>();
+        SetCenterPosition(ladderBukaGo.GetComponent<RectTransform>(), 110.0f, 0f, 52.0f, 28.0f);
+
+        var ladderBukaTextGo = CreateUIObject("Text", ladderBukaGo);
+        var ladderBukaText = ladderBukaTextGo.AddComponent<TextMeshProUGUI>();
+        ladderBukaText.text = "Buka";
+        ladderBukaText.fontSize = 11.0f;
+        ladderBukaText.fontStyle = FontStyles.Bold;
+        ladderBukaText.color = Color.white;
+        ladderBukaText.alignment = TextAlignmentOptions.Center;
+        if (interFont != null) ladderBukaText.font = interFont;
+        StretchRect(ladderBukaTextGo.GetComponent<RectTransform>());
+
         // G08 Back Button
         var catalogBackGo = CreateUIObject("CatalogBackButton", nonARModePanelGo);
         var catalogBackText = catalogBackGo.AddComponent<TextMeshProUGUI>();
         catalogBackText.enableWordWrapping = true;
         catalogBackText.overflowMode = TMPro.TextOverflowModes.Overflow;
-        catalogBackText.text = "← Petunjuk";
+        catalogBackText.text = "< Petunjuk";
         catalogBackText.fontSize = 12.0f;
         catalogBackText.fontStyle = FontStyles.Bold;
         catalogBackText.color = ColorForestGreen;
@@ -715,7 +793,7 @@ public static class SetupAndBuild
         var camOffIcon = camOffIconGo.AddComponent<TextMeshProUGUI>();
         camOffIcon.enableWordWrapping = true;
         camOffIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
-        camOffIcon.text = "📷";
+        camOffIcon.text = "CAM";
         camOffIcon.fontSize = 44.0f;
         camOffIcon.alignment = TextAlignmentOptions.Center;
         SetCenterPosition(camOffIconGo.GetComponent<RectTransform>(), 0f, 73.3f, 66.7f, 66.7f);
@@ -798,6 +876,8 @@ public static class SetupAndBuild
         serialBtn.FindProperty("nonARModeLink").objectReferenceValue = nonARBtn;
         serialBtn.FindProperty("cameraErrorLink").objectReferenceValue = camErrorBtn;
         serialBtn.FindProperty("squatBukaBtn").objectReferenceValue = squatBukaBtn;
+        serialBtn.FindProperty("dynamicStretchBukaBtn").objectReferenceValue = dynamicStretchBukaBtn;
+        serialBtn.FindProperty("ladderDrillBukaBtn").objectReferenceValue = ladderDrillBukaBtn;
         serialBtn.FindProperty("catalogBackBtn").objectReferenceValue = catalogBackBtn;
         serialBtn.FindProperty("settingsBtn").objectReferenceValue = settingsBtn;
         serialBtn.FindProperty("retryBtn").objectReferenceValue = retryBtn;
@@ -814,40 +894,58 @@ public static class SetupAndBuild
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         scene.name = "MainAR";
 
-        // XR Origin & Camera setup
-        var originGo = new GameObject("XR Origin");
-        var origin = originGo.AddComponent<Unity.XR.CoreUtils.XROrigin>();
+        // Keep ExecuteInEditMode ARUnityX components inactive while they are added.
+        // The package does not ship a Linux Editor native library.
+        var arRootGo = new GameObject("ARUnityX Runtime");
+        arRootGo.SetActive(false);
+        var arController = arRootGo.AddComponent<ARXController>();
+        arController.enabled = false;
+        arController.AutoStartAR = true;
+        arController.UseNativeGLTexturingIfAvailable = false;
+        arController.AllowNonRGBVideo = true;
+        arController.QuitOnEscOrBack = false;
+        arController.videoCParamName0 = "camera_para";
 
-        // CameraOffset GameObject (required by XROrigin for floor offset)
-        var cameraOffsetGo = new GameObject("Camera Offset");
-        cameraOffsetGo.transform.SetParent(originGo.transform, false);
+        var videoConfig = arRootGo.GetComponent<ARXVideoConfig>();
+        ConfigureRearCamera(videoConfig);
 
-        // AR Camera sebagai child dari CameraOffset
+        var imageTarget = arRootGo.AddComponent<ARXTrackable>();
+        imageTarget.enabled = false;
+        imageTarget.Tag = "C5";
+        var serializedTarget = new SerializedObject(imageTarget);
+        serializedTarget.FindProperty("<Type>k__BackingField").intValue = (int)ARXTrackable.TrackableType.TwoD;
+        serializedTarget.FindProperty("<TwoDImageFile>k__BackingField").stringValue = "C5.png";
+        serializedTarget.FindProperty("<TwoDImageWidth>k__BackingField").floatValue = 0.18f;
+        serializedTarget.FindProperty("currentFiltered").boolValue = true;
+        serializedTarget.FindProperty("currentFilterSampleRate").floatValue = 30f;
+        serializedTarget.FindProperty("currentFilterCutoffFreq").floatValue = 15f;
+        serializedTarget.ApplyModifiedProperties();
+
+        // ARUnityX foreground camera. Layer 8 is reserved for its video background.
         var camGo = new GameObject("AR Camera");
-        camGo.transform.SetParent(cameraOffsetGo.transform, false);
+        camGo.SetActive(false);
         var cam = camGo.AddComponent<Camera>();
         cam.clearFlags = CameraClearFlags.SolidColor;
-        cam.backgroundColor = new Color(0f, 0f, 0f, 0f);
-        camGo.AddComponent<ARCameraManager>();
-        camGo.AddComponent<ARCameraBackground>();
+        cam.backgroundColor = ColorDeepForest;
+        cam.nearClipPlane = 0.01f;
+        cam.farClipPlane = 100f;
+        cam.cullingMask &= ~(1 << 8);
+        cam.allowHDR = false;
         camGo.tag = "MainCamera";
+        camGo.AddComponent<AudioListener>();
+        var arCamera = camGo.AddComponent<ARXCamera>();
+        arCamera.CameraContentMode = ARXCamera.ContentMode.Fill;
+        var videoBackground = camGo.AddComponent<ARXVideoBackground>();
+        videoBackground.BackgroundLayer = 8;
 
-        // TrackedPoseDriver (Input System) - WAJIB agar kamera bisa tracking AR
-        // AR Foundation akan mengisi binding secara otomatis saat runtime
-        camGo.AddComponent<UnityEngine.InputSystem.XR.TrackedPoseDriver>();
+        // ARUnityX drives this anchor from the C5 trackable pose.
+        var trackedAnchorGo = new GameObject("C5 Tracked Anchor");
+        var trackedObject = trackedAnchorGo.AddComponent<ARXTrackedObject>();
+        trackedObject.TrackableTag = "C5";
+        trackedObject.secondsToRemainVisible = 0.75f;
 
-        // Link XROrigin ke camera dan offset
-        var serialOrigin = new SerializedObject(origin);
-        serialOrigin.FindProperty("m_Camera").objectReferenceValue = cam;
-        serialOrigin.FindProperty("m_CameraFloorOffsetObject").objectReferenceValue = cameraOffsetGo;
-        serialOrigin.ApplyModifiedProperties();
-
-        // AR Session
-        var sessionGo = new GameObject("AR Session");
-        sessionGo.AddComponent<ARSession>();
-
-        // ModelRoot GameObject
         var modelRootGo = new GameObject("ModelRoot");
+        modelRootGo.transform.SetParent(trackedAnchorGo.transform, false);
 
         // Load Database Asset
         var database = AssetDatabase.LoadAssetAtPath<MovementDatabase>("Assets/App/Content/MovementData/MovementDatabase.asset");
@@ -857,14 +955,12 @@ public static class SetupAndBuild
         var modelPool = managersGo.AddComponent<ModelPool>();
         var movementController = managersGo.AddComponent<MovementController>();
         var audioGuideController = managersGo.AddComponent<AudioGuideController>();
+        var trackingController = managersGo.AddComponent<ARImageTrackingController>();
+        var sessionController = managersGo.AddComponent<ARUnityXSessionController>();
 
         // Standalone AppStateManager (so it does not destroy scene-specific Managers via DontDestroyOnLoad)
         var stateMgrGo = new GameObject("AppStateManager");
         var stateMgr = stateMgrGo.AddComponent<AppStateManager>();
-
-        // AR Tracked Image Manager (on XR Origin)
-        var trackedImgMgr = originGo.AddComponent<ARTrackedImageManager>();
-        var trackingController = originGo.AddComponent<ARImageTrackingController>();
 
         // Configure ModelPool
         var serialPool = new SerializedObject(modelPool);
@@ -873,9 +969,22 @@ public static class SetupAndBuild
 
         // Configure tracking controller
         var serialTracking = new SerializedObject(trackingController);
+        serialTracking.FindProperty("imageTarget").objectReferenceValue = imageTarget;
+        serialTracking.FindProperty("trackedObject").objectReferenceValue = trackedObject;
+        serialTracking.FindProperty("referenceImageName").stringValue = "squat_target";
         serialTracking.FindProperty("movementDatabase").objectReferenceValue = database;
         serialTracking.FindProperty("modelPool").objectReferenceValue = modelPool;
+        serialTracking.FindProperty("movementController").objectReferenceValue = movementController;
         serialTracking.ApplyModifiedProperties();
+
+        var serialSession = new SerializedObject(sessionController);
+        serialSession.FindProperty("arController").objectReferenceValue = arController;
+        serialSession.FindProperty("imageTarget").objectReferenceValue = imageTarget;
+        serialSession.FindProperty("trackedObject").objectReferenceValue = trackedObject;
+        serialSession.FindProperty("arCamera").objectReferenceValue = arCamera;
+        serialSession.FindProperty("videoBackground").objectReferenceValue = videoBackground;
+        serialSession.FindProperty("trackingController").objectReferenceValue = trackingController;
+        serialSession.ApplyModifiedProperties();
 
         // Configure Audio Controller
         var serialAudio = new SerializedObject(audioGuideController);
@@ -1033,7 +1142,7 @@ public static class SetupAndBuild
         var instIconText = instIconTextGo.AddComponent<TextMeshProUGUI>();
         instIconText.enableWordWrapping = true;
         instIconText.overflowMode = TMPro.TextOverflowModes.Overflow;
-        instIconText.text = "📷";
+        instIconText.text = "CAM";
         instIconText.fontSize = 14.0f;
         instIconText.alignment = TextAlignmentOptions.Center;
         StretchRect(instIconTextGo.GetComponent<RectTransform>());
@@ -1087,7 +1196,7 @@ public static class SetupAndBuild
         var toastCheck = toastCheckGo.AddComponent<TextMeshProUGUI>();
         toastCheck.enableWordWrapping = true;
         toastCheck.overflowMode = TMPro.TextOverflowModes.Overflow;
-        toastCheck.text = "✔";
+        toastCheck.text = "OK";
         toastCheck.fontSize = 19.3f;
         toastCheck.color = Color.white;
         toastCheck.alignment = TextAlignmentOptions.Center;
@@ -1205,7 +1314,7 @@ public static class SetupAndBuild
         var matIcon = matIconGo.AddComponent<TextMeshProUGUI>();
         matIcon.enableWordWrapping = true;
         matIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
-        matIcon.text = "📖";
+        matIcon.text = "M";
         matIcon.fontSize = 12.0f;
         matIcon.alignment = TextAlignmentOptions.Center;
         StretchRect(matIconGo.GetComponent<RectTransform>());
@@ -1224,7 +1333,7 @@ public static class SetupAndBuild
         var closeIcon = closeIconGo.AddComponent<TextMeshProUGUI>();
         closeIcon.enableWordWrapping = true;
         closeIcon.overflowMode = TMPro.TextOverflowModes.Overflow;
-        closeIcon.text = "✕";
+        closeIcon.text = "X";
         closeIcon.fontSize = 12.0f;
         closeIcon.color = Color.white;
         closeIcon.alignment = TextAlignmentOptions.Center;
@@ -1440,7 +1549,7 @@ public static class SetupAndBuild
         var sheetCloseTxt = sheetCloseTxtGo.AddComponent<TextMeshProUGUI>();
         sheetCloseTxt.enableWordWrapping = true;
         sheetCloseTxt.overflowMode = TMPro.TextOverflowModes.Overflow;
-        sheetCloseTxt.text = "✕";
+        sheetCloseTxt.text = "X";
         sheetCloseTxt.fontSize = 9.3f;
         sheetCloseTxt.color = ColorCharcoal;
         sheetCloseTxt.alignment = TextAlignmentOptions.Center;
@@ -1653,11 +1762,9 @@ public static class SetupAndBuild
         var serialSheet = new SerializedObject(sheetCtrl);
         serialSheet.FindProperty("sheetRect").objectReferenceValue = sheetRT;
         serialSheet.FindProperty("scrim").objectReferenceValue = scrimGo;
+        serialSheet.FindProperty("closeButton").objectReferenceValue = sheetCloseBtn;
         serialSheet.FindProperty("movementController").objectReferenceValue = movementController;
         serialSheet.ApplyModifiedProperties();
-
-        // Wire sheet close button to close sheet
-        sheetCloseBtn.onClick.AddListener(sheetCtrl.CloseSheet);
 
         // Material content controller
         var matCtrl = sheetGo.AddComponent<MaterialContentController>();
@@ -1697,6 +1804,16 @@ public static class SetupAndBuild
         serialUI.FindProperty("playPauseIcon").objectReferenceValue = playPauseImg;
         serialUI.ApplyModifiedProperties();
 
+        // Finish provider wiring after the UI controllers have been created.
+        serialTracking.Update();
+        serialTracking.FindProperty("timelineController").objectReferenceValue = timelineCtrl;
+        serialTracking.FindProperty("materialController").objectReferenceValue = matCtrl;
+        serialTracking.FindProperty("uiController").objectReferenceValue = arUI;
+        serialTracking.ApplyModifiedProperties();
+
+        arRootGo.SetActive(true);
+        camGo.SetActive(true);
+
         EditorSceneManager.SaveScene(scene, "Assets/App/Scenes/MainAR.unity");
         Debug.Log("[GerakAR] Scene MainAR selesai dibuat.");
     }
@@ -1712,11 +1829,61 @@ public static class SetupAndBuild
         Debug.Log("[GerakAR] Build Settings scenes updated.");
     }
 
+    [MenuItem("Build/Validate ARUnityX Setup")]
+    public static void ValidateSetup()
+    {
+        var controllers = Object.FindObjectsByType<ARXController>(FindObjectsInactive.Include);
+        if (controllers.Length != 1 || controllers[0].enabled)
+            throw new BuildFailedException("MainAR must contain exactly one disabled ARXController.");
+
+        var trackables = Object.FindObjectsByType<ARXTrackable>(FindObjectsInactive.Include);
+        if (trackables.Length != 1 || trackables[0].enabled ||
+            trackables[0].Type != ARXTrackable.TrackableType.TwoD ||
+            trackables[0].TwoDImageFile != "C5.png")
+        {
+            throw new BuildFailedException("MainAR C5 TwoD trackable is not configured correctly.");
+        }
+
+        if (!System.IO.File.Exists("Assets/StreamingAssets/C5.png"))
+            throw new BuildFailedException("Assets/StreamingAssets/C5.png is missing.");
+
+        if (Resources.Load<TextAsset>("ardata/camera_para") == null)
+            throw new BuildFailedException("ARUnityX camera_para resource is missing.");
+
+        MovementDatabase database = AssetDatabase.LoadAssetAtPath<MovementDatabase>(
+            "Assets/App/Content/MovementData/MovementDatabase.asset");
+        if (database == null || database.FindByReferenceImageName("squat_target") == null)
+            throw new BuildFailedException("Squat movement mapping is missing.");
+
+        if (GameObject.Find("XR Origin") != null || GameObject.Find("AR Session") != null)
+            throw new BuildFailedException("AR Foundation objects remain in MainAR.");
+
+        Debug.Log("[GerakAR] ARUnityX scene validation passed.");
+    }
+
+    private static void ConfigureRearCamera(ARXVideoConfig videoConfig)
+    {
+        int index = videoConfig.configs.FindIndex(config => config.platform == RuntimePlatform.Android);
+        if (index < 0)
+            throw new System.InvalidOperationException("ARUnityX Android video configuration is missing.");
+
+        ARXVideoConfig.ARVideoPlatformConfig config = videoConfig.configs[index];
+        config.module = ARXVideoConfig.ARVideoModule.Android;
+        config.inputSelectionMethod = ARXVideoConfig.ARVideoConfigInputSelectionMethod.CameraAtPosition;
+        config.position = ARXVideoConfig.AR_VIDEO_POSITION.AR_VIDEO_POSITION_BACK;
+        config.width = 1280;
+        config.height = 720;
+        config.sizePreference = ARXVideoConfig.ARVideoSizeSelectionStrategySizePreference.closestpixelcount;
+        config.isUsingManualConfig = false;
+        config.isUsingUnityVideoSource = false;
+        config.unityVideoSource = ARXVideoConfig.ARVideoUnityVideoSource.None;
+        videoConfig.configs[index] = config;
+    }
+
     private static void BuildAPK()
     {
         Debug.Log("[GerakAR] Menjalankan build Android APK...");
-        PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.ARM64;
-        PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
+        ConfigurePlayerSettings();
         
         string targetPath = "Builds/GerakAR.apk";
         System.IO.Directory.CreateDirectory("Builds");

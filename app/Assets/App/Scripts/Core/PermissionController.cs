@@ -20,9 +20,6 @@ namespace GerakAR.Core
     /// </summary>
     public class PermissionController : MonoBehaviour
     {
-        [Tooltip("Seconds to wait for the permission dialog before checking result.")]
-        [SerializeField] [Range(0.5f, 5f)] private float dialogWaitSeconds = 2.5f;
-
         private AppStateManager _stateMgr;
 
         private void Start()
@@ -68,6 +65,9 @@ namespace GerakAR.Core
 
         public static bool CameraPermissionDenied { get; private set; } = false;
 
+        public static void SetCameraPermissionDeniedForSimulation(bool denied) =>
+            CameraPermissionDenied = denied;
+
         private void OnPermissionGranted(string permissionName)
         {
             CameraPermissionDenied = false;
@@ -80,6 +80,20 @@ namespace GerakAR.Core
             CameraPermissionDenied = true;
             if (_stateMgr != null)
                 _stateMgr.TransitionTo(AppState.CameraDenied);
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus || _stateMgr == null || !_stateMgr.Is(AppState.CameraDenied))
+                return;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+            if (Permission.HasUserAuthorizedPermission(Permission.Camera))
+            {
+                CameraPermissionDenied = false;
+                _stateMgr.TransitionTo(AppState.LoadingARScene);
+            }
+#endif
         }
     }
 }

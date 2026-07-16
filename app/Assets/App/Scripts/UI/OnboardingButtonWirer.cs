@@ -23,7 +23,7 @@ namespace GerakAR.UI
             var btn = GetComponent<Button>();
             if (btn == null) return;
 
-            var controller = FindObjectOfType<OnboardingController>();
+            var controller = FindAnyObjectByType<OnboardingController>();
             if (controller == null)
             {
                 Debug.LogWarning("[GerakAR] OnboardingButtonWirer: OnboardingController tidak ditemukan di scene.");

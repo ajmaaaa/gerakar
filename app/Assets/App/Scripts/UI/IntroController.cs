@@ -27,6 +27,9 @@ namespace GerakAR.UI
 
         private void Start()
         {
+            if (AppStateManager.Instance == null || !AppStateManager.Instance.Is(AppState.Intro))
+                return;
+
             if (introCanvasGroup != null)
                 introCanvasGroup.alpha = 1f;
 

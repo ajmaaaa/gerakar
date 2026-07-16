@@ -7,6 +7,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 using GerakAR.Core;
 using GerakAR.Content;
 
@@ -21,8 +22,8 @@ namespace GerakAR.UI
     ///   scanOverlay      → Panel with scan frame + hint text
     ///   arControls       → Group holding label + timeline + FABs
     ///   movementLabel    → TMP text component for movement name
-    ///   closeButton      → "×" floating action button
-    ///   materialButton   → "📖" floating action button
+    ///   closeButton      -> close floating action button
+    ///   materialButton   -> material floating action button
     /// </summary>
     public class ARUIController : MonoBehaviour
     {
@@ -63,6 +64,7 @@ namespace GerakAR.UI
             AppStateManager.OnStateChanged += OnStateChanged;
             GerakAREvents.OnMovementDetected += OnMovementDetected;
             GerakAREvents.OnLoopStarted += OnLoopStarted;
+            Audio.AudioGuideController.OnAudioAvailabilityChanged += OnAudioAvailabilityChanged;
 
             // Wire buttons
             closeButton?.onClick.AddListener(OnClosePressed);
@@ -80,6 +82,7 @@ namespace GerakAR.UI
             AppStateManager.OnStateChanged -= OnStateChanged;
             GerakAREvents.OnMovementDetected -= OnMovementDetected;
             GerakAREvents.OnLoopStarted -= OnLoopStarted;
+            Audio.AudioGuideController.OnAudioAvailabilityChanged -= OnAudioAvailabilityChanged;
         }
 
         // ── State changes ─────────────────────────────────────────────
@@ -90,7 +93,7 @@ namespace GerakAR.UI
         {
             bool scanning = state == AppState.Scanning || state == AppState.TrackingLost;
             bool detecting = state == AppState.TargetConfirmed;
-            bool tracking = state is AppState.TrackingLoop or AppState.InspectingPose;
+            bool tracking = state is AppState.TrackingLoop or AppState.InspectingPose or AppState.NonARMovementPlayer;
             bool showMaterial = state == AppState.ShowingMaterial;
 
             if (detecting)
@@ -139,13 +142,15 @@ namespace GerakAR.UI
 
         private void OnMovementDetected(string movementId)
         {
-            // The label is updated separately; just ensure controls are shown
+            UpdatePlayPauseUI();
         }
 
         private void OnLoopStarted(string movementId)
         {
             UpdatePlayPauseUI();
         }
+
+        private void OnAudioAvailabilityChanged(bool available) => UpdatePlayPauseUI();
 
         // ── Label update ──────────────────────────────────────────────
 
@@ -163,6 +168,14 @@ namespace GerakAR.UI
 
         private void OnClosePressed()
         {
+            if (AppStateManager.RunInNonARMode)
+            {
+                ActiveMovementContext.Clear();
+                _stateMgr?.TransitionTo(AppState.NonARCatalog);
+                SceneManager.LoadScene("Bootstrap");
+                return;
+            }
+
             _stateMgr?.TransitionTo(AppState.Scanning);
         }
 
@@ -184,9 +197,12 @@ namespace GerakAR.UI
 
         private void UpdatePlayPauseUI()
         {
+            var audioController = Audio.AudioGuideController.Instance;
+            if (playPauseButton != null)
+                playPauseButton.interactable = audioController != null && audioController.HasAudio;
             if (playPauseIcon == null) return;
 
-            bool isPlaying = Audio.AudioGuideController.Instance != null && Audio.AudioGuideController.Instance.IsPlaying;
+            bool isPlaying = audioController != null && audioController.IsPlaying;
             playPauseIcon.sprite = isPlaying ? pauseSprite : playSprite;
         }
 

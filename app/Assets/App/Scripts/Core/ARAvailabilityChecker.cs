@@ -1,14 +1,11 @@
 // ============================================================
 // GerakAR – ARAvailabilityChecker.cs
-// Checks whether ARCore is available on this device using the
-// AR Foundation ARSession API and routes appropriately.
+// Checks whether the ARUnityX runtime can be attempted on this platform.
 // Transitions: CheckingAR → LoadingARScene (Ready + permission granted)
 //                         → UnsupportedNotice (Unsupported/InstallFailed)
 // ============================================================
 using System.Collections;
 using UnityEngine;
-using UnityEngine.XR.ARFoundation;
-using GerakAR.Core;
 
 namespace GerakAR.Core
 {
@@ -58,54 +55,18 @@ namespace GerakAR.Core
             yield return null;
             _stateMgr.TransitionTo(AppState.RequestingPermission);
             yield break;
+#else
+            yield return null;
+
+#if UNITY_ANDROID
+            // ARUnityX ships native ARMv7 and ARM64 libraries and does not depend
+            // on Google Play Services for AR. Camera startup is validated in MainAR.
+            _stateMgr.TransitionTo(AppState.RequestingPermission);
+#else
+            Debug.LogWarning("[ARAvailabilityChecker] ARUnityX production runtime is Android-only.");
+            _stateMgr.TransitionTo(AppState.UnsupportedNotice);
 #endif
-
-            Debug.Log("[ARAvailabilityChecker] Checking AR availability...");
-            yield return ARSession.CheckAvailability();
-
-            ARSessionState state = ARSession.state;
-            Debug.Log($"[ARAvailabilityChecker] AR session state: {state}");
-
-            switch (state)
-            {
-                case ARSessionState.Ready:
-                case ARSessionState.SessionInitializing:
-                case ARSessionState.SessionTracking:
-                    // Device supports AR and services are ready
-                    _stateMgr.TransitionTo(AppState.RequestingPermission);
-                    break;
-
-                case ARSessionState.NeedsInstall:
-                    // Device supports AR but needs Google Play Services for AR
-                    Debug.Log("[ARAvailabilityChecker] AR services need installation. Installing...");
-                    yield return ARSession.Install();
-                    
-                    // Wait for the installation state to stabilize
-                    while (ARSession.state == ARSessionState.Installing)
-                    {
-                        yield return null;
-                    }
-                    
-                    // Check result after installation attempt
-                    if (ARSession.state == ARSessionState.Ready)
-                    {
-                        Debug.Log("[ARAvailabilityChecker] AR services installed successfully.");
-                        _stateMgr.TransitionTo(AppState.RequestingPermission);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[ARAvailabilityChecker] AR service installation failed. State: {ARSession.state}");
-                        _stateMgr.TransitionTo(AppState.ARInstallFailed);
-                    }
-                    break;
-
-                case ARSessionState.Unsupported:
-                default:
-                    // Device does not support AR
-                    Debug.LogWarning($"[ARAvailabilityChecker] AR not supported. State: {state}");
-                    _stateMgr.TransitionTo(AppState.UnsupportedNotice);
-                    break;
-            }
+#endif
         }
     }
 }

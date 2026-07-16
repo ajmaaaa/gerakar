@@ -1,0 +1,5 @@
+<linker>
+  <assembly fullname="org.artoolkitx.artoolkitx-unity">
+    <type fullname="ARXController" preserve="all" />
+  </assembly>
+</linker>

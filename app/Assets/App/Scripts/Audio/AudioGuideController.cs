@@ -1,11 +1,12 @@
 // ============================================================
 // GerakAR – AudioGuideController.cs
 // Manages playback of the voice guide audio clip for each movement.
-// Playback starts automatically when the movement animation starts.
+// Playback starts only after the user presses the audio control.
 // Pauses when the user scrubs the timeline or target is lost.
 // Provides public methods for the Play/Pause UI buttons.
 // ============================================================
 using UnityEngine;
+using System;
 using GerakAR.Core;
 using GerakAR.Content;
 
@@ -17,6 +18,7 @@ namespace GerakAR.Audio
         // ── Singleton / Reference ─────────────────────────────────────
 
         public static AudioGuideController Instance { get; private set; }
+        public static event Action<bool> OnAudioAvailabilityChanged;
 
         // ── Inspector ─────────────────────────────────────────────────
 
@@ -51,33 +53,49 @@ namespace GerakAR.Audio
             _stateMgr = AppStateManager.Instance;
 
             // Subscribe to event bus
-            GerakAREvents.OnLoopStarted += PlayAudioForMovement;
+            GerakAREvents.OnMovementDetected += PrepareAudioForMovement;
             GerakAREvents.OnTrackingLost += StopAudio;
             GerakAREvents.OnPoseInspectionStarted += PauseAudioOnScrub;
             GerakAREvents.OnPoseInspectionEnded += ResumeAudioAfterScrub;
+            AppStateManager.OnStateChanged += OnAppStateChanged;
         }
 
         private void OnDestroy()
         {
-            GerakAREvents.OnLoopStarted -= PlayAudioForMovement;
+            GerakAREvents.OnMovementDetected -= PrepareAudioForMovement;
             GerakAREvents.OnTrackingLost -= StopAudio;
             GerakAREvents.OnPoseInspectionStarted -= PauseAudioOnScrub;
             GerakAREvents.OnPoseInspectionEnded -= ResumeAudioAfterScrub;
+            AppStateManager.OnStateChanged -= OnAppStateChanged;
         }
 
         // ── Event Handlers ────────────────────────────────────────────
 
-        private void PlayAudioForMovement(string movementId)
+        private void PrepareAudioForMovement(string movementId)
         {
-            if (movementDatabase == null) return;
+            _audioSource.Stop();
+            _audioSource.clip = null;
+            _currentData = null;
+            _isManualPaused = false;
+
+            if (movementDatabase == null)
+            {
+                OnAudioAvailabilityChanged?.Invoke(false);
+                return;
+            }
             MovementData data = movementDatabase.FindById(movementId);
-            if (data == null || data.audioGuide == null) return;
+            if (data == null || data.audioGuide == null)
+            {
+                OnAudioAvailabilityChanged?.Invoke(false);
+                return;
+            }
 
             _currentData = data;
             _isManualPaused = false;
 
             _audioSource.clip = data.audioGuide;
-            _audioSource.Play();
+            _audioSource.Stop();
+            OnAudioAvailabilityChanged?.Invoke(true);
         }
 
         private void StopAudio(string movementId)
@@ -85,6 +103,20 @@ namespace GerakAR.Audio
             _audioSource.Stop();
             _audioSource.clip = null;
             _currentData = null;
+            OnAudioAvailabilityChanged?.Invoke(false);
+        }
+
+        private void OnAppStateChanged(AppState previous, AppState next)
+        {
+            if (next is AppState.ShowingMaterial or AppState.ShowingRelatedMaterial)
+            {
+                if (_audioSource.isPlaying)
+                    _audioSource.Pause();
+                return;
+            }
+
+            if (next is AppState.Scanning or AppState.TrackingLost or AppState.NonARCatalog or AppState.CameraDenied)
+                StopAudio(ActiveMovementContext.ActiveId ?? string.Empty);
         }
 
         private void PauseAudioOnScrub(float normTime)
@@ -104,6 +136,7 @@ namespace GerakAR.Audio
 
         public bool IsPlaying => _audioSource.isPlaying;
         public bool IsPaused => !_audioSource.isPlaying && _audioSource.time > 0;
+        public bool HasAudio => _currentData != null && _audioSource.clip != null;
 
         /// <summary>Toggle play/pause manually from UI button.</summary>
         public void TogglePlayPause()
