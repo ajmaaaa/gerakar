@@ -21,7 +21,10 @@ namespace GerakAR.AR
         [SerializeField] private ARXCamera arCamera;
         [SerializeField] private ARXVideoBackground videoBackground;
         [SerializeField] private string targetImageFileName = "C5.png";
-        [SerializeField] [Min(0.01f)] private float physicalTargetWidthMeters = 0.18f;
+        [SerializeField]
+        [Min(0.01f)]
+        [Tooltip("ARUnityX image width in Unity units, where 1.0 equals 1 metre.")]
+        private float physicalTargetWidthMeters = 0.12f;
 
         [Header("GerakAR")]
         [SerializeField] private ARImageTrackingController trackingController;

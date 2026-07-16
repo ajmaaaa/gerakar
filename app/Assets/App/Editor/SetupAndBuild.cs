@@ -915,7 +915,7 @@ public static class SetupAndBuild
         var serializedTarget = new SerializedObject(imageTarget);
         serializedTarget.FindProperty("<Type>k__BackingField").intValue = (int)ARXTrackable.TrackableType.TwoD;
         serializedTarget.FindProperty("<TwoDImageFile>k__BackingField").stringValue = "C5.png";
-        serializedTarget.FindProperty("<TwoDImageWidth>k__BackingField").floatValue = 0.18f;
+        serializedTarget.FindProperty("<TwoDImageWidth>k__BackingField").floatValue = 0.12f;
         serializedTarget.FindProperty("currentFiltered").boolValue = true;
         serializedTarget.FindProperty("currentFilterSampleRate").floatValue = 30f;
         serializedTarget.FindProperty("currentFilterCutoffFreq").floatValue = 15f;
@@ -1845,7 +1845,8 @@ public static class SetupAndBuild
         var trackables = Object.FindObjectsByType<ARXTrackable>(FindObjectsInactive.Include);
         if (trackables.Length != 1 || trackables[0].enabled ||
             trackables[0].Type != ARXTrackable.TrackableType.TwoD ||
-            trackables[0].TwoDImageFile != "C5.png")
+            trackables[0].TwoDImageFile != "C5.png" ||
+            !Mathf.Approximately(trackables[0].TwoDImageWidth, 0.12f))
         {
             throw new BuildFailedException("MainAR C5 TwoD trackable is not configured correctly.");
         }
