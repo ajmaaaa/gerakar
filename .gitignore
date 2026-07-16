@@ -72,6 +72,9 @@ Thumbs.db
 # Temporary files & scripts
 ponytail/
 build*.log
+import*.log
+*info.json
+PerformanceTestRun*
 *.html
 *.txt
 *.py
