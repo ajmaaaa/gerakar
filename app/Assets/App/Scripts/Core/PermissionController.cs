@@ -58,11 +58,11 @@ namespace GerakAR.Core
             }
             else
             {
-                _stateMgr.TransitionTo(AppState.CheckingAR);
+                _stateMgr.TransitionTo(AppState.LoadingARScene);
             }
 #else
             // Non-Android platforms
-            _stateMgr.TransitionTo(AppState.CheckingAR);
+            _stateMgr.TransitionTo(AppState.LoadingARScene);
 #endif
         }
 
@@ -72,7 +72,7 @@ namespace GerakAR.Core
         {
             CameraPermissionDenied = false;
             if (_stateMgr != null)
-                _stateMgr.TransitionTo(AppState.CheckingAR);
+                _stateMgr.TransitionTo(AppState.LoadingARScene);
         }
 
         private void OnPermissionDenied(string permissionName)

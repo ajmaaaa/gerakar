@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using GerakAR.Core;
 
 namespace GerakAR.UI
@@ -39,24 +40,40 @@ namespace GerakAR.UI
             if (introPanel != null)
                 introPanel.SetActive(state == AppState.Intro);
 
-            // Onboarding panel is shown in Scanning state (if first run)
-            if (onboardingPanel != null)
-                onboardingPanel.SetActive(state == AppState.Scanning);
+            if (state == AppState.UnsupportedNotice || state == AppState.ARInstallFailed)
+            {
+                Invoke(nameof(RouteToNonARCatalog), 1.5f);
+            }
 
-            // Unsupported state houses both G08 (Non-AR Catalog) and G09 (Camera Error)
+            // Onboarding panel is shown in Onboarding state
+            if (onboardingPanel != null)
+                onboardingPanel.SetActive(state == AppState.Onboarding);
+
             if (unsupportedPanel != null)
             {
-                bool isUnsupported = state == AppState.Unsupported;
-                unsupportedPanel.SetActive(isUnsupported);
+                bool showNonAR = state == AppState.NonARCatalog || state == AppState.UnsupportedNotice || state == AppState.ARInstallFailed;
+                bool showCamDenied = state == AppState.CameraDenied;
+                
+                unsupportedPanel.SetActive(showNonAR || showCamDenied);
 
-                if (isUnsupported)
-                {
-                    bool isCameraDenied = PermissionController.CameraPermissionDenied;
-                    if (nonARModePanel != null)
-                        nonARModePanel.SetActive(!isCameraDenied);
-                    if (cameraErrorPanel != null)
-                        cameraErrorPanel.SetActive(isCameraDenied);
-                }
+                if (nonARModePanel != null)
+                    nonARModePanel.SetActive(showNonAR);
+                if (cameraErrorPanel != null)
+                    cameraErrorPanel.SetActive(showCamDenied);
+            }
+
+            if (state == AppState.LoadingARScene)
+            {
+                SceneManager.LoadSceneAsync("MainAR");
+            }
+        }
+
+        private void RouteToNonARCatalog()
+        {
+            if (AppStateManager.Instance != null && 
+                (AppStateManager.Instance.Is(AppState.UnsupportedNotice) || AppStateManager.Instance.Is(AppState.ARInstallFailed)))
+            {
+                AppStateManager.Instance.TransitionTo(AppState.NonARCatalog);
             }
         }
     }

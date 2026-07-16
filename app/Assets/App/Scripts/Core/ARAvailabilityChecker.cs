@@ -56,7 +56,7 @@ namespace GerakAR.Core
             // Editor: simulate AR-supported for development
             Debug.Log("[ARAvailabilityChecker] Editor detected; simulating AR support.");
             yield return null;
-            _stateMgr.TransitionTo(AppState.LoadingARScene);
+            _stateMgr.TransitionTo(AppState.RequestingPermission);
             yield break;
 #endif
 
@@ -72,7 +72,7 @@ namespace GerakAR.Core
                 case ARSessionState.SessionInitializing:
                 case ARSessionState.SessionTracking:
                     // Device supports AR and services are ready
-                    _stateMgr.TransitionTo(AppState.LoadingARScene);
+                    _stateMgr.TransitionTo(AppState.RequestingPermission);
                     break;
 
                 case ARSessionState.NeedsInstall:
@@ -80,16 +80,21 @@ namespace GerakAR.Core
                     Debug.Log("[ARAvailabilityChecker] AR services need installation. Installing...");
                     yield return ARSession.Install();
                     
+                    // Wait for the installation state to stabilize
+                    while (ARSession.state == ARSessionState.Installing)
+                    {
+                        yield return null;
+                    }
+                    
                     // Check result after installation attempt
-                    if (ARSession.state == ARSessionState.Ready ||
-                        ARSession.state == ARSessionState.SessionInitializing)
+                    if (ARSession.state == ARSessionState.Ready)
                     {
                         Debug.Log("[ARAvailabilityChecker] AR services installed successfully.");
-                        _stateMgr.TransitionTo(AppState.LoadingARScene);
+                        _stateMgr.TransitionTo(AppState.RequestingPermission);
                     }
                     else
                     {
-                        Debug.LogWarning("[ARAvailabilityChecker] AR service installation failed.");
+                        Debug.LogWarning($"[ARAvailabilityChecker] AR service installation failed. State: {ARSession.state}");
                         _stateMgr.TransitionTo(AppState.ARInstallFailed);
                     }
                     break;

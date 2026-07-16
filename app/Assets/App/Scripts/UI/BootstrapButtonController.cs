@@ -37,7 +37,7 @@ namespace GerakAR.UI
         private void OnNonARModeLinkClicked()
         {
             // Transition to Unsupported, which shows G08 Non-AR catalog panel
-            AppStateManager.Instance?.TransitionTo(AppState.Unsupported);
+            AppStateManager.Instance?.TransitionTo(AppState.NonARCatalog);
         }
 
         private void OnCameraErrorLinkClicked()
@@ -49,7 +49,7 @@ namespace GerakAR.UI
             {
                 deniedProp.SetValue(null, true);
             }
-            AppStateManager.Instance?.TransitionTo(AppState.Unsupported);
+            AppStateManager.Instance?.TransitionTo(AppState.CameraDenied);
         }
 
         private void OnSquatBukaClicked()

@@ -53,6 +53,11 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# Android Gradle build artifacts
+.utmp/
+.gradle/
+*.iml
+
 # IDE
 .idea/
 .vscode/
@@ -63,3 +68,11 @@ crashlytics-build.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# Temporary files & scripts
+ponytail/
+build*.log
+*.html
+*.txt
+*.py
+.agents/

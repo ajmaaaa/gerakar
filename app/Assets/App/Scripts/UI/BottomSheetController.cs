@@ -26,12 +26,11 @@ namespace GerakAR.UI
     {
         // ── Snap point config ─────────────────────────────────────────
 
-        public enum SheetState { Closed, Half, Full }
+        public enum SheetState { Closed, Full }
 
         [Header("Snap Heights (fraction of screen height, 0-1)")]
         [SerializeField] [Range(0f, 0.1f)] private float closedFraction = 0f;
-        [SerializeField] [Range(0.3f, 0.6f)] private float halfFraction  = 0.48f;
-        [SerializeField] [Range(0.7f, 1f)]   private float fullFraction  = 0.92f;
+        [SerializeField] [Range(0.7f, 1f)] private float fullFraction  = 0.94f;
 
         [Header("Animation")]
         [SerializeField] [Range(0.1f, 0.4f)] private float snapDuration = 0.22f;
@@ -57,7 +56,7 @@ namespace GerakAR.UI
         private bool _isSnapping;
 
         // Cache target Y positions (anchoredPosition.y of sheetRect)
-        private float _closedY, _halfY, _fullY;
+        private float _closedY, _fullY;
 
         // ── Unity lifecycle ───────────────────────────────────────────
 
@@ -92,18 +91,16 @@ namespace GerakAR.UI
 
         private void RecalculateSnapPoints()
         {
-            _screenHeight = Screen.height;
-            // anchoredPosition.y = 0 → sheet bottom edge at pivot (bottom of screen)
-            // We push the sheet upward by (fraction × screenHeight)
+            var parentRT = transform.parent as RectTransform;
+            _screenHeight = parentRT != null ? parentRT.rect.height : Screen.height;
             _closedY = -(sheetRect != null ? sheetRect.rect.height : 0f);
-            _halfY   = _screenHeight * halfFraction;
             _fullY   = _screenHeight * fullFraction;
         }
 
         // ── Public API ────────────────────────────────────────────────
 
-        /// <summary>Open the sheet to the half-open position.</summary>
-        public void Open() => SnapTo(SheetState.Half);
+        /// <summary>Open the sheet to the full position.</summary>
+        public void Open() => SnapTo(SheetState.Full);
 
         /// <summary>Close the sheet.</summary>
         public void CloseSheet()
@@ -147,13 +144,10 @@ namespace GerakAR.UI
             {
                 // Snap to nearest
                 float distClosed = Mathf.Abs(currentY - _closedY);
-                float distHalf   = Mathf.Abs(currentY - _halfY);
                 float distFull   = Mathf.Abs(currentY - _fullY);
 
-                if (distClosed <= distHalf && distClosed <= distFull)
+                if (distClosed <= distFull)
                     target = SheetState.Closed;
-                else if (distHalf <= distFull)
-                    target = SheetState.Half;
                 else
                     target = SheetState.Full;
             }
@@ -215,7 +209,6 @@ namespace GerakAR.UI
         private float TargetY(SheetState state) => state switch
         {
             SheetState.Closed => _closedY,
-            SheetState.Half   => _halfY,
             SheetState.Full   => _fullY,
             _ => _closedY
         };

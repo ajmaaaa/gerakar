@@ -46,7 +46,8 @@ namespace GerakAR.UI
                 elapsed += Time.deltaTime;
                 if (loadingFillImage != null)
                 {
-                    loadingFillImage.fillAmount = Mathf.Clamp01(elapsed / introDuration);
+                    float t = Mathf.Clamp01(elapsed / introDuration);
+                    loadingFillImage.fillAmount = Mathf.SmoothStep(0f, 1f, t);
                 }
                 yield return null;
             }
@@ -68,8 +69,8 @@ namespace GerakAR.UI
                 introCanvasGroup.gameObject.SetActive(false);
             }
 
-            // Hand off to permission / onboarding flow
-            AppStateManager.Instance?.TransitionTo(AppState.RequestingPermission);
+            // Hand off to onboarding flow
+            AppStateManager.Instance?.TransitionTo(AppState.Onboarding);
         }
     }
 }

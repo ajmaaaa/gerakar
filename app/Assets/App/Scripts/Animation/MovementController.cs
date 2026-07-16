@@ -93,8 +93,8 @@ namespace GerakAR.Animation
             _animator.Play(_stateHash, 0, 0f);
             _currentNormalizedTime = 0f;
 
-            if (_stateMgr != null && _stateMgr.ActiveMovementId() != null)
-                GerakAREvents.RaiseLoopStarted(_stateMgr.ActiveMovementId());
+            if (ActiveMovementContext.ActiveId != null)
+                GerakAREvents.RaiseLoopStarted(ActiveMovementContext.ActiveId);
         }
 
         /// <summary>Pause or resume the loop (used when bottom sheet opens/closes).</summary>
@@ -204,16 +204,4 @@ namespace GerakAR.Animation
         }
     }
 
-    // Small extension so MovementController can read the active movement id
-    // from AppStateManager without a circular dependency.
-    internal static class AppStateManagerExt
-    {
-        public static string ActiveMovementId(this AppStateManager mgr)
-        {
-            // We access it through ModelPool indirectly via event args stored elsewhere.
-            // For the event raise we pass a dummy value here; the real id is already
-            // stored in ModelPool. This helper avoids a direct reference to ModelPool.
-            return null; // placeholder – caller already has the id from MovementData
-        }
-    }
 }

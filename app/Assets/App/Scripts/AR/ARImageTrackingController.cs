@@ -6,6 +6,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using GerakAR.Core;
@@ -55,7 +56,7 @@ namespace GerakAR.AR
             _manager = GetComponent<ARTrackedImageManager>();
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
             _stateMgr = AppStateManager.Instance;
             
@@ -74,6 +75,39 @@ namespace GerakAR.AR
 
                 StartCoroutine(SpawnNonARModelDelayed());
             }
+            else
+            {
+                // Monitor AR Session state at runtime
+                float elapsed = 0f;
+                bool arSuccess = false;
+
+                while (elapsed < 6.0f)
+                {
+                    if (ARSession.state == ARSessionState.SessionTracking)
+                    {
+                        arSuccess = true;
+                        break;
+                    }
+                    if (ARSession.state == ARSessionState.Unsupported)
+                    {
+                        break;
+                    }
+                    elapsed += Time.deltaTime;
+                    yield return null;
+                }
+
+                if (!arSuccess)
+                {
+                    Debug.LogWarning("[ARImageTrackingController] AR Session failed or timed out. Redirecting to Non-AR Mode.");
+                    AppStateManager.RunInNonARMode = true;
+                    
+                    if (_stateMgr != null)
+                    {
+                        _stateMgr.TransitionTo(AppState.NonARCatalog);
+                    }
+                    SceneManager.LoadScene("Bootstrap");
+                }
+            }
         }
 
         private IEnumerator SpawnNonARModelDelayed()
@@ -85,6 +119,8 @@ namespace GerakAR.AR
                 GameObject model = modelPool.Activate(squatData);
                 if (model != null)
                 {
+                    ActiveMovementContext.ActiveId = squatData.movementId;
+                    ActiveMovementContext.ActiveData = squatData;
                     model.transform.position = new Vector3(0f, -0.6f, 1.8f);
                     model.transform.rotation = Quaternion.Euler(0f, 180f, 0f); // Face the camera
                 }
@@ -185,17 +221,19 @@ namespace GerakAR.AR
 
         private IEnumerator DetectionSequence(ARTrackedImage img, MovementData data)
         {
-            // Transition to Detecting state and notify UI
-            _stateMgr.TransitionTo(AppState.Detecting);
+            // Transition to TargetConfirmed state and notify UI
+            _stateMgr.TransitionTo(AppState.TargetConfirmed);
             GerakAREvents.RaiseDetectionStarted(data.movementId);
             modelPool.HideActive();
 
-            // Show green checkmark toast for 1.2 seconds
-            yield return new WaitForSeconds(1.2f);
+            // Wait 2.2 seconds (1.2s of laser scanning + 1.0s of success checkmark pop-up)
+            yield return new WaitForSeconds(2.2f);
 
-            // Double check we are still in Detecting state (not canceled by tracking lost)
-            if (_stateMgr.Is(AppState.Detecting))
+            // Double check we are still in TargetConfirmed state (not canceled by tracking lost)
+            if (_stateMgr.Is(AppState.TargetConfirmed))
             {
+                ActiveMovementContext.ActiveId = data.movementId;
+                ActiveMovementContext.ActiveData = data;
                 GameObject model = modelPool.Activate(data);
                 modelPool.UpdateAnchor(img.transform);
 
@@ -225,7 +263,7 @@ namespace GerakAR.AR
             if (modelPool.ActiveMovementId != data.movementId) return;
 
             // Transition to TrackingLost if we are in a live state or detecting
-            if (_stateMgr.IsAny(AppState.TrackingLoop, AppState.InspectingPose, AppState.ShowingMaterial, AppState.Detecting))
+            if (_stateMgr.IsAny(AppState.TrackingLoop, AppState.InspectingPose, AppState.ShowingMaterial, AppState.TargetConfirmed))
             {
                 _stateMgr.TransitionTo(AppState.TrackingLost);
             }
@@ -246,6 +284,7 @@ namespace GerakAR.AR
             {
                 GerakAREvents.RaiseTrackingLost(data.movementId);
                 modelPool.HideActive();
+                ActiveMovementContext.Clear();
                 _stateMgr.TransitionTo(AppState.Scanning);
             }
 
