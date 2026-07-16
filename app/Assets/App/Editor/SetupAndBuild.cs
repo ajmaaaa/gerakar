@@ -111,10 +111,13 @@ public static class SetupAndBuild
 
         // Create Managers GameObject
         var managersGo = new GameObject("Managers");
-        var stateMgr = managersGo.AddComponent<AppStateManager>();
         var permissionController = managersGo.AddComponent<PermissionController>();
         var arChecker = managersGo.AddComponent<ARAvailabilityChecker>();
         var onboardingController = managersGo.AddComponent<OnboardingController>();
+
+        // Standalone AppStateManager (so it does not destroy scene-specific Managers via DontDestroyOnLoad)
+        var stateMgrGo = new GameObject("AppStateManager");
+        var stateMgr = stateMgrGo.AddComponent<AppStateManager>();
 
         // Create Camera
         var camGo = new GameObject("Main Camera");
@@ -851,14 +854,17 @@ public static class SetupAndBuild
 
         // Managers
         var managersGo = new GameObject("Managers");
-        var stateMgr = managersGo.AddComponent<AppStateManager>();
         var modelPool = managersGo.AddComponent<ModelPool>();
-        var trackingController = managersGo.AddComponent<ARImageTrackingController>();
         var movementController = managersGo.AddComponent<MovementController>();
         var audioGuideController = managersGo.AddComponent<AudioGuideController>();
 
+        // Standalone AppStateManager (so it does not destroy scene-specific Managers via DontDestroyOnLoad)
+        var stateMgrGo = new GameObject("AppStateManager");
+        var stateMgr = stateMgrGo.AddComponent<AppStateManager>();
+
         // AR Tracked Image Manager (on XR Origin)
         var trackedImgMgr = originGo.AddComponent<ARTrackedImageManager>();
+        var trackingController = originGo.AddComponent<ARImageTrackingController>();
 
         // Configure ModelPool
         var serialPool = new SerializedObject(modelPool);
@@ -976,7 +982,9 @@ public static class SetupAndBuild
         scanLineImg.sprite = btnSprite;
         scanLineImg.type = Image.Type.Sliced;
         scanLineImg.color = new Color(0.66f, 0.745f, 0.635f, 0.7f); // Glowing Soft Sage
-        SetCenterPosition(scanLineGo.GetComponent<RectTransform>(), 0f, 0f, 180.0f, 2.7f);
+        scanLineGo.AddComponent<LaserLineAnimator>();
+        scanLineGo.SetActive(false); // Hide initially until target is detected
+        SetCenterPosition(scanLineGo.GetComponent<RectTransform>(), 0f, 100.0f, 180.0f, 2.7f);
 
         // G03 Scan Target Pill Below Frame (corresponds to translate-y-[130px] from center)
         var scanPillGo = CreateUIObject("ScanTargetPill", scanGo);
@@ -1678,6 +1686,7 @@ public static class SetupAndBuild
         // Link ARUIController
         var serialUI = new SerializedObject(arUI);
         serialUI.FindProperty("scanOverlay").objectReferenceValue = scanGo;
+        serialUI.FindProperty("scanLine").objectReferenceValue = scanLineGo;
         serialUI.FindProperty("detectionToast").objectReferenceValue = toastGo;
         serialUI.FindProperty("arControls").objectReferenceValue = arControlsGo;
         serialUI.FindProperty("movementNameLabel").objectReferenceValue = nameLabel;

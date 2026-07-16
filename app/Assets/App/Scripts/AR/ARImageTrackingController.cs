@@ -6,6 +6,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using GerakAR.Core;
@@ -55,7 +56,7 @@ namespace GerakAR.AR
             _manager = GetComponent<ARTrackedImageManager>();
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
             _stateMgr = AppStateManager.Instance;
             
@@ -73,6 +74,39 @@ namespace GerakAR.AR
                 }
 
                 StartCoroutine(SpawnNonARModelDelayed());
+            }
+            else
+            {
+                // Monitor AR Session state at runtime
+                float elapsed = 0f;
+                bool arSuccess = false;
+
+                while (elapsed < 6.0f)
+                {
+                    if (ARSession.state == ARSessionState.SessionTracking)
+                    {
+                        arSuccess = true;
+                        break;
+                    }
+                    if (ARSession.state == ARSessionState.Unsupported)
+                    {
+                        break;
+                    }
+                    elapsed += Time.deltaTime;
+                    yield return null;
+                }
+
+                if (!arSuccess)
+                {
+                    Debug.LogWarning("[ARImageTrackingController] AR Session failed or timed out. Redirecting to Non-AR Mode.");
+                    AppStateManager.RunInNonARMode = true;
+                    
+                    if (_stateMgr != null)
+                    {
+                        _stateMgr.TransitionTo(AppState.NonARCatalog);
+                    }
+                    SceneManager.LoadScene("Bootstrap");
+                }
             }
         }
 
@@ -192,8 +226,8 @@ namespace GerakAR.AR
             GerakAREvents.RaiseDetectionStarted(data.movementId);
             modelPool.HideActive();
 
-            // Show green checkmark toast for 1.2 seconds
-            yield return new WaitForSeconds(1.2f);
+            // Wait 2.2 seconds (1.2s of laser scanning + 1.0s of success checkmark pop-up)
+            yield return new WaitForSeconds(2.2f);
 
             // Double check we are still in TargetConfirmed state (not canceled by tracking lost)
             if (_stateMgr.Is(AppState.TargetConfirmed))

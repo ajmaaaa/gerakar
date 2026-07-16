@@ -30,6 +30,7 @@ namespace GerakAR.UI
 
         [Header("Scan Overlay")]
         [SerializeField] private GameObject scanOverlay;
+        [SerializeField] private GameObject scanLine;
 
         [Header("Detection Toast (green checkmark)")]
         [SerializeField] private GameObject detectionToast;
@@ -92,8 +93,23 @@ namespace GerakAR.UI
             bool tracking = state is AppState.TrackingLoop or AppState.InspectingPose;
             bool showMaterial = state == AppState.ShowingMaterial;
 
-            SetActive(scanOverlay, scanning);
-            SetActive(detectionToast, detecting);
+            if (detecting)
+            {
+                // In detection scanning phase, show L-brackets and laser line
+                SetActive(scanOverlay, true);
+                SetActive(scanLine, true);
+                SetActive(detectionToast, false);
+                StopAllCoroutines();
+                StartCoroutine(DetectionUISequence());
+            }
+            else
+            {
+                StopAllCoroutines();
+                SetActive(scanOverlay, scanning);
+                SetActive(scanLine, false);
+                SetActive(detectionToast, false);
+            }
+
             SetActive(arControls, tracking || showMaterial);
 
             // Timeline: only when tracking, not when material is open
@@ -106,6 +122,19 @@ namespace GerakAR.UI
 
             // Synchronize Play/Pause icon state
             UpdatePlayPauseUI();
+        }
+
+        private System.Collections.IEnumerator DetectionUISequence()
+        {
+            // Wait 1.2 seconds while the green laser line scans
+            yield return new WaitForSeconds(1.2f);
+
+            // Hide the scan line and guide frame
+            SetActive(scanOverlay, false);
+            SetActive(scanLine, false);
+
+            // Show the checkmark pop-up card
+            SetActive(detectionToast, true);
         }
 
         private void OnMovementDetected(string movementId)
