@@ -129,14 +129,20 @@ namespace GerakAR.UI
 
         private System.Collections.IEnumerator DetectionUISequence()
         {
-            // Wait 1.2 seconds while the green laser line scans
-            yield return new WaitForSeconds(1.2f);
+            // Show detection sweep (one-shot from top to bottom)
+            SetActive(scanLine, true);
+            var laserAnim = scanLine?.GetComponent<LaserLineAnimator>();
+            if (laserAnim != null)
+                laserAnim.enabled = true;
+
+            // Wait for sweep to complete (~1.0s)
+            yield return new WaitForSeconds(1.0f);
 
             // Hide the scan line and guide frame
             SetActive(scanOverlay, false);
             SetActive(scanLine, false);
 
-            // Show the checkmark pop-up card
+            // Show the checkmark pop-up card (G04)
             SetActive(detectionToast, true);
         }
 

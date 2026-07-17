@@ -2,17 +2,16 @@ using UnityEngine;
 
 namespace GerakAR.UI
 {
-    /// <summary>
-    /// Animates the green laser scan line inside the G03 scan guide frame.
-    /// Ping-pongs vertically between top and bottom boundaries.
-    /// </summary>
     public class LaserLineAnimator : MonoBehaviour
     {
         private RectTransform _rt;
-        private float _direction = -1f; // Start moving downwards
-        
-        [SerializeField] private float speed = 200f; // Speed of the scan line
-        [SerializeField] private float limitY = 100f; // Limit Y coordinate relative to center
+        private float _startY;
+        private float _endY;
+        private float _elapsed;
+        private bool _isPlaying;
+
+        [SerializeField] private float speed = 250f;
+        [SerializeField] public float limitY = 100f;
 
         private void Awake()
         {
@@ -21,29 +20,31 @@ namespace GerakAR.UI
 
         private void OnEnable()
         {
+            _rt = GetComponent<RectTransform>();
+            _startY = limitY;
+            _endY = -limitY;
+            _elapsed = 0f;
+            _isPlaying = true;
             if (_rt != null)
-                _rt.anchoredPosition = new Vector2(0f, limitY); // Start at top
+                _rt.anchoredPosition = new Vector2(0f, _startY);
         }
 
         private void Update()
         {
-            if (_rt == null) return;
+            if (!_isPlaying || _rt == null) return;
 
-            Vector2 pos = _rt.anchoredPosition;
-            pos.y += _direction * speed * Time.deltaTime;
+            _elapsed += Time.deltaTime;
+            float distance = Mathf.Abs(_startY - _endY);
+            float duration = distance / speed;
+            float t = Mathf.Clamp01(_elapsed / duration);
 
-            if (pos.y >= limitY)
+            _rt.anchoredPosition = new Vector2(0f, Mathf.Lerp(_startY, _endY, t));
+
+            if (t >= 1f)
             {
-                pos.y = limitY;
-                _direction = -1f;
+                _isPlaying = false;
+                gameObject.SetActive(false);
             }
-            else if (pos.y <= -limitY)
-            {
-                pos.y = -limitY;
-                _direction = 1f;
-            }
-
-            _rt.anchoredPosition = pos;
         }
     }
 }
