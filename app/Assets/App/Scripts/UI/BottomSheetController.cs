@@ -100,8 +100,8 @@ namespace GerakAR.UI
 
         // ── Public API ────────────────────────────────────────────────
 
-        /// <summary>Open material to the half-height presentation.</summary>
-        public void Open() => SnapTo(SheetState.Half);
+        /// <summary>Open material directly to full height (~94%).</summary>
+        public void Open() => SnapTo(SheetState.Full);
 
         /// <summary>Close the sheet.</summary>
         public void CloseSheet()
