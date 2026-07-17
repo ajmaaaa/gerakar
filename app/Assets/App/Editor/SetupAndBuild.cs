@@ -38,8 +38,13 @@ public static class SetupAndBuild
         ConfigurePlayerSettings();
         Debug.Log("[GerakAR] Memulai setup scene...");
 
-        var sdfFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
-            "Assets/MobileARTemplateAssets/UI/Fonts/Inter-Regular_SDF.asset");
+        var poppinsRegular = FontSetupHelper.LoadPoppinsFont("Regular") ??
+            AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
+                "Assets/MobileARTemplateAssets/UI/Fonts/Inter-Regular_SDF.asset");
+        var poppinsMedium = FontSetupHelper.LoadPoppinsFont("Medium") ?? poppinsRegular;
+        var poppinsSemiBold = FontSetupHelper.LoadPoppinsFont("SemiBold") ?? poppinsRegular;
+        var poppinsBold = FontSetupHelper.LoadPoppinsFont("Bold") ?? poppinsRegular;
+        var fonts = new FontSet(poppinsRegular, poppinsMedium, poppinsSemiBold, poppinsBold);
         var btnSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
             "Assets/MobileARTemplateAssets/UI/Sprites/ActivationButtonOpaque.png");
         var uiSolidRect = AssetDatabase.LoadAssetAtPath<Sprite>(
@@ -47,9 +52,9 @@ public static class SetupAndBuild
         var roundTopSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
             "Assets/MobileARTemplateAssets/UI/Sprites/RoundRadius_10_Top.png");
 
-        GeneratePrefabs(sdfFont, btnSprite, uiSolidRect);
-        CreateBootstrapScene(sdfFont, btnSprite, uiSolidRect);
-        CreateMainARScene(sdfFont, btnSprite, uiSolidRect, roundTopSprite);
+        GeneratePrefabs(fonts, btnSprite, uiSolidRect);
+        CreateBootstrapScene(fonts, btnSprite, uiSolidRect);
+        CreateMainARScene(fonts, btnSprite, uiSolidRect, roundTopSprite);
         UpdateBuildSettings();
         ValidateSetup();
         AssetDatabase.SaveAssets();
@@ -71,12 +76,25 @@ public static class SetupAndBuild
         PlayerSettings.allowedAutorotateToLandscapeRight = false;
         PlayerSettings.Android.forceInternetPermission = false;
 
+        QualitySettings.antiAliasing = 4;
+
+        var urpAsset = AssetDatabase.LoadAssetAtPath<RenderPipelineAsset>(
+            "Assets/Settings/URP-Performant.asset");
+        if (urpAsset != null)
+        {
+            var so = new SerializedObject(urpAsset);
+            var msaaProp = so.FindProperty("m_MSAA");
+            if (msaaProp != null) msaaProp.intValue = 4;
+            so.ApplyModifiedProperties();
+            so.Dispose();
+        }
+
         EditorUserBuildSettings.buildAppBundle = false;
         EditorUserBuildSettings.development = false;
         EditorUserBuildSettings.allowDebugging = false;
     }
 
-    private static void GeneratePrefabs(TMP_FontAsset font, Sprite btnSprite, Sprite uiSolidRect)
+    private static void GeneratePrefabs(FontSet fonts, Sprite btnSprite, Sprite uiSolidRect)
     {
         System.IO.Directory.CreateDirectory("Assets/App/Prefabs");
 
@@ -88,7 +106,7 @@ public static class SetupAndBuild
         stepText.fontSize = 13f;
         stepText.color = SecondaryText;
         stepText.alignment = TextAlignmentOptions.Left;
-        if (font != null) stepText.font = font;
+        if (fonts != null) stepText.font = fonts.Body;
         stepGo.GetComponent<RectTransform>().sizeDelta = new Vector2(880f, 60f);
         PrefabUtility.SaveAsPrefabAsset(stepGo, "Assets/App/Prefabs/StepItem.prefab");
         Object.DestroyImmediate(stepGo);
@@ -101,7 +119,7 @@ public static class SetupAndBuild
         bulletText.fontSize = 12f;
         bulletText.color = SecondaryText;
         bulletText.alignment = TextAlignmentOptions.Left;
-        if (font != null) bulletText.font = font;
+        if (fonts != null) bulletText.font = fonts.Body;
         bulletGo.GetComponent<RectTransform>().sizeDelta = new Vector2(880f, 50f);
         PrefabUtility.SaveAsPrefabAsset(bulletGo, "Assets/App/Prefabs/BulletItem.prefab");
         Object.DestroyImmediate(bulletGo);
@@ -131,7 +149,7 @@ public static class SetupAndBuild
         titleText.fontStyle = FontStyles.Bold;
         titleText.color = DeepForest;
         titleText.alignment = TextAlignmentOptions.Center;
-        if (font != null) titleText.font = font;
+        if (fonts != null) titleText.font = fonts.Display;
         SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, -16.7f, 66.7f, 13.3f);
 
         PrefabUtility.SaveAsPrefabAsset(cardGo, "Assets/App/Prefabs/RelatedCard.prefab");
@@ -154,7 +172,7 @@ public static class SetupAndBuild
     // ─────────────────────────────────────────────────────────────────
     // BOOTSTRAP SCENE
     // ─────────────────────────────────────────────────────────────────
-    private static void CreateBootstrapScene(TMP_FontAsset font, Sprite btnSprite, Sprite uiSolidRect)
+    private static void CreateBootstrapScene(FontSet fonts, Sprite btnSprite, Sprite uiSolidRect)
     {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         scene.name = "Bootstrap";
@@ -208,7 +226,7 @@ public static class SetupAndBuild
         metaText.fontSize = 12f;
         metaText.color = WarmWhite;
         metaText.alignment = TextAlignmentOptions.Left;
-        if (font != null) metaText.font = font;
+        if (fonts != null) metaText.font = fonts.Display;
         StretchRect(metaTextGo.GetComponent<RectTransform>());
 
         // Center visual placeholder
@@ -227,7 +245,7 @@ public static class SetupAndBuild
         titleText.fontStyle = FontStyles.Bold;
         titleText.color = WarmWhite;
         titleText.alignment = TextAlignmentOptions.Center;
-        if (font != null) titleText.font = font;
+        if (fonts != null) titleText.font = fonts.Display;
         SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, 45f, 266.7f, 36f);
 
         var subtitleGo = CreateUIObject("SubtitleText", brandGroupGo);
@@ -237,7 +255,7 @@ public static class SetupAndBuild
         subtitleText.fontSize = 12f;
         subtitleText.color = SoftSand;
         subtitleText.alignment = TextAlignmentOptions.Center;
-        if (font != null) subtitleText.font = font;
+        if (fonts != null) subtitleText.font = fonts.Medium;
         SetCenterPosition(subtitleGo.GetComponent<RectTransform>(), 0f, 15f, 266.7f, 16.7f);
 
         // StraightProgressBar — UISolidRectangle anti-taper
@@ -272,7 +290,7 @@ public static class SetupAndBuild
         loadingLabel.fontSize = 10f;
         loadingLabel.color = SoftSand;
         loadingLabel.alignment = TextAlignmentOptions.Center;
-        if (font != null) loadingLabel.font = font;
+        if (fonts != null) loadingLabel.font = fonts.Medium;
         SetCenterPosition(loadingLabelGo.GetComponent<RectTransform>(), 0f, -50f, 200f, 14f);
 
         var serialIntro = new SerializedObject(introController);
@@ -306,7 +324,7 @@ public static class SetupAndBuild
         obTitle.fontStyle = FontStyles.Bold;
         obTitle.color = DeepForest;
         obTitle.alignment = TextAlignmentOptions.Center;
-        if (font != null) obTitle.font = font;
+        if (fonts != null) obTitle.font = fonts.Heading;
         SetCenterPosition(obTitleGo.GetComponent<RectTransform>(), 0f, 30f, 266.7f, 30f);
 
         var obSubtitleGo = CreateUIObject("OnboardingSubtitle", safetyHeaderGo);
@@ -316,7 +334,7 @@ public static class SetupAndBuild
         obSubtitle.fontSize = 12f;
         obSubtitle.color = SecondaryText;
         obSubtitle.alignment = TextAlignmentOptions.Center;
-        if (font != null) obSubtitle.font = font;
+        if (fonts != null) obSubtitle.font = fonts.Medium;
         SetCenterPosition(obSubtitleGo.GetComponent<RectTransform>(), 0f, -5f, 266.7f, 16.7f);
 
         var obListGo = CreateUIObject("InstructionList", onboardGo);
@@ -324,13 +342,13 @@ public static class SetupAndBuild
 
         // Card 1
         CreateOnboardingCard(obListGo, "Card1", "1", "Gunakan di tempat yang cukup luas.",
-            0f, 65f, btnSprite, font);
+            0f, 65f, btnSprite, fonts);
         // Card 2
         CreateOnboardingCard(obListGo, "Card2", "2", "Minta guru atau orang tua mendampingi.",
-            0f, 0f, btnSprite, font);
+            0f, 0f, btnSprite, fonts);
         // Card 3
         CreateOnboardingCard(obListGo, "Card3", "3", "Izinkan kamera untuk melihat gerakan.",
-            0f, -65f, btnSprite, font);
+            0f, -65f, btnSprite, fonts);
 
         var btnGroupGo = CreateUIObject("ButtonGroup", onboardGo);
         SetAnchorBottom(btnGroupGo.GetComponent<RectTransform>(), 0f, 60f, 320f, 100f);
@@ -353,7 +371,7 @@ public static class SetupAndBuild
         btnText.fontStyle = FontStyles.Bold;
         btnText.color = WarmWhite;
         btnText.alignment = TextAlignmentOptions.Center;
-        if (font != null) btnText.font = font;
+        if (fonts != null) btnText.font = fonts.Heading;
         StretchRect(btnTextGo.GetComponent<RectTransform>());
 
         // Fallback links (hidden in production)
@@ -368,7 +386,7 @@ public static class SetupAndBuild
         nonARLinkText.fontSize = 10f;
         nonARLinkText.color = ForestGreen;
         nonARLinkText.alignment = TextAlignmentOptions.Center;
-        if (font != null) nonARLinkText.font = font;
+        if (fonts != null) nonARLinkText.font = fonts.Heading;
         var nonARBtn = nonARLinkGo.AddComponent<Button>();
         SetCenterPosition(nonARLinkGo.GetComponent<RectTransform>(), -73.3f, 0f, 113.3f, 16.7f);
 
@@ -379,7 +397,7 @@ public static class SetupAndBuild
         camErrorLinkText.fontSize = 10f;
         camErrorLinkText.color = DeepForest;
         camErrorLinkText.alignment = TextAlignmentOptions.Center;
-        if (font != null) camErrorLinkText.font = font;
+        if (fonts != null) camErrorLinkText.font = fonts.Heading;
         var camErrorBtn = camErrorLinkGo.AddComponent<Button>();
         SetCenterPosition(camErrorLinkGo.GetComponent<RectTransform>(), 73.3f, 0f, 113.3f, 16.7f);
 
@@ -415,7 +433,7 @@ public static class SetupAndBuild
         g08BrandText.fontStyle = FontStyles.Bold;
         g08BrandText.color = WarmWhite;
         g08BrandText.alignment = TextAlignmentOptions.Left;
-        if (font != null) g08BrandText.font = font;
+        if (fonts != null) g08BrandText.font = fonts.Display;
         SetCenterPosition(g08BrandGo.GetComponent<RectTransform>(), -140f, 0f, 120f, 28f);
 
         var g08BadgeGo = CreateUIObject("ModeBadge", g08HeaderBarGo);
@@ -433,12 +451,12 @@ public static class SetupAndBuild
         g08BadgeText.fontStyle = FontStyles.Bold;
         g08BadgeText.color = WarmWhite;
         g08BadgeText.alignment = TextAlignmentOptions.Center;
-        if (font != null) g08BadgeText.font = font;
+        if (fonts != null) g08BadgeText.font = fonts.Heading;
         StretchRect(g08BadgeTextGo.GetComponent<RectTransform>());
 
         // G08 Collapsible Warning
         var collapsibleWarnGo = CreateCollapsibleWarning(
-            nonARModePanelGo, btnSprite, font, "Assets/App/UI/Icons/Lucide/info.png");
+            nonARModePanelGo, btnSprite, fonts, "Assets/App/UI/Icons/Lucide/info.png");
         var collapsibleWarnRT = collapsibleWarnGo.GetComponent<RectTransform>();
         collapsibleWarnRT.anchorMin = new Vector2(0.5f, 1f);
         collapsibleWarnRT.anchorMax = new Vector2(0.5f, 1f);
@@ -458,26 +476,26 @@ public static class SetupAndBuild
         catTitle.fontStyle = FontStyles.Bold;
         catTitle.color = DeepForest;
         catTitle.alignment = TextAlignmentOptions.Left;
-        if (font != null) catTitle.font = font;
+        if (fonts != null) catTitle.font = fonts.Heading;
         SetCenterPosition(catTitleGo.GetComponent<RectTransform>(), 0f, 145f, 300f, 16f);
 
         // Squat card
         var (squatBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardSquat", "SQ", "Gerakan Squat",
             "Melatih otot paha dan sendi lutut",
-            0f, 95f, btnSprite, font);
+            0f, 95f, btnSprite, fonts);
 
         // Dynamic Stretching card
         var (dynamicStretchBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardDynamicStretch", "DS", "Dynamic Stretching",
             "Peregangan aktif sebelum bergerak",
-            0f, 30f, btnSprite, font);
+            0f, 30f, btnSprite, fonts);
 
         // Ladder Drill card
         var (ladderDrillBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardLadderDrill", "LD", "Ladder Drill",
             "Melatih kelincahan dan langkah kaki",
-            0f, -35f, btnSprite, font);
+            0f, -35f, btnSprite, fonts);
 
         // Back button
         var catalogBackGo = CreateUIObject("CatalogBackButton", nonARModePanelGo);
@@ -496,7 +514,7 @@ public static class SetupAndBuild
         catalogBackText.fontStyle = FontStyles.Bold;
         catalogBackText.color = WarmWhite;
         catalogBackText.alignment = TextAlignmentOptions.Center;
-        if (font != null) catalogBackText.font = font;
+        if (fonts != null) catalogBackText.font = fonts.Heading;
         StretchRect(catalogBackTextGo.GetComponent<RectTransform>());
 
         // ── G09 — CAMERA DENIED ──
@@ -534,7 +552,7 @@ public static class SetupAndBuild
         camOffIconText.fontStyle = FontStyles.Bold;
         camOffIconText.color = DeepForest;
         camOffIconText.alignment = TextAlignmentOptions.Center;
-        if (font != null) camOffIconText.font = font;
+        if (fonts != null) camOffIconText.font = fonts.Heading;
         StretchRect(camOffIconTextGo.GetComponent<RectTransform>());
 
         var camErrorTitleGo = CreateUIObject("Title", camCardGo);
@@ -545,7 +563,7 @@ public static class SetupAndBuild
         camErrorTitle.fontStyle = FontStyles.Bold;
         camErrorTitle.color = DeepForest;
         camErrorTitle.alignment = TextAlignmentOptions.Center;
-        if (font != null) camErrorTitle.font = font;
+        if (fonts != null) camErrorTitle.font = fonts.Heading;
         SetCenterPosition(camErrorTitleGo.GetComponent<RectTransform>(), 0f, 45f, 240f, 28f);
 
         var camErrorDescGo = CreateUIObject("Desc", camCardGo);
@@ -555,7 +573,7 @@ public static class SetupAndBuild
         camErrorDesc.fontSize = 13f;
         camErrorDesc.color = SecondaryText;
         camErrorDesc.alignment = TextAlignmentOptions.Center;
-        if (font != null) camErrorDesc.font = font;
+        if (fonts != null) camErrorDesc.font = fonts.Medium;
         SetCenterPosition(camErrorDescGo.GetComponent<RectTransform>(), 0f, 10f, 240f, 40f);
 
         // BUKA PENGATURAN button
@@ -575,7 +593,7 @@ public static class SetupAndBuild
         settingsText.fontStyle = FontStyles.Bold;
         settingsText.color = WarmWhite;
         settingsText.alignment = TextAlignmentOptions.Center;
-        if (font != null) settingsText.font = font;
+        if (fonts != null) settingsText.font = fonts.Heading;
         StretchRect(settingsTextGo.GetComponent<RectTransform>());
 
         // Coba Lagi button
@@ -595,7 +613,7 @@ public static class SetupAndBuild
         retryText.fontStyle = FontStyles.Bold;
         retryText.color = DeepForest;
         retryText.alignment = TextAlignmentOptions.Center;
-        if (font != null) retryText.font = font;
+        if (fonts != null) retryText.font = fonts.Heading;
         StretchRect(retryTextGo.GetComponent<RectTransform>());
 
         // Helper text
@@ -606,7 +624,7 @@ public static class SetupAndBuild
         helperText.fontSize = 11f;
         helperText.color = SoftSand;
         helperText.alignment = TextAlignmentOptions.Center;
-        if (font != null) helperText.font = font;
+        if (fonts != null) helperText.font = fonts.Medium;
         SetAnchorBottom(helperGo.GetComponent<RectTransform>(), 0f, 20f, 280f, 16f);
 
         // BootstrapUIController wiring
@@ -639,7 +657,7 @@ public static class SetupAndBuild
     // ─────────────────────────────────────────────────────────────────
     // MAIN AR SCENE
     // ─────────────────────────────────────────────────────────────────
-    private static void CreateMainARScene(TMP_FontAsset font, Sprite btnSprite, Sprite uiSolidRect, Sprite roundTopSprite)
+    private static void CreateMainARScene(FontSet fonts, Sprite btnSprite, Sprite uiSolidRect, Sprite roundTopSprite)
     {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         scene.name = "MainAR";
@@ -764,7 +782,7 @@ public static class SetupAndBuild
         scanTitle.fontStyle = FontStyles.Bold;
         scanTitle.color = WarmWhite;
         scanTitle.alignment = TextAlignmentOptions.Center;
-        if (font != null) scanTitle.font = font;
+        if (fonts != null) scanTitle.font = fonts.Display;
         SetAnchorTop(scanTitleGo.GetComponent<RectTransform>(), 0f, -48f, 200f, 28f);
 
         var scanSubGo = CreateUIObject("HeaderSub", scanGo);
@@ -774,7 +792,7 @@ public static class SetupAndBuild
         scanSub.fontSize = 10f;
         scanSub.color = SoftSand;
         scanSub.alignment = TextAlignmentOptions.Center;
-        if (font != null) scanSub.font = font;
+        if (fonts != null) scanSub.font = fonts.Medium;
         SetAnchorTop(scanSubGo.GetComponent<RectTransform>(), 0f, -76f, 200f, 16f);
 
         // G03 Central Scan Guide Frame — Solid Warm White corners
@@ -863,7 +881,7 @@ public static class SetupAndBuild
         scanPillText.fontStyle = FontStyles.Bold;
         scanPillText.color = WarmWhite;
         scanPillText.alignment = TextAlignmentOptions.Center;
-        if (font != null) scanPillText.font = font;
+        if (fonts != null) scanPillText.font = fonts.Heading;
         StretchRect(scanPillTextGo.GetComponent<RectTransform>());
 
         // Instruction card — Deep Forest
@@ -882,7 +900,7 @@ public static class SetupAndBuild
         hintText.fontStyle = FontStyles.Bold;
         hintText.color = WarmWhite;
         hintText.alignment = TextAlignmentOptions.Center;
-        if (font != null) hintText.font = font;
+        if (fonts != null) hintText.font = fonts.Body;
         StretchRect(hintGo.GetComponent<RectTransform>());
 
         var instSubtitleGo = CreateUIObject("InstructionSubtitle", scanGo);
@@ -892,7 +910,7 @@ public static class SetupAndBuild
         instSubtitle.fontSize = 10f;
         instSubtitle.color = SoftSand;
         instSubtitle.alignment = TextAlignmentOptions.Center;
-        if (font != null) instSubtitle.font = font;
+        if (fonts != null) instSubtitle.font = fonts.Medium;
         SetAnchorBottom(instSubtitleGo.GetComponent<RectTransform>(), 0f, 70f, 280f, 16f);
 
         // ═══════════════════════════════════════════════════════════
@@ -919,7 +937,7 @@ public static class SetupAndBuild
         toastCheck.fontStyle = FontStyles.Bold;
         toastCheck.color = WarmWhite;
         toastCheck.alignment = TextAlignmentOptions.Center;
-        if (font != null) toastCheck.font = font;
+        if (fonts != null) toastCheck.font = fonts.Medium;
         StretchRect(toastCheckGo.GetComponent<RectTransform>());
 
         var toastTextGo = CreateUIObject("TitleText", toastGo);
@@ -930,7 +948,7 @@ public static class SetupAndBuild
         toastText.fontStyle = FontStyles.Bold;
         toastText.color = DeepForest;
         toastText.alignment = TextAlignmentOptions.Center;
-        if (font != null) toastText.font = font;
+        if (fonts != null) toastText.font = fonts.Heading;
         SetCenterPosition(toastTextGo.GetComponent<RectTransform>(), 0f, -16f, 180f, 20f);
 
         // Movement name chip
@@ -949,7 +967,7 @@ public static class SetupAndBuild
         toastPillText.fontStyle = FontStyles.Bold;
         toastPillText.color = WarmWhite;
         toastPillText.alignment = TextAlignmentOptions.Center;
-        if (font != null) toastPillText.font = font;
+        if (fonts != null) toastPillText.font = fonts.Heading;
         StretchRect(toastPillTextGo.GetComponent<RectTransform>());
         toastGo.SetActive(false);
 
@@ -969,7 +987,7 @@ public static class SetupAndBuild
         arHeaderTitle.fontStyle = FontStyles.Bold;
         arHeaderTitle.color = WarmWhite;
         arHeaderTitle.alignment = TextAlignmentOptions.Center;
-        if (font != null) arHeaderTitle.font = font;
+        if (fonts != null) arHeaderTitle.font = fonts.Display;
         SetAnchorTop(arHeaderTitleGo.GetComponent<RectTransform>(), 0f, -48f, 200f, 28f);
 
         var arHeaderSubGo = CreateUIObject("HeaderSub", arControlsGo);
@@ -979,7 +997,7 @@ public static class SetupAndBuild
         arHeaderSub.fontSize = 10f;
         arHeaderSub.color = SoftSand;
         arHeaderSub.alignment = TextAlignmentOptions.Center;
-        if (font != null) arHeaderSub.font = font;
+        if (fonts != null) arHeaderSub.font = fonts.Medium;
         SetAnchorTop(arHeaderSubGo.GetComponent<RectTransform>(), 0f, -76f, 200f, 16f);
 
         // ── Floating Action Buttons Column ──
@@ -997,15 +1015,15 @@ public static class SetupAndBuild
         SetAnchorBottomRight(fabColumnGo.GetComponent<RectTransform>(), -16f, 120f, 48f, 160f);
 
         // FAB: Audio Play/Pause
-        var playPauseGo = CreateFAB(fabColumnGo, "PlayPauseButton", DeepForest, "play", font);
+        var playPauseGo = CreateFAB(fabColumnGo, "PlayPauseButton", DeepForest, "play", fonts);
         var playPauseBtn = playPauseGo.GetComponent<Button>();
 
         // FAB: Material
-        var matBtnGo = CreateFAB(fabColumnGo, "MaterialButton", ForestGreen, "book", font);
+        var matBtnGo = CreateFAB(fabColumnGo, "MaterialButton", ForestGreen, "book", fonts);
         var matBtn = matBtnGo.GetComponent<Button>();
 
         // FAB: Close
-        var closeGo = CreateFAB(fabColumnGo, "CloseButton", DeepForest, "x", font);
+        var closeGo = CreateFAB(fabColumnGo, "CloseButton", DeepForest, "x", fonts);
         var closeBtn = closeGo.GetComponent<Button>();
 
         // ── Timeline Card (G05 Bottom) ──
@@ -1035,7 +1053,7 @@ public static class SetupAndBuild
         nameLabel.fontStyle = FontStyles.Bold;
         nameLabel.color = DeepForest;
         nameLabel.alignment = TextAlignmentOptions.Center;
-        if (font != null) nameLabel.font = font;
+        if (fonts != null) nameLabel.font = fonts.Heading;
         StretchRect(nameLabelGo.GetComponent<RectTransform>());
 
         var statusTagGo = CreateUIObject("StatusTag", tlInfoRowGo);
@@ -1046,7 +1064,7 @@ public static class SetupAndBuild
         statusTag.fontStyle = FontStyles.Bold;
         statusTag.color = ForestGreen;
         statusTag.alignment = TextAlignmentOptions.Right;
-        if (font != null) statusTag.font = font;
+        if (fonts != null) statusTag.font = fonts.Heading;
         SetCenterPosition(statusTagGo.GetComponent<RectTransform>(), 103.3f, 0f, 80f, 14f);
 
         // ── Reference Slider (G05) ──
@@ -1176,7 +1194,7 @@ public static class SetupAndBuild
         startLabel.fontSize = 11f;
         startLabel.color = SecondaryText;
         startLabel.alignment = TextAlignmentOptions.Left;
-        if (font != null) startLabel.font = font;
+        if (fonts != null) startLabel.font = fonts.Medium;
         SetCenterPosition(startLabelGo.GetComponent<RectTransform>(), -130f, 0f, 50f, 14f);
 
         var midLabelGo = CreateUIObject("Petunjuk", tlBottomLabelsGo);
@@ -1186,7 +1204,7 @@ public static class SetupAndBuild
         midLabel.fontSize = 11f;
         midLabel.color = SecondaryText;
         midLabel.alignment = TextAlignmentOptions.Center;
-        if (font != null) midLabel.font = font;
+        if (fonts != null) midLabel.font = fonts.Medium;
         SetCenterPosition(midLabelGo.GetComponent<RectTransform>(), 0f, 0f, 160f, 14f);
 
         var endLabelGo = CreateUIObject("Selesai", tlBottomLabelsGo);
@@ -1196,7 +1214,7 @@ public static class SetupAndBuild
         endLabel.fontSize = 11f;
         endLabel.color = SecondaryText;
         endLabel.alignment = TextAlignmentOptions.Right;
-        if (font != null) endLabel.font = font;
+        if (fonts != null) endLabel.font = fonts.Medium;
         SetCenterPosition(endLabelGo.GetComponent<RectTransform>(), 130f, 0f, 50f, 14f);
 
         // PoseTimelineController wiring
@@ -1253,7 +1271,7 @@ public static class SetupAndBuild
         categoryTxt.fontSize = 10f;
         categoryTxt.fontStyle = FontStyles.Bold;
         categoryTxt.color = SoftSand;
-        if (font != null) categoryTxt.font = font;
+        if (fonts != null) categoryTxt.font = fonts.Heading;
         SetCenterPosition(categoryGo.GetComponent<RectTransform>(), -120f, -8f, 120f, 16f);
 
         var sheetTitleGo = CreateUIObject("MovementTitle", sheetHeaderGo);
@@ -1264,7 +1282,7 @@ public static class SetupAndBuild
         sheetTitleText.fontStyle = FontStyles.Bold;
         sheetTitleText.color = WarmWhite;
         sheetTitleText.alignment = TextAlignmentOptions.Left;
-        if (font != null) sheetTitleText.font = font;
+        if (fonts != null) sheetTitleText.font = fonts.Heading;
         SetCenterPosition(sheetTitleGo.GetComponent<RectTransform>(), -120f, -32f, 160f, 20f);
 
         // Back to primary button (G07 -> G06)
@@ -1284,7 +1302,7 @@ public static class SetupAndBuild
         backBtnText.fontStyle = FontStyles.Bold;
         backBtnText.color = WarmWhite;
         backBtnText.alignment = TextAlignmentOptions.Center;
-        if (font != null) backBtnText.font = font;
+        if (fonts != null) backBtnText.font = fonts.Heading;
         StretchRect(backBtnTextGo.GetComponent<RectTransform>());
 
         // Close X button on header
@@ -1303,7 +1321,7 @@ public static class SetupAndBuild
         sheetCloseTxt.fontStyle = FontStyles.Bold;
         sheetCloseTxt.color = WarmWhite;
         sheetCloseTxt.alignment = TextAlignmentOptions.Center;
-        if (font != null) sheetCloseTxt.font = font;
+        if (fonts != null) sheetCloseTxt.font = fonts.Heading;
         StretchRect(sheetCloseTxtGo.GetComponent<RectTransform>());
 
         // Scroll view
@@ -1354,14 +1372,14 @@ public static class SetupAndBuild
         aboutTitle.fontSize = 13f;
         aboutTitle.fontStyle = FontStyles.Bold;
         aboutTitle.color = DeepForest;
-        if (font != null) aboutTitle.font = font;
+        if (fonts != null) aboutTitle.font = fonts.Heading;
 
         var descGo = CreateUIObject("Description", aboutGroupGo);
         var descText = descGo.AddComponent<TextMeshProUGUI>();
         descText.textWrappingMode = TextWrappingModes.Normal;
         descText.fontSize = 13f;
         descText.color = SecondaryText;
-        if (font != null) descText.font = font;
+        if (fonts != null) descText.font = fonts.Body;
 
         // Section: Cara Melakukan
         var stepsGroupGo = CreateUIObject("StepsSection", contentGo);
@@ -1377,7 +1395,7 @@ public static class SetupAndBuild
         stepsTitle.fontSize = 13f;
         stepsTitle.fontStyle = FontStyles.Bold;
         stepsTitle.color = DeepForest;
-        if (font != null) stepsTitle.font = font;
+        if (fonts != null) stepsTitle.font = fonts.Heading;
 
         var stepsContainerGo = CreateUIObject("Container", stepsGroupGo);
         var stepsContVlg = stepsContainerGo.AddComponent<VerticalLayoutGroup>();
@@ -1401,7 +1419,7 @@ public static class SetupAndBuild
         safetyText.fontSize = 12f;
         safetyText.color = DeepForest;
         safetyText.fontStyle = FontStyles.Bold;
-        if (font != null) safetyText.font = font;
+        if (fonts != null) safetyText.font = fonts.Heading;
 
         // Section: Full State Extras
         var fullExtrasGo = CreateUIObject("FullStateExtras", contentGo);
@@ -1417,7 +1435,7 @@ public static class SetupAndBuild
         mistakesTitle.fontSize = 13f;
         mistakesTitle.fontStyle = FontStyles.Bold;
         mistakesTitle.color = DeepForest;
-        if (font != null) mistakesTitle.font = font;
+        if (fonts != null) mistakesTitle.font = fonts.Heading;
 
         var mistakesContainerGo = CreateUIObject("MistakesContainer", fullExtrasGo);
         var mistakesContVlg = mistakesContainerGo.AddComponent<VerticalLayoutGroup>();
@@ -1432,7 +1450,7 @@ public static class SetupAndBuild
         trainedTitle.fontSize = 13f;
         trainedTitle.fontStyle = FontStyles.Bold;
         trainedTitle.color = DeepForest;
-        if (font != null) trainedTitle.font = font;
+        if (fonts != null) trainedTitle.font = fonts.Heading;
 
         var trainedContainerGo = CreateUIObject("TrainedContainer", fullExtrasGo);
         var trainedContVlg = trainedContainerGo.AddComponent<VerticalLayoutGroup>();
@@ -1454,7 +1472,7 @@ public static class SetupAndBuild
         relatedTitle.fontSize = 13f;
         relatedTitle.fontStyle = FontStyles.Bold;
         relatedTitle.color = DeepForest;
-        if (font != null) relatedTitle.font = font;
+        if (fonts != null) relatedTitle.font = fonts.Heading;
 
         var relatedScrollViewGo = CreateUIObject("RelatedScrollView", relatedGroupGo);
         var relScroll = relatedScrollViewGo.AddComponent<ScrollRect>();
@@ -1670,7 +1688,7 @@ public static class SetupAndBuild
     }
 
     private static void CreateOnboardingCard(GameObject parent, string name, string number,
-        string description, float x, float y, Sprite btnSprite, TMP_FontAsset font)
+        string description, float x, float y, Sprite btnSprite, FontSet fonts)
     {
         var cardGo = CreateUIObject(name, parent);
         var cardImg = cardGo.AddComponent<Image>();
@@ -1693,7 +1711,7 @@ public static class SetupAndBuild
         numText.fontStyle = FontStyles.Bold;
         numText.color = WarmWhite;
         numText.alignment = TextAlignmentOptions.Center;
-        if (font != null) numText.font = font;
+        if (fonts != null) numText.font = fonts.Body;
         StretchRect(numTextGo.GetComponent<RectTransform>());
 
         var descGo = CreateUIObject("Desc", cardGo);
@@ -1703,13 +1721,13 @@ public static class SetupAndBuild
         desc.fontSize = 12f;
         desc.color = SecondaryText;
         desc.alignment = TextAlignmentOptions.Left;
-        if (font != null) desc.font = font;
+        if (fonts != null) desc.font = fonts.Body;
         SetCenterPosition(descGo.GetComponent<RectTransform>(), 20f, 0f, 220f, 30f);
     }
 
     private static (Button, GameObject, GameObject) CreateMovementCard(
         GameObject parent, string name, string icon, string title, string subtitle,
-        float x, float y, Sprite btnSprite, TMP_FontAsset font)
+        float x, float y, Sprite btnSprite, FontSet fonts)
     {
         var cardGo = CreateUIObject(name, parent);
         var cardImg = cardGo.AddComponent<Image>();
@@ -1725,7 +1743,7 @@ public static class SetupAndBuild
         iconText.fontStyle = FontStyles.Bold;
         iconText.color = ForestGreen;
         iconText.alignment = TextAlignmentOptions.Center;
-        if (font != null) iconText.font = font;
+        if (fonts != null) iconText.font = fonts.Body;
         SetCenterPosition(iconGo.GetComponent<RectTransform>(), -120f, 0f, 30f, 30f);
 
         var titleGo = CreateUIObject("TitleText", cardGo);
@@ -1735,7 +1753,7 @@ public static class SetupAndBuild
         titleText.fontSize = 12f;
         titleText.color = DeepForest;
         titleText.alignment = TextAlignmentOptions.Left;
-        if (font != null) titleText.font = font;
+        if (fonts != null) titleText.font = fonts.Display;
         SetCenterPosition(titleGo.GetComponent<RectTransform>(), 20f, 0f, 180f, 36f);
 
         var bukaGo = CreateUIObject("BukaButton", cardGo);
@@ -1753,13 +1771,13 @@ public static class SetupAndBuild
         bukaText.fontStyle = FontStyles.Bold;
         bukaText.color = WarmWhite;
         bukaText.alignment = TextAlignmentOptions.Center;
-        if (font != null) bukaText.font = font;
+        if (fonts != null) bukaText.font = fonts.Heading;
         StretchRect(bukaTextGo.GetComponent<RectTransform>());
 
         return (bukaBtn, cardGo, bukaGo);
     }
 
-    private static GameObject CreateFAB(GameObject parent, string name, Color bgColor, string iconText, TMP_FontAsset font)
+    private static GameObject CreateFAB(GameObject parent, string name, Color bgColor, string iconText, FontSet fonts)
     {
         var go = CreateUIObject(name, parent);
         var img = go.AddComponent<Image>();
@@ -1779,14 +1797,14 @@ public static class SetupAndBuild
         iconTxt.fontStyle = FontStyles.Bold;
         iconTxt.color = WarmWhite;
         iconTxt.alignment = TextAlignmentOptions.Center;
-        if (font != null) iconTxt.font = font;
+        if (fonts != null) iconTxt.font = fonts.Heading;
         StretchRect(iconGo.GetComponent<RectTransform>());
 
         return go;
     }
 
     private static GameObject CreateCollapsibleWarning(GameObject parent, Sprite btnSprite,
-        TMP_FontAsset font, string iconPath)
+        FontSet fonts, string iconPath)
     {
         var warnGo = CreateUIObject("CollapsibleWarning", parent);
         var warnImg = warnGo.AddComponent<Image>();
@@ -1811,7 +1829,7 @@ public static class SetupAndBuild
         iconTextGo.fontStyle = FontStyles.Bold;
         iconTextGo.color = ForestGreen;
         iconTextGo.alignment = TextAlignmentOptions.Center;
-        if (font != null) iconTextGo.font = font;
+        if (fonts != null) iconTextGo.font = fonts.Body;
         SetCenterPosition(iconGo.GetComponent<RectTransform>(), -130f, 0f, 22f, 22f);
 
         var titleWarnGo = CreateUIObject("Title", topRowGo);
@@ -1821,7 +1839,7 @@ public static class SetupAndBuild
         titleWarnText.fontStyle = FontStyles.Bold;
         titleWarnText.color = DeepForest;
         titleWarnText.alignment = TextAlignmentOptions.Left;
-        if (font != null) titleWarnText.font = font;
+        if (fonts != null) titleWarnText.font = fonts.Heading;
         SetCenterPosition(titleWarnGo.GetComponent<RectTransform>(), 0f, 0f, 180f, 22f);
 
         var chevronGo = CreateUIObject("Chevron", topRowGo);
@@ -1830,7 +1848,7 @@ public static class SetupAndBuild
         chevronText.fontSize = 14f;
         chevronText.color = ForestGreen;
         chevronText.alignment = TextAlignmentOptions.Center;
-        if (font != null) chevronText.font = font;
+        if (fonts != null) chevronText.font = fonts.Body;
         SetCenterPosition(chevronGo.GetComponent<RectTransform>(), 130f, 0f, 22f, 22f);
 
         // Expanded content (hidden by default)
@@ -1840,7 +1858,7 @@ public static class SetupAndBuild
         expandedText.text = "Perangkat belum mendukung mode AR. Kamu tetap dapat mempelajari seluruh gerakan, materi, dan panduan audio tanpa kamera.";
         expandedText.fontSize = 12f;
         expandedText.color = SecondaryText;
-        if (font != null) expandedText.font = font;
+        if (fonts != null) expandedText.font = fonts.Medium;
         expandedGo.SetActive(false);
 
         // Button for toggling
