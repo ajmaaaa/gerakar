@@ -7,10 +7,8 @@ namespace GerakAR.UI
 {
     public static class RelatedMovementCardView
     {
-        private static readonly Color WarmWhite = new Color32(255, 254, 250, 255);
+        private static readonly Color WarmCream = new Color32(244, 240, 230, 255);
         private static readonly Color DeepForest = new Color32(18, 55, 42, 255);
-        private static readonly Color MossGreen = new Color32(96, 125, 79, 255);
-        private static readonly Color SoftSage = new Color32(169, 190, 162, 255);
 
         public static void ConfigureContainer(Transform container)
         {
@@ -31,7 +29,7 @@ namespace GerakAR.UI
 
             RectTransform contentRect = container as RectTransform;
             if (contentRect != null)
-                contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, 160f);
+                contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, 180f);
 
             Transform scrollView = container.parent != null ? container.parent.parent : null;
             if (scrollView == null)
@@ -39,13 +37,13 @@ namespace GerakAR.UI
 
             RectTransform scrollRect = scrollView as RectTransform;
             if (scrollRect != null)
-                scrollRect.sizeDelta = new Vector2(scrollRect.sizeDelta.x, 160f);
+                scrollRect.sizeDelta = new Vector2(scrollRect.sizeDelta.x, 180f);
 
             LayoutElement scrollLayout = scrollView.GetComponent<LayoutElement>();
             if (scrollLayout == null)
                 scrollLayout = scrollView.gameObject.AddComponent<LayoutElement>();
-            scrollLayout.minHeight = 160f;
-            scrollLayout.preferredHeight = 160f;
+            scrollLayout.minHeight = 180f;
+            scrollLayout.preferredHeight = 180f;
         }
 
         public static void Configure(GameObject card, RelatedMovementData data)
@@ -57,29 +55,26 @@ namespace GerakAR.UI
             if (cardRect != null)
             {
                 cardRect.localScale = Vector3.one;
-                cardRect.sizeDelta = new Vector2(148f, 148f);
+                cardRect.sizeDelta = new Vector2(156f, 168f);
             }
 
             LayoutElement cardLayout = card.GetComponent<LayoutElement>();
             if (cardLayout == null)
                 cardLayout = card.AddComponent<LayoutElement>();
-            cardLayout.minWidth = 148f;
-            cardLayout.preferredWidth = 148f;
-            cardLayout.minHeight = 148f;
-            cardLayout.preferredHeight = 148f;
+            cardLayout.minWidth = 156f;
+            cardLayout.preferredWidth = 156f;
+            cardLayout.minHeight = 168f;
+            cardLayout.preferredHeight = 168f;
             cardLayout.flexibleWidth = 0f;
             cardLayout.flexibleHeight = 0f;
 
             Image background = card.GetComponent<Image>();
             if (background != null)
-                background.color = WarmWhite;
+                background.color = DeepForest;
 
             Outline outline = card.GetComponent<Outline>();
             if (outline != null)
-            {
-                outline.effectColor = new Color(SoftSage.r, SoftSage.g, SoftSage.b, 0.55f);
-                outline.effectDistance = new Vector2(1f, -1f);
-            }
+                outline.enabled = false;
 
             Shadow shadow = null;
             foreach (Shadow candidate in card.GetComponents<Shadow>())
@@ -91,27 +86,63 @@ namespace GerakAR.UI
             }
             if (shadow != null)
             {
-                shadow.effectColor = new Color(0f, 0f, 0f, 0.09f);
-                shadow.effectDistance = new Vector2(0f, -3f);
+                shadow.effectColor = new Color(0f, 0f, 0f, 0.14f);
+                shadow.effectDistance = new Vector2(0f, -2f);
             }
 
-            ConfigureThumbnail(card.transform.Find("Thumbnail"), data);
-            TextMeshProUGUI title = ConfigureTitle(card.transform.Find("Title"), data);
-            ConfigureEyebrow(card.transform, title);
-            ConfigureAccent(card.transform);
+            Transform thumbnail = FindDescendant(card.transform, "Thumbnail");
+            ConfigureThumbnail(card.transform, thumbnail, background, data);
+            ConfigureTitle(FindDescendant(card.transform, "Title"), data);
+            SetOptionalDecorationActive(card.transform, "Eyebrow", false);
+            SetOptionalDecorationActive(card.transform, "Accent", false);
         }
 
-        private static void ConfigureThumbnail(Transform thumbnailTransform, RelatedMovementData data)
+        private static void ConfigureThumbnail(
+            Transform card,
+            Transform thumbnailTransform,
+            Image cardBackground,
+            RelatedMovementData data)
         {
             if (thumbnailTransform == null)
                 return;
 
+            Transform frameTransform = card.Find("ThumbnailFrame");
+            if (frameTransform == null)
+            {
+                var frameObject = new GameObject(
+                    "ThumbnailFrame",
+                    typeof(RectTransform),
+                    typeof(CanvasRenderer),
+                    typeof(Image),
+                    typeof(Mask));
+                frameTransform = frameObject.transform;
+                frameTransform.SetParent(card, false);
+            }
+
+            frameTransform.SetAsFirstSibling();
+            RectTransform frameRect = frameTransform as RectTransform;
+            frameRect.anchorMin = new Vector2(0f, 1f);
+            frameRect.anchorMax = new Vector2(1f, 1f);
+            frameRect.pivot = new Vector2(0.5f, 1f);
+            frameRect.anchoredPosition = new Vector2(0f, -10f);
+            frameRect.sizeDelta = new Vector2(-20f, 118f);
+
+            Image frame = frameTransform.GetComponent<Image>();
+            frame.sprite = cardBackground != null ? cardBackground.sprite : null;
+            frame.type = frame.sprite != null ? Image.Type.Sliced : Image.Type.Simple;
+            frame.color = WarmCream;
+            frame.raycastTarget = false;
+
+            Mask mask = frameTransform.GetComponent<Mask>();
+            mask.showMaskGraphic = true;
+
+            thumbnailTransform.SetParent(frameTransform, false);
             RectTransform rect = thumbnailTransform as RectTransform;
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(1f, 1f);
-            rect.pivot = new Vector2(0.5f, 1f);
-            rect.anchoredPosition = new Vector2(0f, -10f);
-            rect.sizeDelta = new Vector2(-20f, 78f);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(-8f, -8f);
 
             Image image = thumbnailTransform.GetComponent<Image>();
             if (image == null)
@@ -125,7 +156,7 @@ namespace GerakAR.UI
             }
             else
             {
-                image.color = new Color(SoftSage.r, SoftSage.g, SoftSage.b, 0.48f);
+                image.color = WarmCream;
             }
         }
 
@@ -138,71 +169,45 @@ namespace GerakAR.UI
             rect.anchorMin = new Vector2(0f, 1f);
             rect.anchorMax = new Vector2(1f, 1f);
             rect.pivot = new Vector2(0.5f, 1f);
-            rect.anchoredPosition = new Vector2(5f, -111f);
-            rect.sizeDelta = new Vector2(-30f, 29f);
+            rect.anchoredPosition = new Vector2(0f, -136f);
+            rect.sizeDelta = new Vector2(-20f, 24f);
 
             TextMeshProUGUI title = titleTransform.GetComponent<TextMeshProUGUI>();
             if (title == null)
                 return null;
             title.text = data != null ? data.title : "Gerakan Terkait";
-            title.fontSize = 11f;
+            title.fontSize = 11.5f;
             title.fontStyle = FontStyles.Bold;
-            title.color = DeepForest;
-            title.alignment = TextAlignmentOptions.TopLeft;
+            title.color = Color.white;
+            title.alignment = TextAlignmentOptions.Center;
             title.textWrappingMode = TextWrappingModes.Normal;
             title.overflowMode = TextOverflowModes.Ellipsis;
             title.raycastTarget = false;
             return title;
         }
 
-        private static void ConfigureEyebrow(Transform card, TextMeshProUGUI title)
+        private static Transform FindDescendant(Transform root, string objectName)
         {
-            Transform eyebrowTransform = card.Find("Eyebrow");
-            if (eyebrowTransform == null)
+            if (root == null)
+                return null;
+            if (root.name == objectName)
+                return root;
+
+            for (int i = 0; i < root.childCount; i++)
             {
-                var eyebrowObject = new GameObject("Eyebrow", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
-                eyebrowTransform = eyebrowObject.transform;
-                eyebrowTransform.SetParent(card, false);
+                Transform match = FindDescendant(root.GetChild(i), objectName);
+                if (match != null)
+                    return match;
             }
 
-            RectTransform rect = eyebrowTransform as RectTransform;
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(1f, 1f);
-            rect.pivot = new Vector2(0.5f, 1f);
-            rect.anchoredPosition = new Vector2(5f, -95f);
-            rect.sizeDelta = new Vector2(-30f, 12f);
-
-            TextMeshProUGUI eyebrow = eyebrowTransform.GetComponent<TextMeshProUGUI>();
-            eyebrow.text = "LATIHAN TERKAIT";
-            eyebrow.font = title != null ? title.font : eyebrow.font;
-            eyebrow.fontSize = 7.5f;
-            eyebrow.fontStyle = FontStyles.Bold;
-            eyebrow.color = MossGreen;
-            eyebrow.alignment = TextAlignmentOptions.Left;
-            eyebrow.textWrappingMode = TextWrappingModes.NoWrap;
-            eyebrow.raycastTarget = false;
+            return null;
         }
 
-        private static void ConfigureAccent(Transform card)
+        private static void SetOptionalDecorationActive(Transform card, string objectName, bool active)
         {
-            Transform accentTransform = card.Find("Accent");
-            if (accentTransform == null)
-            {
-                var accentObject = new GameObject("Accent", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-                accentTransform = accentObject.transform;
-                accentTransform.SetParent(card, false);
-            }
-
-            RectTransform rect = accentTransform as RectTransform;
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(10f, -97f);
-            rect.sizeDelta = new Vector2(3f, 39f);
-
-            Image accent = accentTransform.GetComponent<Image>();
-            accent.color = MossGreen;
-            accent.raycastTarget = false;
+            Transform decoration = card.Find(objectName);
+            if (decoration != null)
+                decoration.gameObject.SetActive(active);
         }
     }
 }
