@@ -76,3 +76,6 @@ build*.log
 *.txt
 *.py
 .agents/
+
+# Screenshots hasil generate editor
+app/Screenshots/
