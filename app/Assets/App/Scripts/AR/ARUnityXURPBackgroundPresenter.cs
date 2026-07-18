@@ -156,23 +156,29 @@ namespace GerakAR.AR
             // agar area yang tidak tertutup quad tidak hijau.
             _backgroundCamera.backgroundColor = Color.black;
 
-            // Shader VideoPlaneNoLight (Built-in) tidak render transform/rotasi
-            // dengan benar di URP. Ganti ke Universal Render Pipeline/Unlit.
+            // Shader VideoPlaneNoLight (Built-in) mungkin tidak render rotasi
+            // dengan benar di URP. Coba ganti ke shader URP native.
+            // Universal Render Pipeline/Unlit tidak masuk build (no material ref),
+            // jadi fallback ke Unlit/FeatheredPlaneShader dari AR Starter Assets.
             if (videoMaterial != null && videoMaterial.shader != null)
             {
                 string sn = videoMaterial.shader.name;
-                bool isURP = sn.Contains("Universal Render Pipeline") || sn == "Unlit/Texture";
-                if (!isURP)
+                if (!sn.Contains("Universal Render Pipeline") && sn != "Unlit/FeatheredPlaneShader")
                 {
-                    Shader urpUnlit = Shader.Find("Universal Render Pipeline/Unlit");
-                    if (urpUnlit != null && urpUnlit.isSupported)
+                    Shader target = Shader.Find("Unlit/FeatheredPlaneShader");
+                    if (target != null && target.isSupported)
                     {
-                        videoMaterial.shader = urpUnlit;
-                        Debug.Log($"[ARUnityXURPBackgroundPresenter] Switched shader from '{sn}' to 'Universal Render Pipeline/Unlit'.");
+                        // Copy texture reference before switching shader
+                        Texture existingTex = videoMaterial.mainTexture;
+                        videoMaterial.shader = target;
+                        videoMaterial.mainTexture = existingTex;
+                        videoMaterial.SetColor("_TexTintColor", Color.white);
+                        videoMaterial.SetColor("_PlaneColor", Color.white);
+                        Debug.Log($"[ARUnityXURPBackgroundPresenter] Switched shader from '{sn}' to 'Unlit/FeatheredPlaneShader'.");
                     }
                     else
                     {
-                        Debug.LogWarning($"[ARUnityXURPBackgroundPresenter] Could not find URP Unlit shader; keeping '{sn}'.");
+                        Debug.LogWarning($"[ARUnityXURPBackgroundPresenter] Fallback shader not found; keeping '{sn}'.");
                     }
                 }
             }
