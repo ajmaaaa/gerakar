@@ -260,12 +260,14 @@ public static class ScreenshotCapturer
         var arControlsGo = safeAreaTrans.Find("ARControls")?.gameObject;
         var sheetGo = safeAreaTrans.Find("BottomSheet")?.gameObject;
         var fullBgGo = canvas.transform.Find("FullScreenBackground")?.gameObject;
+        var readyCoverGo = canvas.transform.Find("CameraReadyCover")?.gameObject;
 
         System.Action deactivateAll = () => {
             if (scanGo != null) scanGo.SetActive(false);
             if (arControlsGo != null) arControlsGo.SetActive(false);
             if (sheetGo != null) sheetGo.SetActive(false);
             if (fullBgGo != null) fullBgGo.SetActive(false);
+            if (readyCoverGo != null) readyCoverGo.SetActive(false);
         };
 
         // G03 — Scan Guide

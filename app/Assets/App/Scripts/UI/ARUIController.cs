@@ -102,9 +102,10 @@ namespace GerakAR.UI
 
             if (detecting)
             {
-                // In detection scanning phase, show L-brackets and laser line
-                SetActive(scanOverlay, true);
-                SetActive(scanLine, true);
+                // In detection scanning phase, show L-brackets and laser line if loading cover is off
+                bool showScan = cameraReadyCover == null || !cameraReadyCover.gameObject.activeSelf;
+                SetActive(scanOverlay, showScan);
+                SetActive(scanLine, showScan);
                 SetActive(detectionToast, false);
                 StopAllCoroutines();
                 StartCoroutine(DetectionUISequence());
@@ -112,7 +113,8 @@ namespace GerakAR.UI
             else
             {
                 StopAllCoroutines();
-                SetActive(scanOverlay, scanning);
+                bool showScan = scanning && (cameraReadyCover == null || !cameraReadyCover.gameObject.activeSelf);
+                SetActive(scanOverlay, showScan);
                 SetActive(scanLine, false);
                 SetActive(detectionToast, false);
             }
@@ -225,7 +227,13 @@ namespace GerakAR.UI
 
         public System.Collections.IEnumerator FadeOutCameraCover()
         {
-            if (cameraReadyCover == null) yield break;
+            if (cameraReadyCover == null)
+            {
+                SetActive(scanOverlay, true);
+                yield break;
+            }
+
+            SetActive(scanOverlay, false);
 
             float elapsed = 0f;
             float duration = 0.3f; // 300 ms crossfade
@@ -237,6 +245,8 @@ namespace GerakAR.UI
             }
             cameraReadyCover.alpha = 0f;
             cameraReadyCover.gameObject.SetActive(false);
+
+            SetActive(scanOverlay, true);
         }
 
         // ── Helpers ───────────────────────────────────────────────────

@@ -465,7 +465,7 @@ public static class SetupAndBuild
         trackImg.sprite = uiSolidRect;
         trackImg.type = Image.Type.Simple;
         trackImg.preserveAspect = false;
-        trackImg.color = SoftSand;
+        trackImg.color = new Color(1f, 1f, 1f, 0.2f); // Semi-transparent white track background
         trackImg.GetComponent<RectTransform>().localScale = Vector3.one;
         SetCenterPosition(progressTrackGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 4f); // height 4 units, ujung datar
 
@@ -1325,9 +1325,10 @@ public static class SetupAndBuild
         var shieldCheckIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/shield-check.svg");
 
         // ═══════════════════════════════════════════════════════════
-        // G01 LOOKALIKE — CAMERA READY COVER (Stretched on FullScreenBg)
+        // G01 LOOKALIKE — CAMERA READY COVER (Stretched on CanvasGo)
         // ═══════════════════════════════════════════════════════════
-        var readyCoverGo = CreateUIObject("CameraReadyCover", canvasStruct.FullScreenBgGo);
+        var readyCoverGo = CreateUIObject("CameraReadyCover", canvasStruct.CanvasGo);
+        readyCoverGo.transform.SetAsFirstSibling();
         var readyCoverImg = readyCoverGo.AddComponent<Image>();
         readyCoverImg.color = DeepForest;
         StretchRect(readyCoverGo.GetComponent<RectTransform>());
@@ -1352,7 +1353,7 @@ public static class SetupAndBuild
         readyProgressImg.sprite = uiSolidRect;
         readyProgressImg.type = Image.Type.Simple;
         readyProgressImg.preserveAspect = false;
-        readyProgressImg.color = SoftSand;
+        readyProgressImg.color = new Color(1f, 1f, 1f, 0.2f); // Semi-transparent white track background
         SetCenterPosition(readyProgressGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 4f);
 
         var readyProgressFill = CreateUIObject("ProgressFill", readyProgressGo);
@@ -1382,7 +1383,7 @@ public static class SetupAndBuild
         // ═══════════════════════════════════════════════════════════
         var scanGo = CreateUIObject("ScanOverlay", canvasStruct.SafeAreaGo);
         var scanBgImg = scanGo.AddComponent<Image>();
-        scanBgImg.color = new Color(1f, 1f, 1f, 0.25f); // Soft transparent white background wash
+        scanBgImg.color = Color.clear; // Clear background to see camera feed clearly
         StretchRect(scanGo.GetComponent<RectTransform>());
 
         // G03 Header
@@ -1477,12 +1478,12 @@ public static class SetupAndBuild
         serialLaser.FindProperty("speed").floatValue = 250f;
         serialLaser.ApplyModifiedProperties();
 
-        // Scan target pill — White semi-transparent background with deep forest text, rounder corners
+        // Scan target pill — Transparent green background with white text, matching the instruction card
         var scanPillGo = CreateUIObject("ScanTargetPill", scanGo);
         var scanPillImg = scanPillGo.AddComponent<Image>();
         scanPillImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         scanPillImg.type = Image.Type.Sliced;
-        scanPillImg.color = new Color(1f, 1f, 1f, 0.85f);
+        scanPillImg.color = new Color(0.07f, 0.22f, 0.16f, 0.75f); // Transparent green matching instruction card
         SetCenterPosition(scanPillGo.GetComponent<RectTransform>(), 0f, -100f, 180f, 30f);
 
         var scanPillTextGo = CreateUIObject("Text", scanPillGo);
@@ -1491,7 +1492,7 @@ public static class SetupAndBuild
         scanPillText.text = "PINDAI TARGET GAMBAR";
         scanPillText.fontSize = 11f;
         scanPillText.fontStyle = FontStyles.Bold;
-        scanPillText.color = DeepForest;
+        scanPillText.color = Color.white; // White text for visibility on transparent green background
         scanPillText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) scanPillText.font = fonts.Heading;
         StretchRect(scanPillTextGo.GetComponent<RectTransform>());
