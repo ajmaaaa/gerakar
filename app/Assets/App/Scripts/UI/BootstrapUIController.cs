@@ -246,9 +246,10 @@ namespace GerakAR.UI
             SetBootstrapEventSystemsEnabled(false);
             SetMainAREventSystemsEnabled(true);
             SetBootstrapCanvasPriority(false);
+            SetBootstrapRenderingEnabled(false);
 
+            Debug.Log("[BootstrapUIController] Revealing prepared MainAR without unloading Bootstrap.");
             AppStateManager.Instance?.TransitionTo(AppState.Scanning);
-            SceneManager.UnloadSceneAsync("Bootstrap");
         }
 
         private void SetBootstrapCanvasPriority(bool elevated)
@@ -325,6 +326,19 @@ namespace GerakAR.UI
             {
                 foreach (EventSystem eventSystem in root.GetComponentsInChildren<EventSystem>(true))
                     eventSystem.enabled = enabled;
+            }
+        }
+
+        private void SetBootstrapRenderingEnabled(bool enabled)
+        {
+            if (_bootstrapCanvas != null)
+                _bootstrapCanvas.enabled = enabled;
+
+            Scene bootstrapScene = gameObject.scene;
+            foreach (GameObject root in bootstrapScene.GetRootGameObjects())
+            {
+                foreach (Camera camera in root.GetComponentsInChildren<Camera>(true))
+                    camera.enabled = enabled;
             }
         }
 
