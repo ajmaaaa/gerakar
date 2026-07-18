@@ -93,8 +93,16 @@ namespace GerakAR.UI
 
         private void UpdatePanels(AppState state)
         {
+            // Jangan pernah nonaktifkan introPanel selama transisi cepat (Intro → Onboarding → CheckingAR → LoadingARScene)
+            // IntroPanel alpha sudah 0 dari IntroController fadeout, mengaktifkan ulang akan menyebabkan flicker.
+            // Kita hanya nonaktifkan ketika state benar-benar meninggalkan flow loading (misalnya NonAR, CameraDenied, atau sudah Scanning).
             if (introPanel != null)
-                introPanel.SetActive(state == AppState.Intro || state == AppState.LoadingARScene);
+            {
+                bool isIntroFlow = state == AppState.Intro || state == AppState.Onboarding ||
+                                   state == AppState.CheckingAR || state == AppState.RequestingPermission ||
+                                   state == AppState.LoadingARScene;
+                introPanel.SetActive(isIntroFlow);
+            }
 
             if (state == AppState.UnsupportedNotice || state == AppState.ARInstallFailed)
             {

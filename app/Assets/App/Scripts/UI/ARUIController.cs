@@ -75,9 +75,13 @@ namespace GerakAR.UI
             if (playPauseButton != null)
                 playPauseButton.onClick.AddListener(OnPlayPausePressed);
 
-            // Initial state: show scan overlay, hide detection toast
+            // Jangan langsung ApplyState(Scanning) — MainAR dimuat additive saat Bootstrap masih di atas.
+            // Tunggu state aktual dari state machine agar tidak menampilkan scanning overlay sebelum waktunya.
             SetActive(detectionToast, false);
-            ApplyState(AppState.Scanning);
+            if (_stateMgr != null)
+                ApplyState(_stateMgr.CurrentState);
+            else
+                SetActive(scanOverlay, false);
         }
 
         private void OnDestroy()

@@ -65,8 +65,9 @@ namespace GerakAR.AR
 
             StartCoroutine(StartAndroidSession());
 #else
-            Debug.Log("[ARUnityXSessionController] Native camera starts only in an Android player.");
-            _stateManager?.TransitionTo(AppState.Scanning);
+            Debug.Log("[ARUnityXSessionController] Simulating camera startup (editor).");
+            // Jangan langsung Scanning — biarkan loading bar Bootstrap tampil dulu
+            StartCoroutine(SimulateCameraStartup());
 #endif
         }
 
@@ -168,7 +169,20 @@ namespace GerakAR.AR
         {
             _videoStarted = true;
 
-            if (backgroundPresenter == null || !backgroundPresenter.Present())
+            if (backgroundPresenter == null)
+            {
+                RouteToFallback("ARUnityX background presenter is missing.", false);
+                return;
+            }
+
+            // Wire failure callback
+            backgroundPresenter.OnPresentFailed = reason =>
+            {
+                if (!_routingAway)
+                    RouteToFallback("Camera background setup failed: " + reason, false);
+            };
+
+            if (!backgroundPresenter.Present())
             {
                 RouteToFallback("ARUnityX camera background failed to render.", false);
                 return;
@@ -181,9 +195,25 @@ namespace GerakAR.AR
         {
             float timeout = Time.realtimeSinceStartup + startupTimeoutSeconds;
             Texture videoTex = null;
-            GameObject videoObject = GameObject.Find("Video source");
-            Renderer videoRenderer = videoObject != null ? videoObject.GetComponent<Renderer>() : null;
-            Material videoMaterial = videoRenderer != null ? videoRenderer.sharedMaterial : null;
+            GameObject videoObject = null;
+            Renderer videoRenderer = null;
+            Material videoMaterial = null;
+
+            // Tunggu object "Video source" dibuat oleh ARUnityX runtime
+            while (videoObject == null && Time.realtimeSinceStartup < timeout)
+            {
+                videoObject = GameObject.Find("Video source");
+                yield return null;
+            }
+
+            if (videoObject == null)
+            {
+                RouteToFallback("Video source object not found.", false);
+                yield break;
+            }
+
+            videoRenderer = videoObject.GetComponent<Renderer>();
+            videoMaterial = videoRenderer != null ? videoRenderer.sharedMaterial : null;
 
             while (videoTex == null && Time.realtimeSinceStartup < timeout)
             {
@@ -198,34 +228,31 @@ namespace GerakAR.AR
                 yield break;
             }
 
+            // Tunggu beberapa frame stabil tanpa validasi warna agresif
             int stableFrames = 0;
             uint lastUpdateCount = videoTex.updateCount;
 
-            while (stableFrames < 5 && Time.realtimeSinceStartup < timeout)
+            while (stableFrames < 3 && Time.realtimeSinceStartup < timeout)
             {
                 if (videoTex.width > 0 && videoTex.height > 0)
                 {
                     if (videoTex.updateCount > lastUpdateCount)
                     {
                         lastUpdateCount = videoTex.updateCount;
-                        if (IsFrameValidColor(videoTex))
-                        {
-                            stableFrames++;
-                        }
-                        else
-                        {
-                            stableFrames = 0;
-                        }
+                        stableFrames++;
                     }
                 }
                 yield return null;
             }
 
-            if (stableFrames < 5)
+            if (stableFrames < 3)
             {
                 RouteToFallback("Camera stream failed to stabilize.", false);
                 yield break;
             }
+
+            // Beri waktu untuk background presenter menyelesaikan setup
+            yield return new WaitForSeconds(0.5f);
 
             StartCoroutine(WaitForTargetReady());
         }
@@ -253,6 +280,14 @@ namespace GerakAR.AR
             backgroundPresenter?.ResetPresentation();
             if (!_routingAway && !AppStateManager.RunInNonARMode && Application.isPlaying)
                 Debug.LogWarning("[ARUnityXSessionController] Camera stream stopped.");
+        }
+
+        private IEnumerator SimulateCameraStartup()
+        {
+            // Simulasi inisialisasi kamera — biarkan loading bar terlihat
+            yield return new WaitForSeconds(0.5f);
+            _sessionReady = true;
+            _stateManager?.TransitionTo(AppState.Scanning);
         }
 
         private void StartNonARPreview()

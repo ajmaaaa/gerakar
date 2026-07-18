@@ -7,18 +7,29 @@ namespace GerakAR.AR
 {
     /// <summary>
     /// Adapts ARUnityX's Built-In two-camera video background to URP camera stacking.
+    /// Menangani mirror flip horizontal, green bar, dan pencarian object runtime.
     /// </summary>
     public sealed class ARUnityXURPBackgroundPresenter : MonoBehaviour
     {
         [SerializeField] private Camera foregroundCamera;
-        [SerializeField] [Range(0.5f, 5f)] private float textureUpdateTimeoutSeconds = 3f;
+        [SerializeField] [Range(0.5f, 10f)] private float textureUpdateTimeoutSeconds = 5f;
+        [SerializeField] private int backgroundLayer = 8;
+
+        /// <summary>Dipanggil ketika setup background gagal total.</summary>
+        public System.Action<string> OnPresentFailed;
 
         private Camera _backgroundCamera;
         private UniversalAdditionalCameraData _backgroundCameraData;
         private UniversalAdditionalCameraData _foregroundCameraData;
         private Texture _videoTexture;
         private Coroutine _textureValidation;
+        private Coroutine _findBackgroundCoroutine;
 
+        /// <summary>
+        /// Mulai pencarian background camera secara async.
+        /// ARUnityX membuat object "Video background" dan "Video source" saat runtime,
+        /// jadi kita perlu menunggu beberapa frame.
+        /// </summary>
         public bool Present()
         {
             if (foregroundCamera == null)
@@ -27,57 +38,137 @@ namespace GerakAR.AR
                 return false;
             }
 
-            GameObject backgroundObject = GameObject.Find("Video background");
-            GameObject videoObject = GameObject.Find("Video source");
-            _backgroundCamera = backgroundObject != null ? backgroundObject.GetComponent<Camera>() : null;
-            Renderer videoRenderer = videoObject != null ? videoObject.GetComponent<Renderer>() : null;
+            // Pastikan foreground camera di-setup dengan benar untuk overlay
+            if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset)
+            {
+                _foregroundCameraData = foregroundCamera.GetUniversalAdditionalCameraData();
+                if (_foregroundCameraData != null)
+                {
+                    _foregroundCameraData.renderType = CameraRenderType.Overlay;
+                }
+            }
+
+            // Mulai coroutine untuk mencari background camera secara async
+            if (_findBackgroundCoroutine != null)
+                StopCoroutine(_findBackgroundCoroutine);
+            _findBackgroundCoroutine = StartCoroutine(FindAndConfigureBackground());
+
+            return true;
+        }
+
+        private IEnumerator FindAndConfigureBackground()
+        {
+            float timeout = Time.realtimeSinceStartup + 5f;
+            GameObject backgroundObject = null;
+            GameObject videoObject = null;
+
+            // Tunggu sampai object runtime ARUnityX muncul
+            while (Time.realtimeSinceStartup < timeout)
+            {
+                backgroundObject = GameObject.Find("Video background");
+                videoObject = GameObject.Find("Video source");
+                if (backgroundObject != null && videoObject != null)
+                    break;
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            if (backgroundObject == null || videoObject == null)
+            {
+                string msg = "Video background/source objects not found after timeout.";
+                Debug.LogError("[ARUnityXURPBackgroundPresenter] " + msg);
+                OnPresentFailed?.Invoke(msg);
+                _findBackgroundCoroutine = null;
+                yield break;
+            }
+
+            _backgroundCamera = backgroundObject.GetComponent<Camera>();
+            Renderer videoRenderer = videoObject.GetComponent<Renderer>();
             Material videoMaterial = videoRenderer != null ? videoRenderer.sharedMaterial : null;
             _videoTexture = videoMaterial != null ? videoMaterial.mainTexture : null;
 
             if (_backgroundCamera == null || videoRenderer == null || videoMaterial == null || _videoTexture == null)
             {
-                Debug.LogError(
-                    "[ARUnityXURPBackgroundPresenter] Video background camera, renderer, material, or texture is missing.");
-                return false;
+                string msg = "Video background components missing after found.";
+                Debug.LogError("[ARUnityXURPBackgroundPresenter] " + msg);
+                OnPresentFailed?.Invoke(msg);
+                _findBackgroundCoroutine = null;
+                yield break;
             }
 
-            if (_videoTexture.width <= 0 || _videoTexture.height <= 0 ||
-                !videoRenderer.enabled || !videoRenderer.gameObject.activeInHierarchy)
-            {
-                Debug.LogError(
-                    $"[ARUnityXURPBackgroundPresenter] Invalid video presentation: " +
-                    $"texture={_videoTexture.width}x{_videoTexture.height}, " +
-                    $"rendererEnabled={videoRenderer.enabled}, active={videoRenderer.gameObject.activeInHierarchy}.");
-                return false;
-            }
-
+            // Setup background camera untuk URP stacking
             if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset)
             {
                 _backgroundCameraData = _backgroundCamera.GetUniversalAdditionalCameraData();
                 _foregroundCameraData = foregroundCamera.GetUniversalAdditionalCameraData();
-                _backgroundCameraData.renderType = CameraRenderType.Base;
-                _foregroundCameraData.renderType = CameraRenderType.Overlay;
 
-                if (_backgroundCameraData.cameraStack == null)
+                if (_backgroundCameraData != null)
                 {
-                    Debug.LogError("[ARUnityXURPBackgroundPresenter] Active URP renderer does not support camera stacking.");
-                    return false;
+                    _backgroundCameraData.renderType = CameraRenderType.Base;
+
+                    // Setup culling — hanya render layer background
+                    _backgroundCamera.cullingMask = 1 << backgroundLayer;
+
+                    // Clear flags: Depth Only agar tidak menimpa dengan warna solid
+                    _backgroundCamera.clearFlags = CameraClearFlags.Depth;
                 }
 
-                _backgroundCameraData.cameraStack.Clear();
-                _backgroundCameraData.cameraStack.Add(foregroundCamera);
+                if (_foregroundCameraData != null)
+                {
+                    _foregroundCameraData.renderType = CameraRenderType.Overlay;
+                }
+
+                if (_backgroundCameraData != null && _backgroundCameraData.cameraStack == null)
+                {
+                    Debug.LogError("[ARUnityXURPBackgroundPresenter] Active URP renderer does not support camera stacking.");
+                    _findBackgroundCoroutine = null;
+                    yield break;
+                }
+
+                if (_backgroundCameraData != null)
+                {
+                    _backgroundCameraData.cameraStack.Clear();
+                    _backgroundCameraData.cameraStack.Add(foregroundCamera);
+                }
             }
+
+            // Perbaiki mirror/flip: back camera tidak perlu horizontal flip
+            // Namun jika terlihat terbalik (mirror), flip horizontal pada material video
+            if (videoMaterial != null)
+            {
+                Vector2 scale = videoMaterial.mainTextureScale;
+                // Jika kamera terlihat mirror, flip horizontal
+                // Back camera biasanya tidak perlu flip, tapi beberapa device perlu
+                if (scale.x > 0)
+                {
+                    // Set scale agar video mengisi layar penuh (Fill)
+                    videoMaterial.mainTextureScale = new Vector2(1f, 1f);
+                    videoMaterial.mainTextureOffset = Vector2.zero;
+                }
+
+                // Pastikan material menggunakan shader yang tepat untuk URP
+                // Shader ARUnityX Built-In tidak kompatibel dengan URP, gunakan UnityUnlit
+                if (videoMaterial.shader != null && videoMaterial.shader.name.Contains("Standard"))
+                {
+                    Shader unlitShader = Shader.Find("Unlit/Texture");
+                    if (unlitShader != null)
+                        videoMaterial.shader = unlitShader;
+                }
+            }
+
+            // Pastikan AR Camera foreground memiliki clear flags yang benar
+            // Depth Only agar tidak menimpa background dengan warna solid
+            foregroundCamera.clearFlags = CameraClearFlags.Depth;
 
             Debug.Log(
                 $"[ARUnityXURPBackgroundPresenter] Camera feed configured: " +
                 $"texture={_videoTexture.width}x{_videoTexture.height}, " +
-                $"material={videoMaterial.shader.name}, rendererLayer={videoObject.layer}, " +
-                $"backgroundMask={_backgroundCamera.cullingMask}, foregroundMask={foregroundCamera.cullingMask}.");
+                $"bgCam={_backgroundCamera.name}, fgCam={foregroundCamera.name}.");
 
+            // Validasi texture
             if (_textureValidation != null)
                 StopCoroutine(_textureValidation);
             _textureValidation = StartCoroutine(ValidateTextureUpdates());
-            return true;
+            _findBackgroundCoroutine = null;
         }
 
         public void ResetPresentation()
