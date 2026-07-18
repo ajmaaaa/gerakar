@@ -878,8 +878,6 @@ public static class SetupAndBuild
         detailDescText.color = SecondaryText;
         detailDescText.alignment = TextAlignmentOptions.Left;
         if (fonts != null) detailDescText.font = fonts.Medium;
-        var ddescLE = detailDescGo.AddComponent<LayoutElement>();
-        ddescLE.preferredHeight = 40f;
 
         // Steps Container
         var detailStepsGo = CreateUIObject("StepsContainer", dsvContentGo);
@@ -887,6 +885,11 @@ public static class SetupAndBuild
         dstepsVlg.spacing = 8f;
         dstepsVlg.childControlWidth = true;
         dstepsVlg.childControlHeight = true;
+        dstepsVlg.childForceExpandWidth = true;
+        dstepsVlg.childForceExpandHeight = false;
+        var dstepsCsf = detailStepsGo.AddComponent<ContentSizeFitter>();
+        dstepsCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        dstepsCsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
         // Safety tip card (consistent with G06)
         var detailSafetyCardGo = CreateUIObject("SafetyCard", dsvContentGo);
@@ -902,6 +905,11 @@ public static class SetupAndBuild
         dscVlg.spacing = 4f;
         dscVlg.childControlWidth = true;
         dscVlg.childControlHeight = true;
+        dscVlg.childForceExpandWidth = true;
+        dscVlg.childForceExpandHeight = false;
+        var dscCsf = detailSafetyCardGo.AddComponent<ContentSizeFitter>();
+        dscCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        dscCsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
         var dscTitleGo = CreateUIObject("Title", detailSafetyCardGo);
         var dscTitleText = dscTitleGo.AddComponent<TextMeshProUGUI>();
@@ -933,6 +941,11 @@ public static class SetupAndBuild
         dmistakesVlg.spacing = 8f;
         dmistakesVlg.childControlWidth = true;
         dmistakesVlg.childControlHeight = true;
+        dmistakesVlg.childForceExpandWidth = true;
+        dmistakesVlg.childForceExpandHeight = false;
+        var dmistakesCsf = detailMistakesGo.AddComponent<ContentSizeFitter>();
+        dmistakesCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        dmistakesCsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
         // Trained muscles section
         var dTrainedTitleGo = CreateUIObject("TrainedTitle", dsvContentGo);
@@ -948,6 +961,11 @@ public static class SetupAndBuild
         dtrainedVlg.spacing = 8f;
         dtrainedVlg.childControlWidth = true;
         dtrainedVlg.childControlHeight = true;
+        dtrainedVlg.childForceExpandWidth = true;
+        dtrainedVlg.childForceExpandHeight = false;
+        var dtrainedCsf = detailTrainedGo.AddComponent<ContentSizeFitter>();
+        dtrainedCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        dtrainedCsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
         // Related movements section (horizontal swiping cards)
         var dRelatedGroupGo = CreateUIObject("RelatedGroup", dsvContentGo);
@@ -955,6 +973,11 @@ public static class SetupAndBuild
         drgVlg.spacing = 12f;
         drgVlg.childControlWidth = true;
         drgVlg.childControlHeight = true;
+        drgVlg.childForceExpandWidth = true;
+        drgVlg.childForceExpandHeight = false;
+        var drgCsf = dRelatedGroupGo.AddComponent<ContentSizeFitter>();
+        drgCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        drgCsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
         var dRelatedTitleGo = CreateUIObject("Title", dRelatedGroupGo);
         var dRelatedTitle = dRelatedTitleGo.AddComponent<TextMeshProUGUI>();
@@ -969,6 +992,8 @@ public static class SetupAndBuild
         drelScroll.horizontal = true;
         drelScroll.vertical = false;
         dRelatedScrollViewGo.GetComponent<RectTransform>().sizeDelta = new Vector2(900f, 130f);
+        var drelLE = dRelatedScrollViewGo.AddComponent<LayoutElement>();
+        drelLE.preferredHeight = 130f;
 
         var drelViewportGo = CreateUIObject("Viewport", dRelatedScrollViewGo);
         drelViewportGo.AddComponent<RectMask2D>();

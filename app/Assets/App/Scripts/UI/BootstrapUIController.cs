@@ -246,8 +246,14 @@ namespace GerakAR.UI
                 for (int i = 0; i < count; i++)
                 {
                     var item = Instantiate(stepItemPrefab, detailStepsContainer);
-                    var text = item.GetComponentInChildren<TextMeshProUGUI>();
-                    if (text != null) text.text = $"{i + 1}. {data.steps[i]}";
+                    var textTrans = item.transform.Find("Text");
+                    var text = textTrans != null ? textTrans.GetComponent<TextMeshProUGUI>() : null;
+                    if (text != null) text.text = data.steps[i];
+
+                    var badgeTrans = item.transform.Find("Badge/Text");
+                    var badgeText = badgeTrans != null ? badgeTrans.GetComponent<TextMeshProUGUI>() : null;
+                    if (badgeText != null) badgeText.text = (i + 1).ToString();
+
                     _nonARSpawnedItems.Add(item);
                 }
             }
@@ -258,8 +264,9 @@ namespace GerakAR.UI
                 foreach (var mistake in data.commonMistakes)
                 {
                     var item = Instantiate(bulletItemPrefab, detailMistakesContainer);
-                    var text = item.GetComponentInChildren<TextMeshProUGUI>();
-                    if (text != null) text.text = $"- {mistake}";
+                    var textTrans = item.transform.Find("Text");
+                    var text = textTrans != null ? textTrans.GetComponent<TextMeshProUGUI>() : null;
+                    if (text != null) text.text = mistake;
                     _nonARSpawnedItems.Add(item);
                 }
             }
@@ -270,7 +277,8 @@ namespace GerakAR.UI
                 foreach (var area in data.trainedAreas)
                 {
                     var item = Instantiate(muscleItemPrefab, detailTrainedContainer);
-                    var text = item.GetComponentInChildren<TextMeshProUGUI>();
+                    var textTrans = item.transform.Find("Text");
+                    var text = textTrans != null ? textTrans.GetComponent<TextMeshProUGUI>() : null;
                     if (text != null) text.text = area;
                     _nonARSpawnedItems.Add(item);
                 }
