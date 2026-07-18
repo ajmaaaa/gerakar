@@ -56,6 +56,7 @@ namespace GerakAR.UI
 
         private IEnumerator IntroSequence()
         {
+            // Bar berjalan dari 0 ke 45% (berhenti di tengah, akan dilanjutkan saat LoadingARScene)
             float elapsed = 0f;
             while (elapsed < introDuration)
             {
@@ -63,13 +64,14 @@ namespace GerakAR.UI
                 if (_fillRT != null)
                 {
                     float t = Mathf.Clamp01(elapsed / introDuration);
-                    _fillRT.anchorMax = new Vector2(Mathf.SmoothStep(0f, 1f, t), 1f);
+                    // SmoothStep: mulai cepat, melambat saat mendekati 45%
+                    _fillRT.anchorMax = new Vector2(Mathf.SmoothStep(0f, 0.45f, t), 1f);
                 }
                 yield return null;
             }
 
             if (_fillRT != null)
-                _fillRT.anchorMax = new Vector2(1f, 1f);
+                _fillRT.anchorMax = new Vector2(0.45f, 1f); // Berhenti di 45%
 
             // Fade out
             if (introCanvasGroup != null)
