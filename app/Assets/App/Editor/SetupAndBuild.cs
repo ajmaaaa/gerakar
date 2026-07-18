@@ -56,7 +56,7 @@ public static class SetupAndBuild
         var uiSolidRect = AssetDatabase.LoadAssetAtPath<Sprite>(
             "Assets/App/UI/Sprites/Shapes/UISolidRectangle.png");
         var roundTopSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
-            "Assets/App/UI/Sprites/Shapes/RoundedRect-24.png");
+            "Assets/App/UI/Sprites/Shapes/RoundTop-24.png");
 
         GeneratePrefabs(fonts, btnSprite, uiSolidRect);
         CreateBootstrapScene(fonts, btnSprite, uiSolidRect);
@@ -573,37 +573,38 @@ public static class SetupAndBuild
         var nonARModePanelRT = nonARModePanelGo.GetComponent<RectTransform>();
         StretchRect(nonARModePanelRT);
 
-        // G08 Header Deep Forest
+        // G08 Header (transparent)
         var g08HeaderBarGo = CreateUIObject("HeaderBar", nonARModePanelGo);
         var g08HeaderBarImg = g08HeaderBarGo.AddComponent<Image>();
-        g08HeaderBarImg.color = DeepForest;
-        SetAnchorTop(g08HeaderBarGo.GetComponent<RectTransform>(), 0f, 0f, 360f, 56f);
+        g08HeaderBarImg.color = Color.clear; // Transparent header background
+        SetAnchorTop(g08HeaderBarGo.GetComponent<RectTransform>(), 0f, -16f, 360f, 56f);
 
         var g08BrandGo = CreateUIObject("Brand", g08HeaderBarGo);
         var g08BrandText = g08BrandGo.AddComponent<TextMeshProUGUI>();
         g08BrandText.textWrappingMode = TextWrappingModes.Normal;
-        g08BrandText.text = "GerakAR";
-        g08BrandText.fontSize = 20f;
+        g08BrandText.text = "MODE PEMBELAJARAN MANDIRI";
+        g08BrandText.fontSize = 11f;
         g08BrandText.fontStyle = FontStyles.Bold;
-        g08BrandText.color = WarmWhite;
+        g08BrandText.color = SecondaryText; // #716040
         g08BrandText.alignment = TextAlignmentOptions.Left;
-        if (fonts != null) g08BrandText.font = fonts.Display;
-        SetCenterPosition(g08BrandGo.GetComponent<RectTransform>(), -100f, 0f, 120f, 28f);
+        if (fonts != null) g08BrandText.font = fonts.Heading;
+        SetCenterPosition(g08BrandGo.GetComponent<RectTransform>(), -60f, 0f, 200f, 24f);
 
         var g08BadgeGo = CreateUIObject("ModeBadge", g08HeaderBarGo);
         var g08BadgeImg = g08BadgeGo.AddComponent<Image>();
-        g08BadgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-08.png");
+        g08BadgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png"); // pill shape
         g08BadgeImg.type = Image.Type.Sliced;
-        g08BadgeImg.color = ForestGreen;
-        SetCenterPosition(g08BadgeGo.GetComponent<RectTransform>(), 85f, 0f, 110f, 24f);
+        g08BadgeImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // 60% SoftSand tint background
+        g08BadgeGo.AddComponent<Button>(); // For toggling warning card
+        SetCenterPosition(g08BadgeGo.GetComponent<RectTransform>(), 110f, 0f, 100f, 28f);
 
         var g08BadgeTextGo = CreateUIObject("Text", g08BadgeGo);
         var g08BadgeText = g08BadgeTextGo.AddComponent<TextMeshProUGUI>();
         g08BadgeText.textWrappingMode = TextWrappingModes.Normal;
-        g08BadgeText.text = "Mode Tanpa Kamera";
-        g08BadgeText.fontSize = 10f;
+        g08BadgeText.text = "NON-AR MODE";
+        g08BadgeText.fontSize = 9f;
         g08BadgeText.fontStyle = FontStyles.Bold;
-        g08BadgeText.color = WarmWhite;
+        g08BadgeText.color = SecondaryText; // #716040
         g08BadgeText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) g08BadgeText.font = fonts.Heading;
         StretchRect(g08BadgeTextGo.GetComponent<RectTransform>());
@@ -617,6 +618,7 @@ public static class SetupAndBuild
         collapsibleWarnRT.pivot = new Vector2(0.5f, 1f);
         collapsibleWarnRT.anchoredPosition = new Vector2(0f, -70f);
         collapsibleWarnRT.sizeDelta = new Vector2(320f, 48f); // collapsed height
+        collapsibleWarnGo.SetActive(false); // Hidden by default, toggled via NON-AR MODE badge
 
         // G08 Catalog Content
         var catalogCatalogGo = CreateUIObject("CatalogCatalog", nonARModePanelGo);
@@ -635,38 +637,41 @@ public static class SetupAndBuild
 
         // Squat card
         var (squatBukaBtn, _, _) = CreateMovementCard(
-            catalogCatalogGo, "CardSquat", "SQ", "Gerakan Squat",
-            "Melatih otot paha dan sendi lutut",
-            0f, 95f, btnSprite, fonts);
+            catalogCatalogGo, "CardSquat", "SQ", "Squat",
+            "Kekuatan kaki dan postur tubuh.",
+            0f, 90f, btnSprite, fonts);
 
         // Dynamic Stretching card
         var (dynamicStretchBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardDynamicStretch", "DS", "Dynamic Stretching",
-            "Peregangan aktif sebelum bergerak",
-            0f, 30f, btnSprite, fonts);
+            "Pemanasan aktif dan kelenturan tubuh.",
+            0f, 10f, btnSprite, fonts);
 
         // Ladder Drill card
         var (ladderDrillBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardLadderDrill", "LD", "Ladder Drill",
-            "Melatih kelincahan dan langkah kaki",
-            0f, -35f, btnSprite, fonts);
+            "Kelincahan dan koordinasi gerakan.",
+            0f, -70f, btnSprite, fonts);
 
         // Back button
         var catalogBackGo = CreateUIObject("CatalogBackButton", nonARModePanelGo);
         var catalogBackImg = catalogBackGo.AddComponent<Image>();
         catalogBackImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         catalogBackImg.type = Image.Type.Sliced;
-        catalogBackImg.color = ForestGreen;
+        catalogBackImg.color = Color.white;
+        var catalogBackOutline = catalogBackGo.AddComponent<Outline>();
+        catalogBackOutline.effectColor = SoftSand;
+        catalogBackOutline.effectDistance = new Vector2(1f, 1f);
         var catalogBackBtn = catalogBackGo.AddComponent<Button>();
-        SetAnchorBottom(catalogBackGo.GetComponent<RectTransform>(), 0f, 30f, 120f, 44f);
+        SetAnchorBottom(catalogBackGo.GetComponent<RectTransform>(), 0f, 32f, 320f, 48f); // Wide card style
 
         var catalogBackTextGo = CreateUIObject("Text", catalogBackGo);
         var catalogBackText = catalogBackTextGo.AddComponent<TextMeshProUGUI>();
         catalogBackText.textWrappingMode = TextWrappingModes.Normal;
-        catalogBackText.text = "< Petunjuk";
+        catalogBackText.text = "←      Kembali ke petunjuk";
         catalogBackText.fontSize = 13f;
         catalogBackText.fontStyle = FontStyles.Bold;
-        catalogBackText.color = WarmWhite;
+        catalogBackText.color = SecondaryText; // #716040
         catalogBackText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) catalogBackText.font = fonts.Heading;
         StretchRect(catalogBackTextGo.GetComponent<RectTransform>());
@@ -676,115 +681,123 @@ public static class SetupAndBuild
         StretchRect(cameraErrorPanelGo.GetComponent<RectTransform>());
         cameraErrorPanelGo.SetActive(false);
 
-        // Full Deep Forest background
+        // Full transparent background to show the WarmCream parent background
         var camErrorBgGo = CreateUIObject("Background", cameraErrorPanelGo);
         var camErrorBgImg = camErrorBgGo.AddComponent<Image>();
-        camErrorBgImg.color = DeepForest;
+        camErrorBgImg.color = Color.clear;
         StretchRect(camErrorBgGo.GetComponent<RectTransform>());
 
-        // Central card Warm White
+        // Transparent container for elements (no card layout)
         var camCardGo = CreateUIObject("CentralCard", cameraErrorPanelGo);
         var camCardImg = camCardGo.AddComponent<Image>();
-        camCardImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
-        camCardImg.type = Image.Type.Sliced;
-        camCardImg.color = WarmWhite;
-        var camCardOutline = camCardGo.AddComponent<Outline>();
-        camCardOutline.effectColor = SoftSand;
-        camCardOutline.effectDistance = new Vector2(1f, 1f);
-        SetCenterPosition(camCardGo.GetComponent<RectTransform>(), 0f, 20f, 280f, 280f);
+        camCardImg.color = Color.clear; // Transparent container
+        SetCenterPosition(camCardGo.GetComponent<RectTransform>(), 0f, 20f, 300f, 400f);
 
-        // Camera-off icon (x-circle SVG)
+        // Camera-off icon (rounded square camera icon container)
         var camOffIconGo = CreateUIObject("CamOffIcon", camCardGo);
         var camOffIconImg = camOffIconGo.AddComponent<Image>();
         camOffIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         camOffIconImg.type = Image.Type.Sliced;
-        camOffIconImg.color = SoftSand;
-        SetCenterPosition(camOffIconGo.GetComponent<RectTransform>(), 0f, 90f, 44f, 44f);
+        camOffIconImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // 60% SoftSand tint background
+        SetCenterPosition(camOffIconGo.GetComponent<RectTransform>(), 0f, 130f, 64f, 64f);
 
         var camOffIconSvgGo = CreateUIObject("SvgIcon", camOffIconGo);
         var camOffIconSvg = camOffIconSvgGo.AddComponent<Image>();
-        camOffIconSvg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/x-circle.svg");
+        camOffIconSvg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/camera.svg");
         camOffIconSvg.preserveAspect = true;
         camOffIconSvg.raycastTarget = false;
-        camOffIconSvg.color = Error;
+        camOffIconSvg.color = DeepForest; // #12372A
         var camOffIconSvgRT = camOffIconSvgGo.GetComponent<RectTransform>();
         camOffIconSvgRT.localScale = Vector3.one;
-        SetCenterPosition(camOffIconSvgRT, 0f, 0f, 24f, 24f);
+        SetCenterPosition(camOffIconSvgRT, 0f, 0f, 28f, 28f);
 
         var camErrorTitleGo = CreateUIObject("Title", camCardGo);
         var camErrorTitle = camErrorTitleGo.AddComponent<TextMeshProUGUI>();
         camErrorTitle.textWrappingMode = TextWrappingModes.Normal;
-        camErrorTitle.text = "Kamera belum dapat dibuka";
-        camErrorTitle.fontSize = 18f;
+        camErrorTitle.text = "Kamera Belum Aktif";
+        camErrorTitle.fontSize = 20f;
         camErrorTitle.fontStyle = FontStyles.Bold;
-        camErrorTitle.color = DeepForest;
+        camErrorTitle.color = DeepForest; // #12372A
         camErrorTitle.alignment = TextAlignmentOptions.Center;
         if (fonts != null) camErrorTitle.font = fonts.Heading;
-        SetCenterPosition(camErrorTitleGo.GetComponent<RectTransform>(), 0f, 45f, 240f, 28f);
+        SetCenterPosition(camErrorTitleGo.GetComponent<RectTransform>(), 0f, 75f, 280f, 28f);
 
         var camErrorDescGo = CreateUIObject("Desc", camCardGo);
         var camErrorDesc = camErrorDescGo.AddComponent<TextMeshProUGUI>();
         camErrorDesc.textWrappingMode = TextWrappingModes.Normal;
-        camErrorDesc.text = "Periksa izin kamera, lalu coba lagi.";
-        camErrorDesc.fontSize = 13f;
-        camErrorDesc.color = SecondaryText;
+        camErrorDesc.text = "Izinkan akses kamera agar GerakAR dapat melihat gambar gerakan.";
+        camErrorDesc.fontSize = 12f;
+        camErrorDesc.color = SecondaryText; // #716040
         camErrorDesc.alignment = TextAlignmentOptions.Center;
         if (fonts != null) camErrorDesc.font = fonts.Medium;
-        SetCenterPosition(camErrorDescGo.GetComponent<RectTransform>(), 0f, 10f, 240f, 40f);
+        SetCenterPosition(camErrorDescGo.GetComponent<RectTransform>(), 0f, 25f, 260f, 48f);
 
-        // Belajar Tanpa Kamera button (replacing settingBtn detail)
+        // Buka Pengaturan button (primary button)
         var settingsGo = CreateUIObject("SettingsButton", camCardGo);
         var settingsImg = settingsGo.AddComponent<Image>();
         settingsImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         settingsImg.type = Image.Type.Sliced;
-        settingsImg.color = ForestGreen;
+        settingsImg.color = DeepForest; // Dark DeepForest background button
         var settingsBtn = settingsGo.AddComponent<Button>();
-        SetCenterPosition(settingsGo.GetComponent<RectTransform>(), 0f, -35f, 240f, 44f);
+        SetCenterPosition(settingsGo.GetComponent<RectTransform>(), 0f, -40f, 260f, 48f);
+
+        var settingsIconGo = CreateUIObject("Icon", settingsGo);
+        var settingsIconImg = settingsIconGo.AddComponent<Image>();
+        settingsIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/camera.svg");
+        settingsIconImg.preserveAspect = true;
+        settingsIconImg.raycastTarget = false;
+        settingsIconImg.color = Color.white;
+        SetCenterPosition(settingsIconGo.GetComponent<RectTransform>(), -75f, 0f, 16f, 16f);
 
         var settingsTextGo = CreateUIObject("Text", settingsGo);
         var settingsText = settingsTextGo.AddComponent<TextMeshProUGUI>();
         settingsText.textWrappingMode = TextWrappingModes.Normal;
-        settingsText.text = "Belajar Tanpa Kamera";
-        settingsText.fontSize = 14f;
+        settingsText.text = "     BUKA PENGATURAN";
+        settingsText.fontSize = 11f;
         settingsText.fontStyle = FontStyles.Bold;
-        settingsText.color = WarmWhite;
+        settingsText.color = Color.white;
         settingsText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) settingsText.font = fonts.Heading;
         StretchRect(settingsTextGo.GetComponent<RectTransform>());
 
-        // Coba Lagi button
+        // Coba Lagi button (secondary button)
         var retryGo = CreateUIObject("RetryButton", camCardGo);
         var retryBtnImg = retryGo.AddComponent<Image>();
         retryBtnImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         retryBtnImg.type = Image.Type.Sliced;
-        retryBtnImg.color = WarmCream;
-        var retryBtnOutline = retryGo.AddComponent<Outline>();
-        retryBtnOutline.effectColor = SoftSand;
-        retryBtnOutline.effectDistance = new Vector2(1f, 1f);
+        retryBtnImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // SoftSand 60% opacity background
         var retryBtn = retryGo.AddComponent<Button>();
-        SetCenterPosition(retryGo.GetComponent<RectTransform>(), 0f, -80f, 240f, 36f);
+        SetCenterPosition(retryGo.GetComponent<RectTransform>(), 0f, -96f, 260f, 48f);
+
+        var retryIconGo = CreateUIObject("Icon", retryGo);
+        var retryIconImg = retryIconGo.AddComponent<Image>();
+        retryIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/refresh-cw.svg");
+        retryIconImg.preserveAspect = true;
+        retryIconImg.raycastTarget = false;
+        retryIconImg.color = DeepForest;
+        SetCenterPosition(retryIconGo.GetComponent<RectTransform>(), -50f, 0f, 16f, 16f);
 
         var retryTextGo = CreateUIObject("Text", retryGo);
         var retryText = retryTextGo.AddComponent<TextMeshProUGUI>();
         retryText.textWrappingMode = TextWrappingModes.Normal;
-        retryText.text = "Coba Lagi";
-        retryText.fontSize = 14f;
+        retryText.text = "     Coba Lagi";
+        retryText.fontSize = 12f;
         retryText.fontStyle = FontStyles.Bold;
         retryText.color = DeepForest;
         retryText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) retryText.font = fonts.Heading;
         StretchRect(retryTextGo.GetComponent<RectTransform>());
 
-        // Helper text
-        var helperGo = CreateUIObject("HelperText", cameraErrorPanelGo);
-        var helperText = helperGo.AddComponent<TextMeshProUGUI>();
-        helperText.textWrappingMode = TextWrappingModes.Normal;
-        helperText.text = "Minta bantuan guru atau orang tua jika diperlukan.";
-        helperText.fontSize = 11f;
-        helperText.color = SoftSand;
-        helperText.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) helperText.font = fonts.Medium;
-        SetAnchorBottom(helperGo.GetComponent<RectTransform>(), 0f, 20f, 280f, 16f);
+        // Bottom helper tip text
+        var tipGo = CreateUIObject("HelperTip", camCardGo);
+        var tipText = tipGo.AddComponent<TextMeshProUGUI>();
+        tipText.textWrappingMode = TextWrappingModes.Normal;
+        tipText.text = "Minta bantuan guru atau orang tua jika diperlukan.";
+        tipText.fontSize = 10f;
+        tipText.color = SecondaryText;
+        tipText.alignment = TextAlignmentOptions.Center;
+        if (fonts != null) tipText.font = fonts.Medium;
+        SetCenterPosition(tipGo.GetComponent<RectTransform>(), 0f, -145f, 280f, 20f);
 
         // BootstrapUIController wiring
         var bootstrapUI = managersGo.AddComponent<BootstrapUIController>();
@@ -809,6 +822,8 @@ public static class SetupAndBuild
         serialBtn.FindProperty("dynamicStretchBukaBtn").objectReferenceValue = dynamicStretchBukaBtn;
         serialBtn.FindProperty("ladderDrillBukaBtn").objectReferenceValue = ladderDrillBukaBtn;
         serialBtn.FindProperty("catalogBackBtn").objectReferenceValue = catalogBackBtn;
+        serialBtn.FindProperty("infoBadgeButton").objectReferenceValue = g08BadgeGo.GetComponent<Button>();
+        serialBtn.FindProperty("warningPanel").objectReferenceValue = collapsibleWarnGo;
         serialBtn.FindProperty("settingsBtn").objectReferenceValue = settingsBtn;
         serialBtn.FindProperty("retryBtn").objectReferenceValue = retryBtn;
         serialBtn.ApplyModifiedProperties();
@@ -2070,43 +2085,92 @@ public static class SetupAndBuild
         cardOutline.effectColor = SoftSand;
         cardOutline.effectDistance = new Vector2(1f, 1f);
 
-        SetCenterPosition(cardGo.GetComponent<RectTransform>(), x, y, 300f, 56f);
+        SetCenterPosition(cardGo.GetComponent<RectTransform>(), x, y, 320f, 76f); // 320x76
 
-        var iconGo = CreateUIObject("Icon", cardGo);
-        var iconImg = iconGo.AddComponent<Image>();
-        iconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-08.png");
-        iconImg.type = Image.Type.Sliced;
-        iconImg.color = SoftSand;
-        SetCenterPosition(iconGo.GetComponent<RectTransform>(), -120f, 0f, 32f, 32f);
+        // Left Preview Image
+        var prevGo = CreateUIObject("PreviewImage", cardGo);
+        var prevImg = prevGo.AddComponent<Image>();
+        prevImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        prevImg.type = Image.Type.Sliced;
+        prevImg.color = new Color(0.918f, 0.867f, 0.812f, 0.4f); // 40% SoftSand background
+        SetCenterPosition(prevGo.GetComponent<RectTransform>(), -116f, 0f, 56f, 56f);
 
-        var iconTextGo = CreateUIObject("Text", iconGo);
-        var iconText = iconTextGo.AddComponent<TextMeshProUGUI>();
-        iconText.text = icon;
-        iconText.fontSize = 11f;
-        iconText.fontStyle = FontStyles.Bold;
-        iconText.color = ForestGreen;
-        iconText.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) iconText.font = fonts.Heading;
-        StretchRect(iconTextGo.GetComponent<RectTransform>());
+        // Try to load mannequin image if available
+        Sprite modelSprite = null;
+        if (icon == "SQ") modelSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Related/squat.png");
+        else if (icon == "DS") modelSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Related/dynamic_stretch.png");
+        else if (icon == "LD") modelSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Related/ladder_drill.png");
+        
+        if (modelSprite != null)
+        {
+            var innerGo = CreateUIObject("Mannequin", prevGo);
+            var innerImg = innerGo.AddComponent<Image>();
+            innerImg.sprite = modelSprite;
+            innerImg.preserveAspect = true;
+            StretchRect(innerGo.GetComponent<RectTransform>());
+        }
 
+        // Small badge on top-left of the preview image
+        var badgeGo = CreateUIObject("Badge", prevGo);
+        var badgeImg = badgeGo.AddComponent<Image>();
+        badgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-08.png");
+        badgeImg.type = Image.Type.Sliced;
+        badgeImg.color = new Color(0.443f, 0.376f, 0.251f, 1f); // #716040 (SecondaryText)
+        var badgeRT = badgeGo.GetComponent<RectTransform>();
+        badgeRT.anchorMin = new Vector2(0f, 1f);
+        badgeRT.anchorMax = new Vector2(0f, 1f);
+        badgeRT.pivot = new Vector2(0f, 1f);
+        badgeRT.anchoredPosition = new Vector2(-4f, 4f);
+        badgeRT.sizeDelta = new Vector2(26f, 16f);
+
+        var badgeTxtGo = CreateUIObject("Text", badgeGo);
+        var badgeTxt = badgeTxtGo.AddComponent<TextMeshProUGUI>();
+        badgeTxt.text = icon;
+        badgeTxt.fontSize = 8f;
+        badgeTxt.fontStyle = FontStyles.Bold;
+        badgeTxt.color = Color.white;
+        badgeTxt.alignment = TextAlignmentOptions.Center;
+        if (fonts != null) badgeTxt.font = fonts.Heading;
+        StretchRect(badgeTxtGo.GetComponent<RectTransform>());
+
+        // Middle Text Area (Title & Subtitle)
         var titleGo = CreateUIObject("TitleText", cardGo);
         var titleText = titleGo.AddComponent<TextMeshProUGUI>();
         titleText.textWrappingMode = TextWrappingModes.Normal;
-        titleText.text = $"<b>{title}</b>\n<size=10><color=#1F5D42>{subtitle}</color></size>";
-        titleText.fontSize = 12f;
+        titleText.text = title;
+        titleText.fontSize = 13f;
+        titleText.fontStyle = FontStyles.Bold;
         titleText.color = DeepForest;
         titleText.alignment = TextAlignmentOptions.Left;
         if (fonts != null) titleText.font = fonts.Display;
-        SetCenterPosition(titleGo.GetComponent<RectTransform>(), 10f, 0f, 180f, 36f);
+        SetCenterPosition(titleGo.GetComponent<RectTransform>(), 10f, 10f, 160f, 20f);
 
+        var subGo = CreateUIObject("SubText", cardGo);
+        var subText = subGo.AddComponent<TextMeshProUGUI>();
+        subText.textWrappingMode = TextWrappingModes.Normal;
+        subText.text = subtitle;
+        subText.fontSize = 10f;
+        subText.color = SecondaryText;
+        subText.alignment = TextAlignmentOptions.Left;
+        if (fonts != null) subText.font = fonts.Medium;
+        SetCenterPosition(subGo.GetComponent<RectTransform>(), 10f, -12f, 160f, 24f);
+
+        // Right Button
         var bukaGo = CreateUIObject("BukaButton", cardGo);
         var bukaImg = bukaGo.AddComponent<Image>();
-        bukaImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/chevron-right.svg");
-        bukaImg.preserveAspect = true;
-        bukaImg.raycastTarget = true;
-        bukaImg.color = ForestGreen;
+        bukaImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        bukaImg.type = Image.Type.Sliced;
+        bukaImg.color = new Color(0.443f, 0.376f, 0.251f, 1f); // #716040 (SecondaryText)
         var bukaBtn = bukaGo.AddComponent<Button>();
-        SetCenterPosition(bukaGo.GetComponent<RectTransform>(), 124f, 0f, 24f, 24f);
+        SetCenterPosition(bukaGo.GetComponent<RectTransform>(), 120f, 0f, 36f, 36f);
+
+        var chevronGo = CreateUIObject("Chevron", bukaGo);
+        var chevronImg = chevronGo.AddComponent<Image>();
+        chevronImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/chevron-right.svg");
+        chevronImg.preserveAspect = true;
+        chevronImg.raycastTarget = false;
+        chevronImg.color = Color.white;
+        SetCenterPosition(chevronGo.GetComponent<RectTransform>(), 0f, 0f, 16f, 16f);
 
         return (bukaBtn, cardGo, bukaGo);
     }

@@ -19,6 +19,8 @@ namespace GerakAR.UI
         [SerializeField] private Button dynamicStretchBukaBtn;
         [SerializeField] private Button ladderDrillBukaBtn;
         [SerializeField] private Button catalogBackBtn;
+        [SerializeField] private Button infoBadgeButton;
+        [SerializeField] private GameObject warningPanel;
 
         [Header("G09 Camera Error Buttons")]
         [SerializeField] private Button settingsBtn;
@@ -26,6 +28,21 @@ namespace GerakAR.UI
 
         private void Start()
         {
+            ConfigureButtons(PermissionController.CameraPermissionDenied);
+        }
+
+        public void ConfigureButtons(bool permissionDenied)
+        {
+            nonARModeLink?.onClick.RemoveAllListeners();
+            cameraErrorLink?.onClick.RemoveAllListeners();
+            squatBukaBtn?.onClick.RemoveAllListeners();
+            dynamicStretchBukaBtn?.onClick.RemoveAllListeners();
+            ladderDrillBukaBtn?.onClick.RemoveAllListeners();
+            catalogBackBtn?.onClick.RemoveAllListeners();
+            infoBadgeButton?.onClick.RemoveAllListeners();
+            settingsBtn?.onClick.RemoveAllListeners();
+            retryBtn?.onClick.RemoveAllListeners();
+
             nonARModeLink?.onClick.AddListener(OnNonARModeLinkClicked);
             cameraErrorLink?.onClick.AddListener(OnCameraErrorLinkClicked);
             
@@ -34,13 +51,33 @@ namespace GerakAR.UI
             ladderDrillBukaBtn?.onClick.AddListener(() => OpenNonARMovement("ladder_drill"));
             catalogBackBtn?.onClick.AddListener(OnCatalogBackClicked);
 
-            settingsBtn?.onClick.AddListener(OnSettingsClicked);
-            retryBtn?.onClick.AddListener(OnRetryClicked);
+            if (infoBadgeButton != null && warningPanel != null)
+            {
+                infoBadgeButton.onClick.AddListener(() => {
+                    warningPanel.SetActive(!warningPanel.activeSelf);
+                });
+            }
+
+            if (permissionDenied)
+            {
+                // G09a: Denied
+                // settingsBtn (Forest Green primary) opens settings
+                settingsBtn?.onClick.AddListener(OpenDeviceSettings);
+                // retryBtn (Warm Cream secondary) retries permission
+                retryBtn?.onClick.AddListener(OnRetryClicked);
+            }
+            else
+            {
+                // G09b: Timeout
+                // settingsBtn (Forest Green primary) retries camera
+                settingsBtn?.onClick.AddListener(OnRetryClicked);
+                // retryBtn (Warm Cream secondary) routes to catalog
+                retryBtn?.onClick.AddListener(GoToNonARMode);
+            }
         }
 
         private void OnNonARModeLinkClicked()
         {
-            // Transition to Unsupported, which shows G08 Non-AR catalog panel
             AppStateManager.Instance?.TransitionTo(AppState.NonARCatalog);
         }
 
@@ -70,33 +107,42 @@ namespace GerakAR.UI
             AppStateManager.Instance?.TransitionTo(AppState.Onboarding);
         }
 
-        private void OnSettingsClicked()
+        private void OpenDeviceSettings()
         {
-            // Try to open Android Settings (standard Unity helper)
-            #if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
             try
             {
-                using (var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+                using (var unityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
                 {
-                    using (var currentActivity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
+                    using (var currentActivity = unityClass.GetStatic<AndroidJavaObject>("currentActivity"))
                     {
                         using (var intent = new AndroidJavaObject("android.content.Intent", "android.settings.APPLICATION_DETAILS_SETTINGS"))
                         {
-                            var uri = new AndroidJavaClass("android.net.Uri");
-                            var packageUri = uri.CallStatic<AndroidJavaObject>("fromParts", "package", currentActivity.Call<string>("getPackageName"), null);
-                            intent.Call<AndroidJavaObject>("setData", packageUri);
-                            currentActivity.Call("startActivity", intent);
+                            using (var uriClass = new AndroidJavaClass("android.net.Uri"))
+                            {
+                                using (var uri = uriClass.CallStatic<AndroidJavaObject>("parse", "package:" + Application.identifier))
+                                {
+                                    intent.Call<AndroidJavaObject>("setData", uri);
+                                    currentActivity.Call("startActivity", intent);
+                                }
+                            }
                         }
                     }
                 }
             }
             catch (System.Exception ex)
             {
-                Debug.LogError("[GerakAR] Failed to open application settings: " + ex.Message);
+                Debug.LogError("[BootstrapButtonController] Failed to open settings: " + ex.Message);
             }
-            #else
-            Debug.Log("[GerakAR] Open settings simulated.");
-            #endif
+#else
+            Debug.Log("[BootstrapButtonController] Opening device settings simulated.");
+#endif
+        }
+
+        private void GoToNonARMode()
+        {
+            AppStateManager.RunInNonARMode = true;
+            AppStateManager.Instance?.TransitionTo(AppState.NonARCatalog);
         }
 
         private void OnRetryClicked()
