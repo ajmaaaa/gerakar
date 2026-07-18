@@ -186,59 +186,52 @@ namespace GerakAR.UI
             if (introCanvasGroup != null) introCanvasGroup.alpha = 1f;
             if (onboardingPanel != null) onboardingPanel.SetActive(false);
 
-            // Muat MainAR segera — loading di background
             SceneManager.LoadSceneAsync("MainAR", LoadSceneMode.Additive);
 
-            // Crossfade teks + bar berjalan BERSAMAAN
-            float barDuration = 6.0f;
-            float textFadeDuration = 0.15f;
-            float elapsed = 0f;
-            bool textChanged = false;
+            // Bar + text crossfade di coroutine TERPISAH agar halus dan tidak saling ganggu
+            StartCoroutine(AnimateLoadingBar());
+            yield return StartCoroutine(CrossfadeStatusText());
+        }
 
+        private System.Collections.IEnumerator CrossfadeStatusText()
+        {
+            if (introStatusText == null) yield break;
+            Color c = introStatusText.color;
+            float duration = 0.15f;
+            float t = 0f;
+            while (t < duration)
+            {
+                t += Time.deltaTime;
+                introStatusText.color = new Color(c.r, c.g, c.b, 1f - Mathf.Clamp01(t / duration));
+                yield return null;
+            }
+            introStatusText.text = "Memuat kamera";
+            t = 0f;
+            while (t < duration)
+            {
+                t += Time.deltaTime;
+                introStatusText.color = new Color(c.r, c.g, c.b, Mathf.Clamp01(t / duration));
+                yield return null;
+            }
+            introStatusText.color = c;
+        }
+
+        private System.Collections.IEnumerator AnimateLoadingBar()
+        {
             RectTransform fillRT = introLoadingFill?.GetComponent<RectTransform>();
-            float barStartX = fillRT != null ? fillRT.anchorMax.x : 0.45f;
-            Color textColor = introStatusText != null ? introStatusText.color : Color.white;
-
-            while (AppStateManager.Instance != null &&
+            if (fillRT == null) yield break;
+            float startX = fillRT.anchorMax.x;
+            float elapsed = 0f;
+            float duration = 6.0f;
+            while (elapsed < duration &&
+                   AppStateManager.Instance != null &&
                    !AppStateManager.Instance.Is(AppState.Scanning))
             {
                 elapsed += Time.deltaTime;
-
-                // Text crossfade — cepat (0.15s out + 0.15s in), berjalan saat bar bergerak
-                if (introStatusText != null)
-                {
-                    if (elapsed < textFadeDuration)
-                    {
-                        float t = elapsed / textFadeDuration;
-                        introStatusText.color = new Color(textColor.r, textColor.g, textColor.b, 1f - t);
-                    }
-                    else if (!textChanged)
-                    {
-                        textChanged = true;
-                        introStatusText.text = "Memuat kamera";
-                    }
-                    else if (elapsed < textFadeDuration * 2f)
-                    {
-                        float t = (elapsed - textFadeDuration) / textFadeDuration;
-                        introStatusText.color = new Color(textColor.r, textColor.g, textColor.b, t);
-                    }
-                    else
-                    {
-                        introStatusText.color = textColor;
-                    }
-                }
-
-                // Bar animation — berjalan dari awal bersamaan dengan crossfade teks
-                if (fillRT != null && elapsed < barDuration)
-                {
-                    float t = Mathf.Clamp01(elapsed / barDuration);
-                    float newX = Mathf.Lerp(barStartX, 1f, Mathf.SmoothStep(0f, 1f, t));
-                    fillRT.anchorMax = new Vector2(newX, 1f);
-                }
-
+                float t = Mathf.Clamp01(elapsed / duration);
+                fillRT.anchorMax = new Vector2(Mathf.Lerp(startX, 1f, Mathf.SmoothStep(0f, 1f, t)), 1f);
                 yield return null;
             }
-
             if (fillRT != null) fillRT.anchorMax = new Vector2(1f, 1f);
         }
 

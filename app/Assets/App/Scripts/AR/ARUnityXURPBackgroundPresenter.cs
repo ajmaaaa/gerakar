@@ -102,26 +102,19 @@ namespace GerakAR.AR
             }
 
             // Setup background camera untuk URP stacking
+            // JANGAN ubah cullingMask atau clearFlags background camera —
+            // ARUnityX sudah mengaturnya dengan benar untuk rendering video.
+            // Kita hanya perlu stacking: bg sebagai Base, fg sebagai Overlay.
             if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset)
             {
                 _backgroundCameraData = _backgroundCamera.GetUniversalAdditionalCameraData();
                 _foregroundCameraData = foregroundCamera.GetUniversalAdditionalCameraData();
 
                 if (_backgroundCameraData != null)
-                {
                     _backgroundCameraData.renderType = CameraRenderType.Base;
 
-                    // Setup culling — hanya render layer background
-                    _backgroundCamera.cullingMask = 1 << backgroundLayer;
-
-                    // Clear flags: Depth Only agar tidak menimpa dengan warna solid
-                    _backgroundCamera.clearFlags = CameraClearFlags.Depth;
-                }
-
                 if (_foregroundCameraData != null)
-                {
                     _foregroundCameraData.renderType = CameraRenderType.Overlay;
-                }
 
                 if (_backgroundCameraData != null && _backgroundCameraData.cameraStack == null)
                 {
@@ -164,10 +157,26 @@ namespace GerakAR.AR
             // Depth Only agar tidak menimpa background dengan warna solid
             foregroundCamera.clearFlags = CameraClearFlags.Depth;
 
-            Debug.Log(
-                $"[ARUnityXURPBackgroundPresenter] Camera feed configured: " +
-                $"texture={_videoTexture.width}x{_videoTexture.height}, " +
-                $"bgCam={_backgroundCamera.name}, fgCam={foregroundCamera.name}.");
+            // Diagnostic log untuk debug flip/orientasi
+            {
+                Renderer r = videoObject.GetComponent<Renderer>();
+                Vector3 qScale = backgroundObject.transform.localScale;
+                Vector3 qRot = backgroundObject.transform.localEulerAngles;
+                Debug.Log(
+                    $"[ARUnityXURPBackgroundPresenter] Camera feed configured: " +
+                    $"tex={_videoTexture.width}x{_videoTexture.height}, " +
+                    $"screen={Screen.width}x{Screen.height}, " +
+                    $"bgCam='{_backgroundCamera.name}' layer={_backgroundCamera.gameObject.layer} " +
+                    $"mask={_backgroundCamera.cullingMask}, " +
+                    $"clearFlags={_backgroundCamera.clearFlags}, " +
+                    $"fgCam='{foregroundCamera.name}', " +
+                    $"qScale=({qScale.x:F3},{qScale.y:F3},{qScale.z:F3}), " +
+                    $"qRot=({qRot.x:F1},{qRot.y:F1},{qRot.z:F1}), " +
+                    $"material={r?.sharedMaterial?.name}, " +
+                    $"shader={r?.sharedMaterial?.shader?.name}, " +
+                    $"texScale={r?.sharedMaterial?.mainTextureScale}, " +
+                    $"flipH={flipHorizontally}, flipV={flipVertically}");
+            }
 
             // Validasi texture
             if (_textureValidation != null)
