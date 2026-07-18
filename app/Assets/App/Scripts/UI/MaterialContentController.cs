@@ -33,12 +33,14 @@ namespace GerakAR.UI
     /// </summary>
     public class MaterialContentController : MonoBehaviour
     {
+        private static readonly Color ForestGreen = new Color(0.12f, 0.365f, 0.259f, 1f); // #1F5D42
         // ── Inspector – Primary movement ──────────────────────────────
 
         [Header("Header")]
         [SerializeField] private TextMeshProUGUI categoryTypeLabel;  // Shows "Gerakan Utama" or "Materi Tambahan"
         [SerializeField] private TextMeshProUGUI movementNameText;
         [SerializeField] private Image categoryAccentBar;
+        [SerializeField] private TextMeshProUGUI movementSubtitleText;
         [SerializeField] private Button backToPrimaryButton;        // Button to return to main movement
 
         [Header("Half-state content")]
@@ -51,7 +53,10 @@ namespace GerakAR.UI
         [SerializeField] private GameObject fullStateExtras;        // Parent GO
         [SerializeField] private Transform trainedAreasContainer;
         [SerializeField] private Transform commonMistakesContainer;
+        [SerializeField] private GameObject mistakesTitleText;
+        [SerializeField] private GameObject trainedTitleText;
         [SerializeField] private GameObject bulletItemPrefab;       // TMP label
+        [SerializeField] private GameObject muscleItemPrefab;       // Grid card label
 
         [Header("Related movements")]
         [SerializeField] private Transform relatedCardsContainer;
@@ -123,9 +128,31 @@ namespace GerakAR.UI
 
             // Header
             if (movementNameText != null)
-                movementNameText.text = data.displayName.ToUpper();
+                movementNameText.text = data.displayName;
             if (categoryAccentBar != null)
-                categoryAccentBar.color = data.categoryColor;
+            {
+                // Semi-transparent background for kicker badge (12% opacity)
+                categoryAccentBar.color = new Color(data.categoryColor.r, data.categoryColor.g, data.categoryColor.b, 0.12f);
+            }
+            if (categoryTypeLabel != null)
+            {
+                string categoryName = "GERAKAN";
+                if (data.movementId.Contains("squat")) categoryName = "SQUAT";
+                else if (data.movementId.Contains("stretch") || data.movementId.Contains("dynamic")) categoryName = "DYNAMIC STRETCHING";
+                else if (data.movementId.Contains("ladder")) categoryName = "LADDER DRILL";
+
+                categoryTypeLabel.text = categoryName;
+                categoryTypeLabel.color = data.categoryColor; // Text color matches category color
+            }
+            if (movementSubtitleText != null)
+            {
+                string subtitle = "Latihan Olahraga SD";
+                if (data.movementId.Contains("squat")) subtitle = "Latihan kekuatan kaki dan keseimbangan.";
+                else if (data.movementId.Contains("stretch") || data.movementId.Contains("dynamic")) subtitle = "Latihan kelenturan dan pemanasan.";
+                else if (data.movementId.Contains("ladder")) subtitle = "Latihan kelincahan dan koordinasi.";
+
+                movementSubtitleText.text = subtitle;
+            }
 
             // Description
             if (shortDescriptionText != null)
@@ -138,11 +165,28 @@ namespace GerakAR.UI
 
             // Safety tip (first one)
             if (safetyTipText != null && data.safetyTips?.Count > 0)
-                safetyTipText.text = $"[!] {data.safetyTips[0]}";
+                safetyTipText.text = data.safetyTips[0];
 
             // Full-state extras
+            if (mistakesTitleText != null) mistakesTitleText.SetActive(true);
+            if (commonMistakesContainer != null) commonMistakesContainer.gameObject.SetActive(true);
+            if (trainedTitleText != null) trainedTitleText.SetActive(true);
+            if (trainedAreasContainer != null) trainedAreasContainer.gameObject.SetActive(true);
+
             foreach (var area in data.trainedAreas ?? new List<string>())
-                SpawnBullet(trainedAreasContainer, $"- {area}", bulletItemPrefab);
+            {
+                if (muscleItemPrefab != null)
+                {
+                    GameObject item = Instantiate(muscleItemPrefab, trainedAreasContainer);
+                    var tmp = item.GetComponentInChildren<TextMeshProUGUI>();
+                    if (tmp != null) tmp.text = area;
+                    _spawnedItems.Add(item);
+                }
+                else
+                {
+                    SpawnBullet(trainedAreasContainer, $"- {area}", bulletItemPrefab);
+                }
+            }
             foreach (var mistake in data.commonMistakes ?? new List<string>())
                 SpawnBullet(commonMistakesContainer, $"- {mistake}", bulletItemPrefab);
 
@@ -183,13 +227,29 @@ namespace GerakAR.UI
             if (backToPrimaryButton != null)
                 backToPrimaryButton.gameObject.SetActive(true);
             if (categoryTypeLabel != null)
-                categoryTypeLabel.text = "Materi Tambahan";
+            {
+                categoryTypeLabel.text = "MATERI TAMBAHAN";
+                categoryTypeLabel.color = ForestGreen;
+            }
+            if (categoryAccentBar != null)
+            {
+                categoryAccentBar.color = new Color(ForestGreen.r, ForestGreen.g, ForestGreen.b, 0.12f);
+            }
+            if (movementSubtitleText != null)
+            {
+                movementSubtitleText.text = "Variasi gerakan latihan serupa.";
+            }
+
+            if (mistakesTitleText != null) mistakesTitleText.SetActive(false);
+            if (commonMistakesContainer != null) commonMistakesContainer.gameObject.SetActive(false);
+            if (trainedTitleText != null) trainedTitleText.SetActive(false);
+            if (trainedAreasContainer != null) trainedAreasContainer.gameObject.SetActive(false);
 
             ClearDynamic();
 
             // Populate from related data
             if (movementNameText != null)
-                movementNameText.text = rel.title.ToUpper();
+                movementNameText.text = rel.title;
 
             if (shortDescriptionText != null)
                 shortDescriptionText.text = rel.shortDescription;
@@ -201,7 +261,7 @@ namespace GerakAR.UI
 
             // Safety tip
             if (safetyTipText != null && rel.safetyTips?.Count > 0)
-                safetyTipText.text = $"[!] {rel.safetyTips[0]}";
+                safetyTipText.text = rel.safetyTips[0];
 
             // Related movements (in related detail view, let's keep the related list visible at the bottom so they can tap other ones!)
         }
@@ -222,8 +282,49 @@ namespace GerakAR.UI
             if (parent == null || prefab == null) return;
             var go = Instantiate(prefab, parent);
             _spawnedItems.Add(go);
-            var tmp = go.GetComponentInChildren<TextMeshProUGUI>();
-            if (tmp != null) tmp.text = text;
+
+            // Handle numbered steps
+            int dotIndex = text.IndexOf('.');
+            if (dotIndex > 0 && int.TryParse(text.Substring(0, dotIndex), out int num) && go.transform.Find("Badge") != null)
+            {
+                var numText = go.transform.Find("Badge/Text")?.GetComponent<TextMeshProUGUI>();
+                if (numText != null) numText.text = num.ToString();
+
+                var contentText = go.transform.Find("Text")?.GetComponent<TextMeshProUGUI>();
+                if (contentText != null) contentText.text = text.Substring(dotIndex + 1).Trim();
+            }
+            else
+            {
+                // Strip bullet points if any
+                string cleanText = text;
+                if (cleanText.StartsWith("- "))
+                    cleanText = cleanText.Substring(2);
+
+                var contentText = go.transform.Find("Text")?.GetComponent<TextMeshProUGUI>();
+                if (contentText != null)
+                {
+                    contentText.text = cleanText;
+                }
+                else
+                {
+                    var tmp = go.GetComponentInChildren<TextMeshProUGUI>();
+                    if (tmp != null) tmp.text = cleanText;
+                }
+
+                // Hide the icon badge if parent is the TrainedContainer or if text doesn't start with "- "
+                var badgeGo = go.transform.Find("Badge")?.gameObject;
+                bool isTrainedArea = parent.name == "TrainedContainer" || parent.name.Contains("Trained");
+                if (badgeGo != null && (isTrainedArea || !text.StartsWith("- ")))
+                {
+                    badgeGo.SetActive(false);
+                    var textRT = go.transform.Find("Text")?.GetComponent<RectTransform>();
+                    if (textRT != null)
+                    {
+                        textRT.anchoredPosition = new Vector2(12f, 0f);
+                        textRT.sizeDelta = new Vector2(-24f, 0f);
+                    }
+                }
+            }
         }
 
         private void ClearDynamic()

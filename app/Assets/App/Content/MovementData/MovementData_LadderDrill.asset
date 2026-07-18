@@ -50,7 +50,7 @@ MonoBehaviour:
   - Langkah terlalu lebar sehingga melewati kotak.
   relatedMovements:
   - title: One-In
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: ea6004dade6a9d5da9622e42a809ff40, type: 3}
     shortDescription: Satu kaki di setiap kotak tangga, langkah cepat dan ringan.
     steps:
     - Masukkan kaki kanan ke kotak pertama.
@@ -59,7 +59,7 @@ MonoBehaviour:
     safetyTips:
     - Jaga pandangan lurus ke depan tangga.
   - title: Two-In
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: 1eecbd611b38277969187d8c46a1fbde, type: 3}
     shortDescription: Dua kaki masuk ke setiap kotak secara bergantian.
     steps:
     - Masukkan kedua kaki ke satu kotak secara berurutan.
@@ -68,7 +68,7 @@ MonoBehaviour:
     safetyTips:
     - Mulai lambat dulu untuk menghafal pola.
   - title: Side Shuffle
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: f11669e523ef688df862b680240b7359, type: 3}
     shortDescription: Gerak menyamping melewati tangga untuk kelincahan lateral.
     steps:
     - Hadap ke samping tangga.
@@ -77,7 +77,7 @@ MonoBehaviour:
     safetyTips:
     - Tetap hadap ke satu arah selama seluruh set.
   - title: Two-Foot Hop
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: c02986e4741a530049b84215666e7ff4, type: 3}
     shortDescription: Lompat dua kaki bersamaan masuk setiap kotak tangga.
     steps:
     - Berdiri di ujung tangga dengan kaki rapat.

@@ -50,7 +50,7 @@ MonoBehaviour:
   - Punggung membungkuk berlebihan.
   relatedMovements:
   - title: Bodyweight Squat
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: 72d9eedbbfbce5f339f5a28600858d89, type: 3}
     shortDescription: Squat menggunakan berat badan sendiri tanpa tambahan beban.
     steps:
     - Berdiri tegak, kaki selebar bahu.
@@ -59,7 +59,7 @@ MonoBehaviour:
     safetyTips:
     - Mulai dari gerakan kecil jika baru belajar.
   - title: Squat Jump
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: e6e08821b7764c7a99987fbed6d80b35, type: 3}
     shortDescription: Squat dengan lompatan eksplosif untuk melatih daya ledak kaki.
     steps:
     - Lakukan posisi squat dasar.
@@ -68,7 +68,7 @@ MonoBehaviour:
     safetyTips:
     - Mendarat dengan lembut untuk menjaga lutut.
   - title: Pistol Squat
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: 2c1415933a98ede909da4d1d9e2daf20, type: 3}
     shortDescription: Squat satu kaki untuk melatih keseimbangan dan kekuatan.
     steps:
     - Berdiri di satu kaki.
@@ -77,8 +77,9 @@ MonoBehaviour:
     safetyTips:
     - Latihan keseimbangan dulu sebelum mencoba pistol squat.
   - title: Front Squat
-    thumbnail: {fileID: 0}
-    shortDescription: Squat dengan posisi beban di depan dada untuk melatih paha depan.
+    thumbnail: {fileID: 21300000, guid: 863ec598592b1a6988eccc0361b45b29, type: 3}
+    shortDescription: Squat dengan posisi beban di depan dada untuk melatih paha
+      depan.
     steps:
     - Posisikan beban di depan bahu.
     - Siku tinggi dan dada tegak.

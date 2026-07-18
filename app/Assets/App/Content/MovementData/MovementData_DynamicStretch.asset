@@ -52,7 +52,7 @@ MonoBehaviour:
   - Lutut terkunci saat mengayun.
   relatedMovements:
   - title: Standing Toe Touch
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: d5dcadde0454f345e9566f526e8d5803, type: 3}
     shortDescription: Ayunkan kaki lurus ke depan dan raih ujung jari kaki.
     steps:
     - Berdiri tegak dan rileks.
@@ -61,7 +61,7 @@ MonoBehaviour:
     safetyTips:
     - Jangan memaksa jika kaku; gerak perlahan.
   - title: Diagonal Reach
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: f0c1e4e50edf5ecea964ead0c8bbdd1e, type: 3}
     shortDescription: Raih diagonal silang untuk melatih koordinasi dan fleksibilitas.
     steps:
     - Berdiri kaki selebar bahu.
@@ -70,7 +70,7 @@ MonoBehaviour:
     safetyTips:
     - Jaga punggung tetap lurus saat membungkuk.
   - title: Trunk Rotation
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: 3abc9162ce6aeb0a095bef90bf5c117e, type: 3}
     shortDescription: Rotasi batang tubuh untuk melenturkan pinggang dan punggung.
     steps:
     - Berdiri kaki selebar bahu, tangan di pinggang.
@@ -79,7 +79,7 @@ MonoBehaviour:
     safetyTips:
     - Rotasi dari pinggang, bukan hanya bahu.
   - title: High Knee March
-    thumbnail: {fileID: 0}
+    thumbnail: {fileID: 21300000, guid: 647872819ccc29fb4bbc2b8add7c7ac8, type: 3}
     shortDescription: Marching dengan lutut tinggi untuk memanaskan seluruh kaki.
     steps:
     - Berdiri tegak dengan tangan di sisi tubuh.
