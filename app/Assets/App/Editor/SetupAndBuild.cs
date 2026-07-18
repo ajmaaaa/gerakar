@@ -408,21 +408,19 @@ public static class SetupAndBuild
         if (fonts != null) subtitleText.font = fonts.Medium;
         SetCenterPosition(subtitleGo.GetComponent<RectTransform>(), 0f, 15f, 266.7f, 16.7f);
 
-        // StraightProgressBar — UISolidRectangle anti-taper
+        // StraightProgressBar — Capsule style progress bar
         var progressTrackGo = CreateUIObject("ProgressTrack", brandGroupGo);
         var trackImg = progressTrackGo.AddComponent<Image>();
-        trackImg.sprite = uiSolidRect;
-        trackImg.type = Image.Type.Simple;
-        trackImg.preserveAspect = false;
+        trackImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        trackImg.type = Image.Type.Sliced;
         trackImg.color = SoftSand;
         trackImg.GetComponent<RectTransform>().localScale = Vector3.one;
-        SetCenterPosition(progressTrackGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 4f); // height 4 units, ujung datar
+        SetCenterPosition(progressTrackGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 8f); // height 8 for rounded ends
 
         var progressFillGo = CreateUIObject("ProgressFill", progressTrackGo);
         var fillImg = progressFillGo.AddComponent<Image>();
-        fillImg.sprite = uiSolidRect;
-        fillImg.type = Image.Type.Simple;
-        fillImg.preserveAspect = false;
+        fillImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        fillImg.type = Image.Type.Sliced;
         fillImg.color = WarmWhite;
         fillImg.GetComponent<RectTransform>().localScale = Vector3.one;
         var fillRT = progressFillGo.GetComponent<RectTransform>();
@@ -980,17 +978,15 @@ public static class SetupAndBuild
 
         var readyProgressGo = CreateUIObject("ProgressTrack", readyBrandGroup);
         var readyProgressImg = readyProgressGo.AddComponent<Image>();
-        readyProgressImg.sprite = uiSolidRect;
-        readyProgressImg.type = Image.Type.Simple;
-        readyProgressImg.preserveAspect = false;
+        readyProgressImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        readyProgressImg.type = Image.Type.Sliced;
         readyProgressImg.color = SoftSand;
-        SetCenterPosition(readyProgressGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 4f);
+        SetCenterPosition(readyProgressGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 8f);
 
         var readyProgressFill = CreateUIObject("ProgressFill", readyProgressGo);
         var readyFillImg = readyProgressFill.AddComponent<Image>();
-        readyFillImg.sprite = uiSolidRect;
-        readyFillImg.type = Image.Type.Simple;
-        readyFillImg.preserveAspect = false;
+        readyFillImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        readyFillImg.type = Image.Type.Sliced;
         readyFillImg.color = WarmWhite;
         var rFillRT = readyProgressFill.GetComponent<RectTransform>();
         rFillRT.anchorMin = new Vector2(0f, 0f);
@@ -1125,34 +1121,43 @@ public static class SetupAndBuild
         if (fonts != null) scanPillText.font = fonts.Heading;
         StretchRect(scanPillTextGo.GetComponent<RectTransform>());
 
-        // Instruction card — White semi-transparent background card positioned at the bottom
-        var instructionCardGo = CreateUIObject("InstructionCard", scanGo); // parented under scanGo!
+        // Instruction card — Dark grey horizontal card matching attached image
+        var instructionCardGo = CreateUIObject("InstructionCard", scanGo);
         var instCardImg = instructionCardGo.AddComponent<Image>();
         instCardImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         instCardImg.type = Image.Type.Sliced;
-        instCardImg.color = new Color(1f, 1f, 1f, 0.85f);
-        SetAnchorBottom(instructionCardGo.GetComponent<RectTransform>(), 0f, 80f, 280f, 72f);
+        instCardImg.color = new Color(0.29f, 0.30f, 0.33f, 1f); // Dark slate grey background
+        SetAnchorBottom(instructionCardGo.GetComponent<RectTransform>(), 0f, 80f, 320f, 64f);
+
+        // Left scan-line outline icon
+        var scanIconGo = CreateUIObject("ScanIcon", instructionCardGo);
+        var scanIconImg = scanIconGo.AddComponent<Image>();
+        scanIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/scan-line.svg");
+        scanIconImg.preserveAspect = true;
+        scanIconImg.raycastTarget = false;
+        scanIconImg.color = Color.white;
+        SetCenterPosition(scanIconGo.GetComponent<RectTransform>(), -128f, 0f, 28f, 28f);
 
         var hintGo = CreateUIObject("HintText", instructionCardGo);
         var hintText = hintGo.AddComponent<TextMeshProUGUI>();
         hintText.textWrappingMode = TextWrappingModes.Normal;
         hintText.text = "Arahkan kamera ke gambar gerakan";
-        hintText.fontSize = 13f;
+        hintText.fontSize = 11.5f;
         hintText.fontStyle = FontStyles.Bold;
-        hintText.color = DeepForest;
-        hintText.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) hintText.font = fonts.Body;
-        SetCenterPosition(hintGo.GetComponent<RectTransform>(), 0f, 14f, 260f, 20f);
+        hintText.color = Color.white;
+        hintText.alignment = TextAlignmentOptions.Left;
+        if (fonts != null) hintText.font = fonts.Heading;
+        SetCenterPosition(hintGo.GetComponent<RectTransform>(), 16f, 10f, 230f, 20f);
 
-        var instSubtitleGo = CreateUIObject("InstructionSubtitle", instructionCardGo); // parented under instructionCardGo!
+        var instSubtitleGo = CreateUIObject("InstructionSubtitle", instructionCardGo);
         var instSubtitle = instSubtitleGo.AddComponent<TextMeshProUGUI>();
         instSubtitle.textWrappingMode = TextWrappingModes.Normal;
         instSubtitle.text = "Pastikan seluruh gambar terlihat jelas";
-        instSubtitle.fontSize = 10f;
-        instSubtitle.color = ForestGreen;
-        instSubtitle.alignment = TextAlignmentOptions.Center;
+        instSubtitle.fontSize = 9.5f;
+        instSubtitle.color = new Color(0.918f, 0.867f, 0.812f, 0.8f); // light SoftSand text
+        instSubtitle.alignment = TextAlignmentOptions.Left;
         if (fonts != null) instSubtitle.font = fonts.Medium;
-        SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 0f, -14f, 260f, 16f);
+        SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 16f, -12f, 230f, 16f);
 
         // ═══════════════════════════════════════════════════════════
         // G04 — DETECTION TOAST (Child of CenterContent)
@@ -1441,7 +1446,7 @@ public static class SetupAndBuild
         var sheetImg = sheetGo.AddComponent<Image>();
         sheetImg.sprite = roundTopSprite;
         sheetImg.type = Image.Type.Sliced;
-        sheetImg.color = Color.white; // Clean white sheet background as in mockup
+        sheetImg.color = WarmCream; // Consistent WarmCream background
         var sheetRT = sheetGo.GetComponent<RectTransform>();
         sheetRT.anchorMin = new Vector2(0f, 0f);
         sheetRT.anchorMax = new Vector2(1f, 0f);
@@ -2042,23 +2047,23 @@ public static class SetupAndBuild
         cardOutline.effectColor = SoftSand;
         cardOutline.effectDistance = new Vector2(1f, 1f);
 
-        SetCenterPosition(cardGo.GetComponent<RectTransform>(), x, y, 306.7f, 52f);
+        SetCenterPosition(cardGo.GetComponent<RectTransform>(), x, y, 320f, 56f); // 320x56 Card
 
         var numCircleGo = CreateUIObject("NumCircle", cardGo);
         var numCircleImg = numCircleGo.AddComponent<Image>();
-        numCircleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-08.png");
+        numCircleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png"); // clean circle shape
         numCircleImg.type = Image.Type.Sliced;
-        numCircleImg.color = ForestGreen;
-        SetCenterPosition(numCircleGo.GetComponent<RectTransform>(), -126.7f, 0f, 28f, 28f);
+        numCircleImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // 60% SoftSand tint background
+        SetCenterPosition(numCircleGo.GetComponent<RectTransform>(), -130f, 0f, 32f, 32f);
 
         var numTextGo = CreateUIObject("Text", numCircleGo);
         var numText = numTextGo.AddComponent<TextMeshProUGUI>();
         numText.text = number;
-        numText.fontSize = 14f;
+        numText.fontSize = 13f;
         numText.fontStyle = FontStyles.Bold;
-        numText.color = WarmWhite;
+        numText.color = DeepForest; // consistent text color
         numText.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) numText.font = fonts.Body;
+        if (fonts != null) numText.font = fonts.Heading;
         StretchRect(numTextGo.GetComponent<RectTransform>());
 
         var descGo = CreateUIObject("Desc", cardGo);
@@ -2068,8 +2073,8 @@ public static class SetupAndBuild
         desc.fontSize = 12f;
         desc.color = SecondaryText;
         desc.alignment = TextAlignmentOptions.Left;
-        if (fonts != null) desc.font = fonts.Body;
-        SetCenterPosition(descGo.GetComponent<RectTransform>(), 20f, 0f, 220f, 30f);
+        if (fonts != null) desc.font = fonts.Medium;
+        SetCenterPosition(descGo.GetComponent<RectTransform>(), 20f, 0f, 240f, 36f);
     }
 
     private static (Button, GameObject, GameObject) CreateMovementCard(
