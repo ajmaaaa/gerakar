@@ -47,6 +47,8 @@ namespace GerakAR.UI
         private AppStateManager _stateMgr;
         private bool _isDragging;
         private readonly List<GameObject> _markers = new();
+        private readonly List<float> _markerTimes = new();
+        private Color _accentColor = Color.gray;
 
         // ── Unity lifecycle ───────────────────────────────────────────
 
@@ -69,6 +71,21 @@ namespace GerakAR.UI
         {
             _stateMgr = AppStateManager.Instance;
             AppStateManager.OnStateChanged += OnStateChanged;
+        }
+
+        private void Update()
+        {
+            if (!_isDragging && movementController != null && movementController.CanInspect)
+            {
+                float t = movementController.CurrentNormalizedTime;
+                if (timelineSlider != null)
+                {
+                    timelineSlider.onValueChanged.RemoveListener(OnSliderValueChanged);
+                    timelineSlider.value = t;
+                    timelineSlider.onValueChanged.AddListener(OnSliderValueChanged);
+                }
+                UpdateMarkerColors(t);
+            }
         }
 
         private void OnDestroy()
@@ -152,15 +169,29 @@ namespace GerakAR.UI
         {
             if (_isDragging)
                 movementController?.ScrubTo(value);
+            UpdateMarkerColors(value);
         }
 
         // ── Marker management ─────────────────────────────────────────
 
+        private void UpdateMarkerColors(float sliderValue)
+        {
+            for (int i = 0; i < _markers.Count; i++)
+            {
+                if (_markers[i] == null) continue;
+                var img = _markers[i].GetComponent<Image>();
+                if (img != null)
+                {
+                    float t = _markerTimes[i];
+                    img.color = (t <= sliderValue) ? GerakARTheme.Primary : _accentColor;
+                }
+            }
+        }
+
         private void BuildMarkers(List<KeyPoseData> poses, Color accentColor)
         {
             if (markerContainer == null || markerPrefab == null || poses == null) return;
-
-            float trackWidth = markerContainer.rect.width;
+            _accentColor = accentColor;
 
             foreach (var pose in poses)
             {
@@ -168,17 +199,17 @@ namespace GerakAR.UI
                 var rt = dot.GetComponent<RectTransform>();
                 if (rt != null)
                 {
-                    float xPos = Mathf.Lerp(0f, trackWidth, pose.normalizedTime);
-                    rt.anchoredPosition = new Vector2(xPos, 0f);
+                    rt.anchorMin = new Vector2(pose.normalizedTime, 0.5f);
+                    rt.anchorMax = new Vector2(pose.normalizedTime, 0.5f);
+                    rt.pivot = new Vector2(0.5f, 0.5f);
+                    rt.anchoredPosition = Vector2.zero;
+                    rt.sizeDelta = new Vector2(12f, 12f);
                 }
 
-                // Apply category color
-                var img = dot.GetComponent<Image>();
-                if (img != null)
-                    img.color = accentColor;
-
                 _markers.Add(dot);
+                _markerTimes.Add(pose.normalizedTime);
             }
+            UpdateMarkerColors(timelineSlider != null ? timelineSlider.value : 0f);
         }
 
         private void ClearMarkers()
@@ -186,6 +217,7 @@ namespace GerakAR.UI
             foreach (var m in _markers)
                 if (m != null) Destroy(m);
             _markers.Clear();
+            _markerTimes.Clear();
         }
 
         // ── Helper ────────────────────────────────────────────────────

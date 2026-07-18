@@ -51,6 +51,10 @@ namespace GerakAR.UI
         [SerializeField] private Sprite playSprite;
         [SerializeField] private Sprite pauseSprite;
 
+        [Header("Background")]
+        [SerializeField] private GameObject fullScreenBackground;
+        [SerializeField] private CanvasGroup cameraReadyCover;
+
         // ── Private ───────────────────────────────────────────────────
 
         private AppStateManager _stateMgr;
@@ -122,6 +126,13 @@ namespace GerakAR.UI
             bool fabsVisible = tracking || showMaterial;
             SetActive(closeButton?.gameObject, fabsVisible);
             SetActive(materialButton?.gameObject, fabsVisible && !showMaterial);
+            SetActive(playPauseButton?.gameObject, fabsVisible && !showMaterial);
+
+            if (fullScreenBackground != null)
+            {
+                bool nonAR = state == AppState.NonARMovementPlayer || (state == AppState.ShowingMaterial && AppStateManager.RunInNonARMode);
+                fullScreenBackground.SetActive(nonAR);
+            }
 
             // Synchronize Play/Pause icon state
             UpdatePlayPauseUI();
@@ -212,6 +223,22 @@ namespace GerakAR.UI
             playPauseIcon.sprite = isPlaying ? pauseSprite : playSprite;
         }
 
+        public System.Collections.IEnumerator FadeOutCameraCover()
+        {
+            if (cameraReadyCover == null) yield break;
+
+            float elapsed = 0f;
+            float duration = 0.3f; // 300 ms crossfade
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                cameraReadyCover.alpha = Mathf.Lerp(1f, 0f, elapsed / duration);
+                yield return null;
+            }
+            cameraReadyCover.alpha = 0f;
+            cameraReadyCover.gameObject.SetActive(false);
+        }
+
         // ── Helpers ───────────────────────────────────────────────────
 
         private static void SetActive(GameObject go, bool active)
@@ -220,6 +247,4 @@ namespace GerakAR.UI
                 go.SetActive(active);
         }
     }
-
-
 }

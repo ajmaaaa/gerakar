@@ -39,11 +39,14 @@ namespace GerakAR.UI
             if (loadingFillImage != null)
             {
                 _fillRT = loadingFillImage.GetComponent<RectTransform>();
-                var parentRT = loadingFillImage.transform.parent?.GetComponent<RectTransform>();
-                if (parentRT != null)
-                    _trackWidth = parentRT.rect.width;
                 if (_fillRT != null)
-                    _fillRT.sizeDelta = new Vector2(0f, _fillRT.sizeDelta.y);
+                {
+                    _fillRT.anchorMin = new Vector2(0f, 0f);
+                    _fillRT.anchorMax = new Vector2(0f, 1f);
+                    _fillRT.pivot = new Vector2(0f, 0.5f);
+                    _fillRT.anchoredPosition = Vector2.zero;
+                    _fillRT.sizeDelta = Vector2.zero;
+                }
             }
 
             StartCoroutine(IntroSequence());
@@ -57,16 +60,16 @@ namespace GerakAR.UI
             while (elapsed < introDuration)
             {
                 elapsed += Time.deltaTime;
-                if (_fillRT != null && _trackWidth > 0f)
+                if (_fillRT != null)
                 {
                     float t = Mathf.Clamp01(elapsed / introDuration);
-                    _fillRT.sizeDelta = new Vector2(Mathf.SmoothStep(0f, _trackWidth, t), _fillRT.sizeDelta.y);
+                    _fillRT.anchorMax = new Vector2(Mathf.SmoothStep(0f, 1f, t), 1f);
                 }
                 yield return null;
             }
 
-            if (_fillRT != null && _trackWidth > 0f)
-                _fillRT.sizeDelta = new Vector2(_trackWidth, _fillRT.sizeDelta.y);
+            if (_fillRT != null)
+                _fillRT.anchorMax = new Vector2(1f, 1f);
 
             // Fade out
             if (introCanvasGroup != null)

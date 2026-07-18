@@ -44,6 +44,19 @@ namespace GerakAR.Animation
 
         public bool CanInspect => _animator != null;
 
+        public float CurrentNormalizedTime
+        {
+            get
+            {
+                if (_animator == null) return 0f;
+                if (_stateMgr != null && _stateMgr.Is(AppState.InspectingPose))
+                    return _currentNormalizedTime;
+                
+                var info = _animator.GetCurrentAnimatorStateInfo(0);
+                return info.normalizedTime % 1f;
+            }
+        }
+
         // ── Setup ─────────────────────────────────────────────────────
 
         private void Awake()

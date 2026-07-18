@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using GerakAR.Core;
+using GerakAR.UI;
 
 namespace GerakAR.AR
 {
@@ -143,6 +144,26 @@ namespace GerakAR.AR
             _startupTimeout = StartCoroutine(WaitForVideoStartup());
         }
 
+        private bool IsFrameValidColor(Texture texture)
+        {
+            if (texture is Texture2D tex2D)
+            {
+                try
+                {
+                    Color pixel = tex2D.GetPixel(tex2D.width / 2, tex2D.height / 2);
+                    if (pixel.g > 0.8f && pixel.b < 0.2f)
+                    {
+                        return false;
+                    }
+                }
+                catch
+                {
+                    // Texture not CPU-readable, assume valid
+                }
+            }
+            return true;
+        }
+
         private void OnVideoStarted()
         {
             _videoStarted = true;
@@ -151,6 +172,65 @@ namespace GerakAR.AR
             {
                 RouteToFallback("ARUnityX camera background failed to render.", false);
                 return;
+            }
+
+            StartCoroutine(WaitForCameraReady());
+        }
+
+        private IEnumerator WaitForCameraReady()
+        {
+            float timeout = Time.realtimeSinceStartup + startupTimeoutSeconds;
+            Texture videoTex = null;
+            GameObject videoObject = GameObject.Find("Video source");
+            Renderer videoRenderer = videoObject != null ? videoObject.GetComponent<Renderer>() : null;
+            Material videoMaterial = videoRenderer != null ? videoRenderer.sharedMaterial : null;
+
+            while (videoTex == null && Time.realtimeSinceStartup < timeout)
+            {
+                if (videoMaterial != null)
+                    videoTex = videoMaterial.mainTexture;
+                yield return null;
+            }
+
+            if (videoTex == null)
+            {
+                RouteToFallback("Camera texture is missing.", false);
+                yield break;
+            }
+
+            int stableFrames = 0;
+            uint lastUpdateCount = videoTex.updateCount;
+
+            while (stableFrames < 5 && Time.realtimeSinceStartup < timeout)
+            {
+                if (videoTex.width > 0 && videoTex.height > 0)
+                {
+                    if (videoTex.updateCount > lastUpdateCount)
+                    {
+                        lastUpdateCount = videoTex.updateCount;
+                        if (IsFrameValidColor(videoTex))
+                        {
+                            stableFrames++;
+                        }
+                        else
+                        {
+                            stableFrames = 0;
+                        }
+                    }
+                }
+                yield return null;
+            }
+
+            if (stableFrames < 5)
+            {
+                RouteToFallback("Camera stream failed to stabilize.", false);
+                yield break;
+            }
+
+            var arUI = Object.FindAnyObjectByType<ARUIController>();
+            if (arUI != null)
+            {
+                yield return arUI.FadeOutCameraCover();
             }
 
             StartCoroutine(WaitForTargetReady());

@@ -24,7 +24,7 @@ namespace GerakAR.UI
     {
         // ── Constants ─────────────────────────────────────────────────
 
-        private const string OnboardingKey = "gerakar_onboarding_done";
+        private const string OnboardingKey = "gerakar.onboarding.completed.v1";
         private const string MainARScene = "MainAR";
 
         // ── Inspector ─────────────────────────────────────────────────

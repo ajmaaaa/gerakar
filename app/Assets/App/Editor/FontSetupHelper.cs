@@ -30,8 +30,17 @@ public static class FontSetupHelper
 
             if (File.Exists(sdfPath))
             {
-                Debug.Log($"[FontSetupHelper] SDF already exists: {sdfPath}");
-                continue;
+                var existing = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(sdfPath);
+                if (existing != null && existing.atlasTexture != null && existing.material != null)
+                {
+                    Debug.Log($"[FontSetupHelper] SDF already exists and is valid: {sdfPath}");
+                    continue;
+                }
+                else
+                {
+                    Debug.LogWarning($"[FontSetupHelper] Existing SDF at {sdfPath} is invalid/missing atlas. Recreating...");
+                    AssetDatabase.DeleteAsset(sdfPath);
+                }
             }
 
             var font = AssetDatabase.LoadAssetAtPath<Font>(ttfPath);
@@ -47,7 +56,7 @@ public static class FontSetupHelper
                 continue;
             }
 
-            var sdfFont = TMP_FontAsset.CreateFontAsset(font, 90, 9, 5, true);
+            var sdfFont = TMP_FontAsset.CreateFontAsset(font);
             if (sdfFont == null)
             {
                 Debug.LogError($"[FontSetupHelper] Failed to create SDF asset for {weight}");
@@ -55,9 +64,27 @@ public static class FontSetupHelper
             }
 
             sdfFont.atlasPopulationMode = AtlasPopulationMode.Dynamic;
-            sdfFont.material.mainTexture.filterMode = FilterMode.Bilinear;
 
             AssetDatabase.CreateAsset(sdfFont, sdfPath);
+
+            if (sdfFont.atlasTextures != null)
+            {
+                for (int i = 0; i < sdfFont.atlasTextures.Length; i++)
+                {
+                    if (sdfFont.atlasTextures[i] != null)
+                    {
+                        sdfFont.atlasTextures[i].name = $"{sdfFont.name} Atlas";
+                        AssetDatabase.AddObjectToAsset(sdfFont.atlasTextures[i], sdfFont);
+                    }
+                }
+            }
+
+            if (sdfFont.material != null)
+            {
+                sdfFont.material.name = $"{sdfFont.name} Material";
+                AssetDatabase.AddObjectToAsset(sdfFont.material, sdfFont);
+            }
+
             AssetDatabase.SaveAssets();
             Debug.Log($"[FontSetupHelper] Created Poppins-{weight} SDF asset at {sdfPath}");
         }
