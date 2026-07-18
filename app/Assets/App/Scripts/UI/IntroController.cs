@@ -72,8 +72,8 @@ namespace GerakAR.UI
                 _fillRT.anchorMax = new Vector2(0.45f, 1f); // Berhenti di 45%
 
             // Hapus fadeOut panel — tetap alpha=1, hanya teks yang crossfade nanti
-            // Langsung lanjut ke flow AR (skip G02 Onboarding)
-            AppStateManager.Instance?.TransitionTo(AppState.CheckingAR);
+            // Lanjut ke Onboarding (G02) — akan dilewati otomatis jika sudah pernah
+            AppStateManager.Instance?.TransitionTo(AppState.Onboarding);
         }
     }
 }

@@ -109,9 +109,9 @@ namespace GerakAR.UI
                 Invoke(nameof(RouteToNonARCatalog), 1.5f);
             }
 
-            // Onboarding (G02) dilewati total — panel tidak pernah ditampilkan
+            // Onboarding panel — hanya tampil saat Onboarding state (sekali seumur instalasi)
             if (onboardingPanel != null)
-                onboardingPanel.SetActive(false);
+                onboardingPanel.SetActive(state == AppState.Onboarding);
 
             if (unsupportedPanel != null)
             {
