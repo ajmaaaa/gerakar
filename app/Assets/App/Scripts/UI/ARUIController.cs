@@ -53,7 +53,6 @@ namespace GerakAR.UI
 
         [Header("Background")]
         [SerializeField] private GameObject fullScreenBackground;
-        [SerializeField] private CanvasGroup cameraReadyCover;
 
         // ── Private ───────────────────────────────────────────────────
 
@@ -102,10 +101,9 @@ namespace GerakAR.UI
 
             if (detecting)
             {
-                // In detection scanning phase, show L-brackets and laser line if loading cover is off
-                bool showScan = cameraReadyCover == null || !cameraReadyCover.gameObject.activeSelf;
-                SetActive(scanOverlay, showScan);
-                SetActive(scanLine, showScan);
+                // In detection scanning phase, show L-brackets and laser line
+                SetActive(scanOverlay, true);
+                SetActive(scanLine, true);
                 SetActive(detectionToast, false);
                 StopAllCoroutines();
                 StartCoroutine(DetectionUISequence());
@@ -113,10 +111,10 @@ namespace GerakAR.UI
             else
             {
                 StopAllCoroutines();
-                bool showScan = scanning && (cameraReadyCover == null || !cameraReadyCover.gameObject.activeSelf);
-                SetActive(scanOverlay, showScan);
+                SetActive(scanOverlay, scanning);
                 SetActive(scanLine, false);
                 SetActive(detectionToast, false);
+
             }
 
             SetActive(arControls, tracking || showMaterial);
@@ -225,29 +223,7 @@ namespace GerakAR.UI
             playPauseIcon.sprite = isPlaying ? pauseSprite : playSprite;
         }
 
-        public System.Collections.IEnumerator FadeOutCameraCover()
-        {
-            if (cameraReadyCover == null)
-            {
-                SetActive(scanOverlay, true);
-                yield break;
-            }
 
-            SetActive(scanOverlay, false);
-
-            float elapsed = 0f;
-            float duration = 0.3f; // 300 ms crossfade
-            while (elapsed < duration)
-            {
-                elapsed += Time.deltaTime;
-                cameraReadyCover.alpha = Mathf.Lerp(1f, 0f, elapsed / duration);
-                yield return null;
-            }
-            cameraReadyCover.alpha = 0f;
-            cameraReadyCover.gameObject.SetActive(false);
-
-            SetActive(scanOverlay, true);
-        }
 
         // ── Helpers ───────────────────────────────────────────────────
 

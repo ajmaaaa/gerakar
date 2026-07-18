@@ -227,12 +227,6 @@ namespace GerakAR.AR
                 yield break;
             }
 
-            var arUI = Object.FindAnyObjectByType<ARUIController>();
-            if (arUI != null)
-            {
-                yield return arUI.FadeOutCameraCover();
-            }
-
             StartCoroutine(WaitForTargetReady());
         }
 

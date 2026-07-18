@@ -1328,88 +1328,12 @@ public static class SetupAndBuild
         var shieldCheckIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/shield-check.svg");
 
         // ═══════════════════════════════════════════════════════════
-        // G01 LOOKALIKE — CAMERA READY COVER (Stretched on CanvasGo)
-        // ═══════════════════════════════════════════════════════════
-        var readyCoverGo = CreateUIObject("CameraReadyCover", canvasStruct.CanvasGo);
-        readyCoverGo.transform.SetAsFirstSibling();
-        var readyCoverImg = readyCoverGo.AddComponent<Image>();
-        readyCoverImg.color = DeepForest;
-        StretchRect(readyCoverGo.GetComponent<RectTransform>());
-        var readyCoverGroup = readyCoverGo.AddComponent<CanvasGroup>();
-        readyCoverGroup.alpha = 1f;
-
-        var readyBrandGroup = CreateUIObject("BrandGroup", readyCoverGo);
-        SetAnchorBottom(readyBrandGroup.GetComponent<RectTransform>(), 0f, 100f, 320f, 130f);
-
-        var readyTitleGo = CreateUIObject("TitleText", readyBrandGroup);
-        var readyTitleText = readyTitleGo.AddComponent<TextMeshProUGUI>();
-        readyTitleText.text = "GerakAR";
-        readyTitleText.fontSize = 34f;
-        readyTitleText.fontStyle = FontStyles.Bold;
-        readyTitleText.color = WarmWhite;
-        readyTitleText.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) readyTitleText.font = fonts.Display;
-        SetCenterPosition(readyTitleGo.GetComponent<RectTransform>(), 0f, 45f, 266.7f, 36f);
-
-        var readyProgressGo = CreateUIObject("ProgressTrack", readyBrandGroup);
-        var readyProgressImg = readyProgressGo.AddComponent<Image>();
-        readyProgressImg.sprite = uiSolidRect;
-        readyProgressImg.type = Image.Type.Simple;
-        readyProgressImg.preserveAspect = false;
-        readyProgressImg.color = new Color(1f, 1f, 1f, 0.2f); // Semi-transparent white track background
-        SetCenterPosition(readyProgressGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 4f);
-
-        var readyProgressFill = CreateUIObject("ProgressFill", readyProgressGo);
-        var readyFillImg = readyProgressFill.AddComponent<Image>();
-        readyFillImg.sprite = uiSolidRect;
-        readyFillImg.type = Image.Type.Simple;
-        readyFillImg.preserveAspect = false;
-        readyFillImg.color = WarmWhite;
-        var rFillRT = readyProgressFill.GetComponent<RectTransform>();
-        rFillRT.anchorMin = new Vector2(0f, 0f);
-        rFillRT.anchorMax = new Vector2(0f, 1f);
-        rFillRT.pivot = new Vector2(0f, 0.5f);
-        rFillRT.anchoredPosition = Vector2.zero;
-        rFillRT.sizeDelta = new Vector2(0f, 0f);
-
-        var readyLabelGo = CreateUIObject("LoadingLabel", readyBrandGroup);
-        var readyLabel = readyLabelGo.AddComponent<TextMeshProUGUI>();
-        readyLabel.text = "Memuat kamera";
-        readyLabel.fontSize = 10f;
-        readyLabel.color = SoftSand;
-        readyLabel.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) readyLabel.font = fonts.Medium;
-        SetCenterPosition(readyLabelGo.GetComponent<RectTransform>(), 0f, -50f, 200f, 14f);
-
-        // ═══════════════════════════════════════════════════════════
         // G03 — SCANNER (Child of SafeArea)
         // ═══════════════════════════════════════════════════════════
         var scanGo = CreateUIObject("ScanOverlay", canvasStruct.SafeAreaGo);
         var scanBgImg = scanGo.AddComponent<Image>();
         scanBgImg.color = Color.clear; // Clear background to see camera feed clearly
         StretchRect(scanGo.GetComponent<RectTransform>());
-
-        // G03 Header
-        var scanTitleGo = CreateUIObject("HeaderTitle", scanGo); // parented under scanGo!
-        var scanTitle = scanTitleGo.AddComponent<TextMeshProUGUI>();
-        scanTitle.textWrappingMode = TextWrappingModes.Normal;
-        scanTitle.text = "GerakAR";
-        scanTitle.fontSize = 20f;
-        scanTitle.fontStyle = FontStyles.Bold;
-        scanTitle.color = DeepForest; // Green text so it's visible on white background
-        scanTitle.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) scanTitle.font = fonts.Display;
-        SetAnchorTop(scanTitleGo.GetComponent<RectTransform>(), 0f, -48f, 200f, 28f);
-
-        var scanSubGo = CreateUIObject("HeaderSub", scanGo);
-        var scanSub = scanSubGo.AddComponent<TextMeshProUGUI>();
-        scanSub.textWrappingMode = TextWrappingModes.Normal;
-        scanSub.text = "Belajar Gerak Jadi Seru";
-        scanSub.fontSize = 10f;
-        scanSub.color = ForestGreen; // Green subtitle so it's visible on white background
-        scanSub.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) scanSub.font = fonts.Medium;
-        SetAnchorTop(scanSubGo.GetComponent<RectTransform>(), 0f, -76f, 200f, 16f);
 
         // G03 Central Scan Guide Frame — Solid Warm White corners
         var scanFrameGo = CreateUIObject("ScanFrame", scanGo);
@@ -2274,7 +2198,6 @@ public static class SetupAndBuild
         serialUI.FindProperty("playSprite").objectReferenceValue = playIcon;
         serialUI.FindProperty("pauseSprite").objectReferenceValue = pauseIcon;
         serialUI.FindProperty("fullScreenBackground").objectReferenceValue = canvasStruct.FullScreenBgGo;
-        serialUI.FindProperty("cameraReadyCover").objectReferenceValue = readyCoverGroup;
         serialUI.ApplyModifiedProperties();
 
         // Finish tracking wiring

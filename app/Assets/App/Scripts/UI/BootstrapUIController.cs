@@ -158,77 +158,49 @@ namespace GerakAR.UI
 
             if (state == AppState.LoadingARScene)
             {
+                // Tetap di panel G01 yang sama, hanya teks loading yang diganti
                 if (introPanel != null)
-                {
                     introPanel.SetActive(true);
-                }
+
                 if (introCanvasGroup != null)
                 {
                     introCanvasGroup.alpha = 1f;
                     introCanvasGroup.gameObject.SetActive(true);
                 }
+
+                // Ganti teks menjadi "Memuat kamera"
                 if (introStatusText != null)
-                {
                     introStatusText.text = "Memuat kamera";
-                }
-                StartCoroutine(AnimateIntroLoadingForCamera());
 
-                // Load MainAR scene additively in the background
-                SceneManager.LoadSceneAsync("MainAR", LoadSceneMode.Additive);
-            }
-            else if (state == AppState.Scanning)
-            {
-                // Set the active scene to MainAR so we can safely unload Bootstrap
-                Scene mainArScene = SceneManager.GetSceneByName("MainAR");
-                if (mainArScene.IsValid())
-                {
-                    SceneManager.SetActiveScene(mainArScene);
-                }
-
-                if (introCanvasGroup != null && introCanvasGroup.gameObject.activeSelf)
-                {
-                    StartCoroutine(FadeOutAndUnloadBootstrap());
-                }
+                // Animasi loading bar ulang lalu pindah ke MainAR
+                StartCoroutine(LoadCameraSequence());
             }
         }
 
-        private System.Collections.IEnumerator AnimateIntroLoadingForCamera()
+        private System.Collections.IEnumerator LoadCameraSequence()
         {
-            if (introLoadingFill == null) yield break;
-
-            RectTransform fillRT = introLoadingFill.GetComponent<RectTransform>();
-            if (fillRT == null) yield break;
-
-            float elapsed = 0f;
-            float duration = 2.0f; // Soft 2-second progress bar animation during camera setup
-            while (elapsed < duration)
+            // Animasikan loading bar selama 1 detik sebelum pindah scene
+            if (introLoadingFill != null)
             {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / duration);
-                fillRT.anchorMax = new Vector2(Mathf.SmoothStep(0f, 1f, t), 1f);
-                yield return null;
-            }
-            fillRT.anchorMax = new Vector2(1f, 1f);
-        }
-
-        private System.Collections.IEnumerator FadeOutAndUnloadBootstrap()
-        {
-            if (introCanvasGroup != null)
-            {
-                float elapsed = 0f;
-                float duration = 0.35f;
-                while (elapsed < duration)
+                RectTransform fillRT = introLoadingFill.GetComponent<RectTransform>();
+                if (fillRT != null)
                 {
-                    elapsed += Time.deltaTime;
-                    introCanvasGroup.alpha = 1f - Mathf.Clamp01(elapsed / duration);
-                    yield return null;
+                    fillRT.anchorMax = new Vector2(0f, 1f); // Reset
+                    float elapsed = 0f;
+                    float duration = 1.0f;
+                    while (elapsed < duration)
+                    {
+                        elapsed += Time.deltaTime;
+                        float t = Mathf.Clamp01(elapsed / duration);
+                        fillRT.anchorMax = new Vector2(Mathf.SmoothStep(0f, 1f, t), 1f);
+                        yield return null;
+                    }
+                    fillRT.anchorMax = new Vector2(1f, 1f);
                 }
-                introCanvasGroup.alpha = 0f;
-                introCanvasGroup.gameObject.SetActive(false);
             }
 
-            // Unload the Bootstrap scene now that MainAR camera is fully visible
-            SceneManager.UnloadSceneAsync("Bootstrap");
+            // Setelah loading bar selesai, pindah ke MainAR (Bootstrap otomatis tergantikan)
+            SceneManager.LoadSceneAsync("MainAR");
         }
 
         private void RouteToNonARCatalog()
