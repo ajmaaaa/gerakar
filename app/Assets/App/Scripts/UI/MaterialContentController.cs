@@ -225,7 +225,7 @@ namespace GerakAR.UI
         {
             AppStateManager.Instance?.TransitionTo(AppState.ShowingRelatedMaterial);
             if (backToPrimaryButton != null)
-                backToPrimaryButton.gameObject.SetActive(true);
+                backToPrimaryButton.gameObject.SetActive(false);
             if (categoryTypeLabel != null)
             {
                 categoryTypeLabel.text = "MATERI TAMBAHAN";

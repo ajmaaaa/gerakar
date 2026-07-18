@@ -118,8 +118,11 @@ public static class SetupAndBuild
         var stepOutline = stepGo.AddComponent<Outline>();
         stepOutline.effectColor = SoftSand;
         stepOutline.effectDistance = new Vector2(1f, 1f);
+        var stepShadow = stepGo.AddComponent<Shadow>();
+        stepShadow.effectColor = new Color(0f, 0f, 0f, 0.06f);
+        stepShadow.effectDistance = new Vector2(2f, -2f);
         var stepRT = stepGo.GetComponent<RectTransform>();
-        stepRT.sizeDelta = new Vector2(320f, 60f); // Default, but dynamic
+        stepRT.sizeDelta = new Vector2(320f, 56f); // 56f height like G02
 
         var stepHlg = stepGo.AddComponent<HorizontalLayoutGroup>();
         stepHlg.padding = new RectOffset(16, 16, 12, 12);
@@ -137,21 +140,21 @@ public static class SetupAndBuild
         // Badge
         var badgeGo = CreateUIObject("Badge", stepGo);
         var badgeImg = badgeGo.AddComponent<Image>();
-        badgeImg.sprite = roundRect08;
+        badgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png"); // clean circle badge
         badgeImg.type = Image.Type.Sliced;
-        badgeImg.color = ForestGreen;
+        badgeImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // SoftSand 60% background
         var badgeLE = badgeGo.AddComponent<LayoutElement>();
-        badgeLE.minWidth = 28f;
-        badgeLE.minHeight = 28f;
-        badgeLE.preferredWidth = 28f;
-        badgeLE.preferredHeight = 28f;
+        badgeLE.minWidth = 32f;
+        badgeLE.minHeight = 32f;
+        badgeLE.preferredWidth = 32f;
+        badgeLE.preferredHeight = 32f;
 
         var badgeTextGo = CreateUIObject("Text", badgeGo);
         var badgeText = badgeTextGo.AddComponent<TextMeshProUGUI>();
         badgeText.text = "1";
-        badgeText.fontSize = 12f;
+        badgeText.fontSize = 13f;
         badgeText.fontStyle = FontStyles.Bold;
-        badgeText.color = WarmWhite;
+        badgeText.color = DeepForest; // DeepForest text color for G02 style
         badgeText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) badgeText.font = fonts.Heading;
         StretchRect(badgeTextGo.GetComponent<RectTransform>());
@@ -161,17 +164,17 @@ public static class SetupAndBuild
         var textTmp = textGo.AddComponent<TextMeshProUGUI>();
         textTmp.textWrappingMode = TextWrappingModes.Normal;
         textTmp.overflowMode = TextOverflowModes.Overflow;
-        textTmp.fontSize = 13f;
+        textTmp.fontSize = 12f;
         textTmp.color = SecondaryText;
         textTmp.alignment = TextAlignmentOptions.Left;
-        if (fonts != null) textTmp.font = fonts.Body;
+        if (fonts != null) textTmp.font = fonts.Medium;
         var textLE = textGo.AddComponent<LayoutElement>();
         textLE.flexibleWidth = 1f;
 
         PrefabUtility.SaveAsPrefabAsset(stepGo, "Assets/App/Prefabs/StepItem.prefab");
         Object.DestroyImmediate(stepGo);
 
-        // 2. BulletItem prefab (mistakes card with x-circle SVG icon)
+        // 2. BulletItem prefab (mistakes card with x-circle SVG icon, styled like G02)
         var bulletGo = new GameObject("BulletItem", typeof(RectTransform));
         var bulletImg = bulletGo.AddComponent<Image>();
         bulletImg.sprite = roundRect12;
@@ -180,8 +183,11 @@ public static class SetupAndBuild
         var bulletOutline = bulletGo.AddComponent<Outline>();
         bulletOutline.effectColor = SoftSand;
         bulletOutline.effectDistance = new Vector2(1f, 1f);
+        var bulletShadow = bulletGo.AddComponent<Shadow>();
+        bulletShadow.effectColor = new Color(0f, 0f, 0f, 0.06f);
+        bulletShadow.effectDistance = new Vector2(2f, -2f);
         var bulletRT = bulletGo.GetComponent<RectTransform>();
-        bulletRT.sizeDelta = new Vector2(320f, 48f); // Default, but dynamic
+        bulletRT.sizeDelta = new Vector2(320f, 56f); // 56f height like G02
 
         var bulletHlg = bulletGo.AddComponent<HorizontalLayoutGroup>();
         bulletHlg.padding = new RectOffset(16, 16, 12, 12);
@@ -199,14 +205,14 @@ public static class SetupAndBuild
         // Icon container badge
         var bulletIconGo = CreateUIObject("Badge", bulletGo);
         var bulletIconImg = bulletIconGo.AddComponent<Image>();
-        bulletIconImg.sprite = roundRect08;
+        bulletIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png"); // clean circle badge
         bulletIconImg.type = Image.Type.Sliced;
-        bulletIconImg.color = SoftSand;
+        bulletIconImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // SoftSand 60% background
         var bulletIconLE = bulletIconGo.AddComponent<LayoutElement>();
-        bulletIconLE.minWidth = 24f;
-        bulletIconLE.minHeight = 24f;
-        bulletIconLE.preferredWidth = 24f;
-        bulletIconLE.preferredHeight = 24f;
+        bulletIconLE.minWidth = 32f;
+        bulletIconLE.minHeight = 32f;
+        bulletIconLE.preferredWidth = 32f;
+        bulletIconLE.preferredHeight = 32f;
 
         var bulletIconSvgGo = CreateUIObject("SvgIcon", bulletIconGo);
         var bulletIconSvg = bulletIconSvgGo.AddComponent<Image>();
@@ -226,14 +232,14 @@ public static class SetupAndBuild
         bulletText.fontSize = 12f;
         bulletText.color = SecondaryText;
         bulletText.alignment = TextAlignmentOptions.Left;
-        if (fonts != null) bulletText.font = fonts.Body;
+        if (fonts != null) bulletText.font = fonts.Medium;
         var bulletTextLE = bulletTextGo.AddComponent<LayoutElement>();
         bulletTextLE.flexibleWidth = 1f;
 
         PrefabUtility.SaveAsPrefabAsset(bulletGo, "Assets/App/Prefabs/BulletItem.prefab");
         Object.DestroyImmediate(bulletGo);
 
-        // 3. RelatedCard prefab
+        // 3. RelatedCard prefab (small horizontal card with top thumbnail and bottom title)
         var cardGo = new GameObject("RelatedCard", typeof(RectTransform));
         var cardImg = cardGo.AddComponent<Image>();
         cardImg.sprite = roundRect16;
@@ -242,27 +248,32 @@ public static class SetupAndBuild
         var cardOutline = cardGo.AddComponent<Outline>();
         cardOutline.effectColor = SoftSand;
         cardOutline.effectDistance = new Vector2(1f, 1f);
+        var cardShadow = cardGo.AddComponent<Shadow>();
+        cardShadow.effectColor = new Color(0f, 0f, 0f, 0.05f);
+        cardShadow.effectDistance = new Vector2(2f, -2f);
         cardGo.AddComponent<Button>();
         var cardRT = cardGo.GetComponent<RectTransform>();
-        cardRT.sizeDelta = new Vector2(240f, 180f);
+        cardRT.sizeDelta = new Vector2(120f, 116f); // Small box card size
 
         var thumbGo = CreateUIObject("Thumbnail", cardGo);
         var thumbImg = thumbGo.AddComponent<Image>();
+        thumbImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        thumbImg.type = Image.Type.Sliced;
         thumbImg.preserveAspect = true;
         thumbImg.color = SoftSand;
-        SetCenterPosition(thumbGo.GetComponent<RectTransform>(), 0f, 8.3f, 66.7f, 33.3f);
+        SetCenterPosition(thumbGo.GetComponent<RectTransform>(), 0f, 16f, 104f, 64f); // Top thumbnail positioning
 
         var titleGo = CreateUIObject("Title", cardGo);
         var titleText = titleGo.AddComponent<TextMeshProUGUI>();
         titleText.textWrappingMode = TextWrappingModes.Normal;
         titleText.overflowMode = TextOverflowModes.Overflow;
         titleText.text = "Related";
-        titleText.fontSize = 12f;
+        titleText.fontSize = 10f;
         titleText.fontStyle = FontStyles.Bold;
         titleText.color = DeepForest;
         titleText.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) titleText.font = fonts.Display;
-        SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, -16.7f, 66.7f, 13.3f);
+        if (fonts != null) titleText.font = fonts.Heading;
+        SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, -34f, 110f, 26f); // Bottom title positioning
 
         PrefabUtility.SaveAsPrefabAsset(cardGo, "Assets/App/Prefabs/RelatedCard.prefab");
         Object.DestroyImmediate(cardGo);
@@ -278,7 +289,7 @@ public static class SetupAndBuild
         PrefabUtility.SaveAsPrefabAsset(markerGo, "Assets/App/Prefabs/TimelineMarker.prefab");
         Object.DestroyImmediate(markerGo);
 
-        // 5. MuscleItem prefab (clean grid card badge)
+        // 5. MuscleItem prefab (clean full-width card with check icon, styled like G02)
         var muscleGo = new GameObject("MuscleItem", typeof(RectTransform));
         var muscleImg = muscleGo.AddComponent<Image>();
         muscleImg.sprite = roundRect12;
@@ -287,18 +298,58 @@ public static class SetupAndBuild
         var muscleOutline = muscleGo.AddComponent<Outline>();
         muscleOutline.effectColor = SoftSand;
         muscleOutline.effectDistance = new Vector2(1f, 1f);
+        var muscleShadow = muscleGo.AddComponent<Shadow>();
+        muscleShadow.effectColor = new Color(0f, 0f, 0f, 0.06f);
+        muscleShadow.effectDistance = new Vector2(2f, -2f);
         var muscleRT = muscleGo.GetComponent<RectTransform>();
-        muscleRT.sizeDelta = new Vector2(146f, 32f);
+        muscleRT.sizeDelta = new Vector2(320f, 56f); // 56f height like G02
 
+        var muscleHlg = muscleGo.AddComponent<HorizontalLayoutGroup>();
+        muscleHlg.padding = new RectOffset(16, 16, 12, 12);
+        muscleHlg.spacing = 12f;
+        muscleHlg.childAlignment = TextAnchor.MiddleLeft;
+        muscleHlg.childControlWidth = true;
+        muscleHlg.childControlHeight = true;
+        muscleHlg.childForceExpandWidth = false;
+        muscleHlg.childForceExpandHeight = false;
+
+        var muscleCsf = muscleGo.AddComponent<ContentSizeFitter>();
+        muscleCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        muscleCsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+        // Check badge on the left
+        var checkBadgeGo = CreateUIObject("Badge", muscleGo);
+        var checkBadgeImg = checkBadgeGo.AddComponent<Image>();
+        checkBadgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png"); // clean circle badge
+        checkBadgeImg.type = Image.Type.Sliced;
+        checkBadgeImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // SoftSand 60% background
+        var checkBadgeLE = checkBadgeGo.AddComponent<LayoutElement>();
+        checkBadgeLE.minWidth = 32f;
+        checkBadgeLE.minHeight = 32f;
+        checkBadgeLE.preferredWidth = 32f;
+        checkBadgeLE.preferredHeight = 32f;
+
+        var checkIconGo = CreateUIObject("CheckIcon", checkBadgeGo);
+        var checkIconImg = checkIconGo.AddComponent<Image>();
+        checkIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/check.svg");
+        checkIconImg.preserveAspect = true;
+        checkIconImg.raycastTarget = false;
+        checkIconImg.color = ForestGreen;
+        var checkIconRT = checkIconGo.GetComponent<RectTransform>();
+        checkIconRT.localScale = Vector3.one;
+        SetCenterPosition(checkIconRT, 0f, 0f, 16f, 16f);
+
+        // Muscle name text
         var muscleTextGo = CreateUIObject("Text", muscleGo);
         var muscleText = muscleTextGo.AddComponent<TextMeshProUGUI>();
         muscleText.text = "Muscle";
-        muscleText.fontSize = 11f;
+        muscleText.fontSize = 12f;
         muscleText.fontStyle = FontStyles.Bold;
         muscleText.color = DeepForest;
-        muscleText.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) muscleText.font = fonts.Heading;
-        StretchRect(muscleTextGo.GetComponent<RectTransform>());
+        muscleText.alignment = TextAlignmentOptions.Left;
+        if (fonts != null) muscleText.font = fonts.Medium;
+        var muscleTextLE = muscleTextGo.AddComponent<LayoutElement>();
+        muscleTextLE.flexibleWidth = 1f;
 
         PrefabUtility.SaveAsPrefabAsset(muscleGo, "Assets/App/Prefabs/MuscleItem.prefab");
         Object.DestroyImmediate(muscleGo);
@@ -655,7 +706,7 @@ public static class SetupAndBuild
             "Kelincahan dan koordinasi gerakan.",
             0f, -70f, btnSprite, fonts);
 
-        // Back button
+        // Back button (hidden per user request)
         var catalogBackGo = CreateUIObject("CatalogBackButton", nonARModePanelGo);
         var catalogBackImg = catalogBackGo.AddComponent<Image>();
         catalogBackImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
@@ -667,6 +718,7 @@ public static class SetupAndBuild
         AddSoftShadow(catalogBackGo, 2f, -2f, 0.06f); // Soft shadow
         var catalogBackBtn = catalogBackGo.AddComponent<Button>();
         SetAnchorBottom(catalogBackGo.GetComponent<RectTransform>(), 0f, 32f, 320f, 48f); // Wide card style
+        catalogBackGo.SetActive(false);
 
         var catalogBackTextGo = CreateUIObject("Text", catalogBackGo);
         var catalogBackText = catalogBackTextGo.AddComponent<TextMeshProUGUI>();
@@ -1555,7 +1607,7 @@ public static class SetupAndBuild
         xIconImg.color = Color.white; // White X icon
         SetCenterPosition(xIconGo.GetComponent<RectTransform>(), 0f, 0f, 18f, 18f);
 
-        // Back to primary button (G07 -> G06) - now at the bottom of the Bottom Sheet
+        // Back to primary button (G07 -> G06) - now at the bottom of the Bottom Sheet (hidden per user request)
         var backBtnGo = CreateUIObject("BackToPrimaryButton", sheetGo);
         var backBtnImg = backBtnGo.AddComponent<Image>();
         backBtnImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
@@ -1569,6 +1621,7 @@ public static class SetupAndBuild
         backBtnRT.pivot = new Vector2(0.5f, 0f);
         backBtnRT.anchoredPosition = new Vector2(0f, 20f);
         backBtnRT.sizeDelta = new Vector2(320f, 48f); // full width CTA
+        backBtnGo.SetActive(false);
 
         var arrowIconGo = CreateUIObject("ArrowIcon", backBtnGo);
         var arrowIconImg = arrowIconGo.AddComponent<Image>();
@@ -1816,7 +1869,7 @@ public static class SetupAndBuild
         var relScroll = relatedScrollViewGo.AddComponent<ScrollRect>();
         relScroll.horizontal = true;
         relScroll.vertical = false;
-        relatedScrollViewGo.GetComponent<RectTransform>().sizeDelta = new Vector2(900f, 200f);
+        relatedScrollViewGo.GetComponent<RectTransform>().sizeDelta = new Vector2(900f, 130f);
 
         var relViewportGo = CreateUIObject("Viewport", relatedScrollViewGo);
         relViewportGo.AddComponent<RectMask2D>();
@@ -1829,11 +1882,12 @@ public static class SetupAndBuild
         relContentRT.anchorMax = new Vector2(0f, 0.5f);
         relContentRT.pivot = new Vector2(0f, 0.5f);
         relContentRT.anchoredPosition = Vector2.zero;
-        relContentRT.sizeDelta = new Vector2(800f, 180f);
+        relContentRT.sizeDelta = new Vector2(800f, 120f);
         relScroll.content = relContentRT;
 
         var hlg = relContentGo.AddComponent<HorizontalLayoutGroup>();
-        hlg.spacing = 16f;
+        hlg.padding = new RectOffset(4, 4, 4, 4);
+        hlg.spacing = 12f;
         hlg.childControlWidth = true;
         hlg.childControlHeight = true;
 
@@ -2219,11 +2273,13 @@ public static class SetupAndBuild
         var warnImg = warnGo.AddComponent<Image>();
         warnImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         warnImg.type = Image.Type.Sliced;
-        warnImg.color = new Color(0.12f, 0.365f, 0.259f, 0.08f); // 8% alpha ForestGreen background
+        warnImg.color = WarmWhite; // Solid white background for modal dialog
 
         var warnOutline = warnGo.AddComponent<Outline>();
         warnOutline.effectColor = SoftSand;
         warnOutline.effectDistance = new Vector2(1f, 1f);
+
+        AddSoftShadow(warnGo, 2f, -3f, 0.12f); // Shadow on popup modal
 
         var layout = warnGo.AddComponent<VerticalLayoutGroup>();
         layout.spacing = 6f;
