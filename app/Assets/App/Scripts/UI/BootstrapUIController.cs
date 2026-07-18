@@ -23,6 +23,11 @@ namespace GerakAR.UI
         [SerializeField] private GameObject nonARModePanel;   // G08 Catalog view
         [SerializeField] private GameObject cameraErrorPanel;  // G09 view
 
+        [Header("G01 Persistent Loading References")]
+        [SerializeField] private TextMeshProUGUI introStatusText;
+        [SerializeField] private Image introLoadingFill;
+        [SerializeField] private CanvasGroup introCanvasGroup;
+
         [Header("G09 Error Details")]
         [SerializeField] private TextMeshProUGUI errorTitleText;
         [SerializeField] private TextMeshProUGUI errorDescText;
@@ -153,8 +158,77 @@ namespace GerakAR.UI
 
             if (state == AppState.LoadingARScene)
             {
-                SceneManager.LoadSceneAsync("MainAR");
+                if (introPanel != null)
+                {
+                    introPanel.SetActive(true);
+                }
+                if (introCanvasGroup != null)
+                {
+                    introCanvasGroup.alpha = 1f;
+                    introCanvasGroup.gameObject.SetActive(true);
+                }
+                if (introStatusText != null)
+                {
+                    introStatusText.text = "Memuat kamera";
+                }
+                StartCoroutine(AnimateIntroLoadingForCamera());
+
+                // Load MainAR scene additively in the background
+                SceneManager.LoadSceneAsync("MainAR", LoadSceneMode.Additive);
             }
+            else if (state == AppState.Scanning)
+            {
+                // Set the active scene to MainAR so we can safely unload Bootstrap
+                Scene mainArScene = SceneManager.GetSceneByName("MainAR");
+                if (mainArScene.IsValid())
+                {
+                    SceneManager.SetActiveScene(mainArScene);
+                }
+
+                if (introCanvasGroup != null && introCanvasGroup.gameObject.activeSelf)
+                {
+                    StartCoroutine(FadeOutAndUnloadBootstrap());
+                }
+            }
+        }
+
+        private System.Collections.IEnumerator AnimateIntroLoadingForCamera()
+        {
+            if (introLoadingFill == null) yield break;
+
+            RectTransform fillRT = introLoadingFill.GetComponent<RectTransform>();
+            if (fillRT == null) yield break;
+
+            float elapsed = 0f;
+            float duration = 2.0f; // Soft 2-second progress bar animation during camera setup
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                fillRT.anchorMax = new Vector2(Mathf.SmoothStep(0f, 1f, t), 1f);
+                yield return null;
+            }
+            fillRT.anchorMax = new Vector2(1f, 1f);
+        }
+
+        private System.Collections.IEnumerator FadeOutAndUnloadBootstrap()
+        {
+            if (introCanvasGroup != null)
+            {
+                float elapsed = 0f;
+                float duration = 0.35f;
+                while (elapsed < duration)
+                {
+                    elapsed += Time.deltaTime;
+                    introCanvasGroup.alpha = 1f - Mathf.Clamp01(elapsed / duration);
+                    yield return null;
+                }
+                introCanvasGroup.alpha = 0f;
+                introCanvasGroup.gameObject.SetActive(false);
+            }
+
+            // Unload the Bootstrap scene now that MainAR camera is fully visible
+            SceneManager.UnloadSceneAsync("Bootstrap");
         }
 
         private void RouteToNonARCatalog()

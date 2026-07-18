@@ -1155,6 +1155,9 @@ public static class SetupAndBuild
         serialBUI.FindProperty("errorDescText").objectReferenceValue = camErrorDesc;
         serialBUI.FindProperty("primaryBtnText").objectReferenceValue = settingsText;
         serialBUI.FindProperty("secondaryBtnText").objectReferenceValue = retryText;
+        serialBUI.FindProperty("introStatusText").objectReferenceValue = loadingLabel;
+        serialBUI.FindProperty("introLoadingFill").objectReferenceValue = fillImg;
+        serialBUI.FindProperty("introCanvasGroup").objectReferenceValue = introCanvasGroup;
 
         // Serialize new G08 detail fields
         serialBUI.FindProperty("nonARDetailPanel").objectReferenceValue = nonARDetailPanelGo;
@@ -1371,7 +1374,7 @@ public static class SetupAndBuild
 
         var readyLabelGo = CreateUIObject("LoadingLabel", readyBrandGroup);
         var readyLabel = readyLabelGo.AddComponent<TextMeshProUGUI>();
-        readyLabel.text = "Menyiapkan Kamera";
+        readyLabel.text = "Memuat kamera";
         readyLabel.fontSize = 10f;
         readyLabel.color = SoftSand;
         readyLabel.alignment = TextAlignmentOptions.Center;
@@ -1478,12 +1481,12 @@ public static class SetupAndBuild
         serialLaser.FindProperty("speed").floatValue = 250f;
         serialLaser.ApplyModifiedProperties();
 
-        // Scan target pill — Transparent white background with dark green text
+        // Scan target pill — Transparent gray background with white text
         var scanPillGo = CreateUIObject("ScanTargetPill", scanGo);
         var scanPillImg = scanPillGo.AddComponent<Image>();
         scanPillImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         scanPillImg.type = Image.Type.Sliced;
-        scanPillImg.color = new Color(1f, 1f, 1f, 0.75f); // Transparent white matching instruction card
+        scanPillImg.color = new Color(0.1f, 0.1f, 0.1f, 0.45f); // Transparent gray matching instruction card
         SetCenterPosition(scanPillGo.GetComponent<RectTransform>(), 0f, -100f, 180f, 30f);
 
         var scanPillTextGo = CreateUIObject("Text", scanPillGo);
@@ -1492,17 +1495,17 @@ public static class SetupAndBuild
         scanPillText.text = "PINDAI TARGET GAMBAR";
         scanPillText.fontSize = 11f;
         scanPillText.fontStyle = FontStyles.Bold;
-        scanPillText.color = DeepForest; // DeepForest text for visibility on transparent white background
+        scanPillText.color = Color.white; // White text for visibility on transparent gray background
         scanPillText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) scanPillText.font = fonts.Heading;
         StretchRect(scanPillTextGo.GetComponent<RectTransform>());
 
-        // Instruction card — Transparent white background card positioned at the bottom
+        // Instruction card — Transparent gray background card positioned at the bottom
         var instructionCardGo = CreateUIObject("InstructionCard", scanGo);
         var instCardImg = instructionCardGo.AddComponent<Image>();
         instCardImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         instCardImg.type = Image.Type.Sliced;
-        instCardImg.color = new Color(1f, 1f, 1f, 0.75f); // Transparent white background
+        instCardImg.color = new Color(0.1f, 0.1f, 0.1f, 0.45f); // Transparent gray background
         SetAnchorBottom(instructionCardGo.GetComponent<RectTransform>(), 0f, 80f, 320f, 72f);
 
         var hintGo = CreateUIObject("HintText", instructionCardGo);
@@ -1511,7 +1514,7 @@ public static class SetupAndBuild
         hintText.text = "Arahkan kamera ke gambar gerakan";
         hintText.fontSize = 13f;
         hintText.fontStyle = FontStyles.Bold;
-        hintText.color = DeepForest; // DeepForest text
+        hintText.color = Color.white; // White text
         hintText.alignment = TextAlignmentOptions.Center; // Centered text alignment restored
         if (fonts != null) hintText.font = fonts.Heading;
         SetCenterPosition(hintGo.GetComponent<RectTransform>(), 0f, 14f, 280f, 20f);
@@ -1521,7 +1524,7 @@ public static class SetupAndBuild
         instSubtitle.textWrappingMode = TextWrappingModes.Normal;
         instSubtitle.text = "Pastikan seluruh gambar terlihat dengan jelas";
         instSubtitle.fontSize = 10f;
-        instSubtitle.color = ForestGreen; // ForestGreen subtitle text color
+        instSubtitle.color = new Color(0.9f, 0.9f, 0.9f, 1f); // Soft white subtitle text color
         instSubtitle.alignment = TextAlignmentOptions.Center; // Centered subtitle alignment restored
         if (fonts != null) instSubtitle.font = fonts.Medium;
         SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 0f, -14f, 280f, 16f);
