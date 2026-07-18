@@ -152,11 +152,27 @@ namespace GerakAR.AR
                 Debug.Log($"[ARUnityXURPBackgroundPresenter] Texture scale set to ({sx}, {sy})");
             }
 
-            // JANGAN scale quad secara manual — ARUnityX sudah handle sendiri.
-            // Quad di-rotate 90° oleh ARUnityX untuk menyesuaikan landscape camera
-            // ke portrait screen. Scaling manual akan merusak orientasi.
-            // Quad scale asli minimal (1,1,1) sudah cukup; ARUnityXVideoBackground
-            // akan menyesuaikan jika diperlukan.
+            // Ubah clear color background camera dari hijau (default ARUnityX) ke hitam
+            // agar area yang tidak tertutup quad tidak hijau.
+            _backgroundCamera.backgroundColor = Color.black;
+
+            // Shader VideoPlaneNoLight (Built-in) mungkin tidak render rotasi
+            // dengan benar di URP. Coba pakai Unlit/Texture yang URP native.
+            if (videoMaterial != null && videoMaterial.shader != null)
+            {
+                bool isURPShader = videoMaterial.shader.name.Contains("Universal Render Pipeline")
+                                || videoMaterial.shader.name.Contains("URP")
+                                || videoMaterial.shader.name == "Unlit/Texture";
+                if (!isURPShader)
+                {
+                    Shader unlit = Shader.Find("Unlit/Texture");
+                    if (unlit != null && unlit.isSupported)
+                    {
+                        videoMaterial.shader = unlit;
+                        Debug.Log("[ARUnityXURPBackgroundPresenter] Switched to Unlit/Texture for URP compatibility.");
+                    }
+                }
+            }
 
             // AR Camera foreground: Depth Only agar tidak timpa background camera
             // Background camera tetap SolidColor (setting ARUnityX asli)
