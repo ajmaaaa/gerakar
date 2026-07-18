@@ -253,10 +253,10 @@ namespace GerakAR.UI
                 yield break;
             }
 
-            // Keep G02 rendered above MainAR until a restarted camera session has
-            // supplied fresh frames. This prevents any solid-color transition.
-            yield return StartCoroutine(sessionController.RestartSessionForPreparedReveal());
-            if (!sessionController.LastControlledRestartSucceeded)
+            // Keep G02 rendered above MainAR until the prepared session supplies
+            // another live frame. Never restart native camera resources here.
+            yield return StartCoroutine(sessionController.WaitForPreparedCameraFrame());
+            if (!sessionController.PreparedRevealReady)
                 yield break;
 
             OnboardingController.MarkCompleted();

@@ -21,6 +21,7 @@ namespace GerakAR.AR
         private UniversalAdditionalCameraData _backgroundCameraData;
         private UniversalAdditionalCameraData _foregroundCameraData;
         private Texture _videoTexture;
+        private Renderer _videoRenderer;
         private Coroutine _textureValidation;
         private Coroutine _findBackgroundCoroutine;
         private bool _isPresenting;
@@ -105,6 +106,11 @@ namespace GerakAR.AR
                 yield break;
             }
 
+            _videoRenderer = videoRenderer;
+            _videoRenderer.enabled = false;
+            _backgroundCamera.backgroundColor = Color.black;
+            foregroundCamera.backgroundColor = Color.black;
+
             // Setup background camera untuk URP stacking
             // JANGAN ubah cullingMask atau clearFlags background camera —
             // ARUnityX sudah mengaturnya dengan benar untuk rendering video.
@@ -180,9 +186,6 @@ namespace GerakAR.AR
                 Quaternion.Inverse(screenRotation) * videoObject.transform.localRotation;
             _backgroundCamera.transform.localRotation = Quaternion.identity;
 
-            _backgroundCamera.backgroundColor = Color.black;
-            foregroundCamera.backgroundColor = Color.black;
-
             // AR Camera foreground: Depth Only agar tidak timpa background camera
             // Background camera tetap SolidColor (setting ARUnityX asli)
             foregroundCamera.clearFlags = CameraClearFlags.Depth;
@@ -224,11 +227,19 @@ namespace GerakAR.AR
 
         public void ResetPresentation()
         {
+            if (_findBackgroundCoroutine != null)
+            {
+                StopCoroutine(_findBackgroundCoroutine);
+                _findBackgroundCoroutine = null;
+            }
             if (_textureValidation != null)
             {
                 StopCoroutine(_textureValidation);
                 _textureValidation = null;
             }
+
+            if (_videoRenderer != null)
+                _videoRenderer.enabled = false;
 
             if (_backgroundCameraData != null && _backgroundCameraData.cameraStack != null)
                 _backgroundCameraData.cameraStack.Clear();
@@ -239,6 +250,8 @@ namespace GerakAR.AR
             _backgroundCameraData = null;
             _foregroundCameraData = null;
             _videoTexture = null;
+            _videoRenderer = null;
+            _isPresenting = false;
         }
 
         private IEnumerator ValidateTextureUpdates()
@@ -250,6 +263,8 @@ namespace GerakAR.AR
             {
                 if (_videoTexture.updateCount > initialUpdateCount)
                 {
+                    if (_videoRenderer != null)
+                        _videoRenderer.enabled = true;
                     Debug.Log(
                         $"[ARUnityXURPBackgroundPresenter] Camera texture is updating " +
                         $"(updateCount {initialUpdateCount} -> {_videoTexture.updateCount}).");
@@ -261,6 +276,8 @@ namespace GerakAR.AR
             }
 
             Debug.LogError("[ARUnityXURPBackgroundPresenter] Camera texture did not update before timeout.");
+            if (_videoRenderer != null)
+                _videoRenderer.enabled = false;
             _textureValidation = null;
         }
     }

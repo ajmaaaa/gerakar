@@ -48,10 +48,9 @@ namespace GerakAR.AR
         private bool _routingAway;
         private bool _applicationPaused;
         private bool _applicationFocused = true;
-        private bool _controlledRestart;
         private int _videoFrameCount;
 
-        public bool LastControlledRestartSucceeded { get; private set; }
+        public bool PreparedRevealReady { get; private set; }
 
         private void Start()
         {
@@ -250,11 +249,11 @@ namespace GerakAR.AR
                 yield break;
             }
 
-            // Tunggu beberapa frame stabil tanpa validasi warna agresif
+            // Tunggu texture native benar-benar bergerak sebelum membuka UI kamera.
             int stableFrames = 0;
             uint lastUpdateCount = videoTex.updateCount;
 
-            while (stableFrames < 3 && Time.realtimeSinceStartup < timeout)
+            while (stableFrames < 2 && Time.realtimeSinceStartup < timeout)
             {
                 if (videoTex.width > 0 && videoTex.height > 0)
                 {
@@ -267,14 +266,11 @@ namespace GerakAR.AR
                 yield return null;
             }
 
-            if (stableFrames < 3)
+            if (stableFrames < 2)
             {
                 RouteToFallback("Camera stream failed to stabilize.", false);
                 yield break;
             }
-
-            // Beri waktu untuk background presenter menyelesaikan setup
-            yield return new WaitForSeconds(0.5f);
 
             StartCoroutine(WaitForTargetReady());
         }
@@ -306,10 +302,7 @@ namespace GerakAR.AR
             Debug.LogWarning(
                 $"[ARUnityXSessionController] Camera stream stopped " +
                 $"(paused={_applicationPaused}, focused={_applicationFocused}, " +
-                $"controlled={_controlledRestart}).");
-
-            if (_controlledRestart)
-                return;
+                $"running={arController.IsRunning}).");
 
             if (_unexpectedStopCheck != null)
                 StopCoroutine(_unexpectedStopCheck);
@@ -331,37 +324,26 @@ namespace GerakAR.AR
             RouteToFallback("Camera stream stopped while the application was active.", false);
         }
 
-        public IEnumerator RestartSessionForPreparedReveal()
+        public IEnumerator WaitForPreparedCameraFrame()
         {
-            LastControlledRestartSucceeded = false;
+            PreparedRevealReady = false;
             if (_routingAway || arController == null)
                 yield break;
 
-            _controlledRestart = true;
             int firstFreshFrame = _videoFrameCount + 1;
-
-            if (arController.IsRunning)
-                arController.StopAR();
-
-            // Match the recovery path ARUnityX uses after Android pause/resume.
-            yield return null;
-            arController.StartAR();
-
             float deadline = Time.realtimeSinceStartup + startupTimeoutSeconds;
-            int requiredFrame = firstFreshFrame;
             while (!_routingAway && Time.realtimeSinceStartup < deadline)
             {
-                if (arController.IsRunning && _videoFrameCount >= requiredFrame)
+                if (arController.IsRunning && _videoFrameCount >= firstFreshFrame)
                 {
-                    LastControlledRestartSucceeded = true;
+                    PreparedRevealReady = true;
                     break;
                 }
                 yield return null;
             }
 
-            _controlledRestart = false;
-            if (!LastControlledRestartSucceeded && !_routingAway)
-                RouteToFallback("Camera restart did not produce fresh frames.", false);
+            if (!PreparedRevealReady && !_routingAway)
+                RouteToFallback("Prepared camera did not produce a fresh frame.", false);
         }
 
         private IEnumerator SimulateCameraStartup()
