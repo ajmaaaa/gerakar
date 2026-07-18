@@ -15,6 +15,7 @@ namespace GerakAR.UI
     public class BootstrapUIController : MonoBehaviour
     {
         public static BootstrapUIController Instance { get; private set; }
+        public static bool CameraPreparedForOnboarding { get; private set; }
 
         [Header("UI Panels")]
         [SerializeField] private GameObject introPanel;
@@ -58,6 +59,12 @@ namespace GerakAR.UI
 
         private readonly List<GameObject> _nonARSpawnedItems = new();
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetSessionState()
+        {
+            CameraPreparedForOnboarding = false;
+        }
+
         private void Awake()
         {
             Instance = this;
@@ -93,6 +100,18 @@ namespace GerakAR.UI
 
         private void UpdatePanels(AppState state)
         {
+            if (state == AppState.Scanning && !OnboardingController.IsCompleted)
+            {
+                // The first-run camera is fully ready behind Bootstrap. Show G02
+                // now so MULAI only dismisses onboarding and reveals G03.
+                Scene preparedScene = SceneManager.GetSceneByName("MainAR");
+                if (preparedScene.IsValid())
+                    SceneManager.SetActiveScene(preparedScene);
+                CameraPreparedForOnboarding = true;
+                AppStateManager.Instance?.TransitionTo(AppState.Onboarding);
+                return;
+            }
+
             // Jangan pernah nonaktifkan introPanel selama transisi cepat (Intro → CheckingAR → LoadingARScene)
             // Panel tetap alpha=1 (tidak fadeOut), hanya teks yang crossfade di LoadCameraSequence.
             // Kita hanya nonaktifkan ketika state benar-benar meninggalkan flow loading (misalnya NonAR, CameraDenied, atau sudah Scanning).

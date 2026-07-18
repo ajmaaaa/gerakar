@@ -54,9 +54,20 @@ namespace GerakAR.UI
 
         private IEnumerator IntroSequence()
         {
+            bool prepareCameraBeforeOnboarding = !OnboardingController.IsCompleted;
+            if (prepareCameraBeforeOnboarding)
+            {
+                // Wait one frame so availability and permission services have
+                // subscribed to state changes before starting the first-run flow.
+                yield return null;
+                AppStateManager.Instance?.TransitionTo(AppState.CheckingAR);
+            }
+
             // Bar berjalan dari 0 ke 45% (berhenti di tengah, akan dilanjutkan saat LoadingARScene)
             float elapsed = 0f;
-            while (elapsed < introDuration)
+            while (elapsed < introDuration &&
+                   (AppStateManager.Instance == null ||
+                    !AppStateManager.Instance.Is(AppState.LoadingARScene)))
             {
                 elapsed += Time.deltaTime;
                 if (_fillRT != null)
@@ -68,8 +79,15 @@ namespace GerakAR.UI
                 yield return null;
             }
 
-            if (_fillRT != null)
+            if (_fillRT != null &&
+                (AppStateManager.Instance == null ||
+                 !AppStateManager.Instance.Is(AppState.LoadingARScene)))
                 _fillRT.anchorMax = new Vector2(0.45f, 1f); // Berhenti di 45%
+
+            // First-run onboarding is shown only after MainAR reports that the
+            // camera is ready. BootstrapUIController owns that handoff.
+            if (prepareCameraBeforeOnboarding)
+                yield break;
 
             // Hapus fadeOut panel — tetap alpha=1, hanya teks yang crossfade nanti
             // Lanjut ke Onboarding (G02) — akan dilewati otomatis jika sudah pernah

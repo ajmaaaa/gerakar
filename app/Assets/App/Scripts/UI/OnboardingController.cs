@@ -4,7 +4,6 @@
 // Uses PlayerPrefs to display only once per installation.
 // ============================================================
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using GerakAR.Core;
 
 namespace GerakAR.UI
@@ -25,7 +24,8 @@ namespace GerakAR.UI
         // ── Constants ─────────────────────────────────────────────────
 
         private const string OnboardingKey = "gerakar.onboarding.completed.v1";
-        private const string MainARScene = "MainAR";
+
+        public static bool IsCompleted => PlayerPrefs.GetInt(OnboardingKey, 0) == 1;
 
         // ── Inspector ─────────────────────────────────────────────────
 
@@ -49,7 +49,7 @@ namespace GerakAR.UI
             if (next != AppState.Onboarding) return;
 
             // Hanya tampilkan sekali seumur instalasi
-            if (!PlayerPrefs.HasKey(OnboardingKey) || PlayerPrefs.GetInt(OnboardingKey) == 0)
+            if (!IsCompleted)
             {
                 ShowOnboarding();
             }
@@ -79,7 +79,10 @@ namespace GerakAR.UI
             if (onboardingPanel != null)
                 onboardingPanel.SetActive(false);
 
-            AppStateManager.Instance?.TransitionTo(AppState.CheckingAR);
+            AppState nextState = BootstrapUIController.CameraPreparedForOnboarding
+                ? AppState.Scanning
+                : AppState.CheckingAR;
+            AppStateManager.Instance?.TransitionTo(nextState);
         }
     }
 }
