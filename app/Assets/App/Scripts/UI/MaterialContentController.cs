@@ -34,6 +34,7 @@ namespace GerakAR.UI
     public class MaterialContentController : MonoBehaviour
     {
         private static readonly Color ForestGreen = new Color(0.12f, 0.365f, 0.259f, 1f); // #1F5D42
+        private static readonly Color SecondaryText = new Color(0.443f, 0.376f, 0.251f, 1f);  // #716040
         // ── Inspector – Primary movement ──────────────────────────────
 
         [Header("Header")]
@@ -128,21 +129,20 @@ namespace GerakAR.UI
 
             // Header
             if (movementNameText != null)
-                movementNameText.text = data.displayName;
+                movementNameText.text = data.displayName.ToUpper();
             if (categoryAccentBar != null)
             {
-                // Semi-transparent background for kicker badge (12% opacity)
                 categoryAccentBar.color = new Color(data.categoryColor.r, data.categoryColor.g, data.categoryColor.b, 0.12f);
             }
             if (categoryTypeLabel != null)
             {
-                string categoryName = "GERAKAN";
-                if (data.movementId.Contains("squat")) categoryName = "SQUAT";
+                string categoryName = "GERAKAN UTAMA";
+                if (data.movementId.Contains("squat")) categoryName = "GERAKAN UTAMA";
                 else if (data.movementId.Contains("stretch") || data.movementId.Contains("dynamic")) categoryName = "DYNAMIC STRETCHING";
                 else if (data.movementId.Contains("ladder")) categoryName = "LADDER DRILL";
 
                 categoryTypeLabel.text = categoryName;
-                categoryTypeLabel.color = data.categoryColor; // Text color matches category color
+                categoryTypeLabel.color = SecondaryText; // Matches mockup precisely
             }
             if (movementSubtitleText != null)
             {
@@ -229,7 +229,7 @@ namespace GerakAR.UI
             if (categoryTypeLabel != null)
             {
                 categoryTypeLabel.text = "MATERI TAMBAHAN";
-                categoryTypeLabel.color = ForestGreen;
+                categoryTypeLabel.color = SecondaryText; // Matches mockup precisely
             }
             if (categoryAccentBar != null)
             {

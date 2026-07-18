@@ -1419,14 +1419,13 @@ public static class SetupAndBuild
         serialTimeline.ApplyModifiedProperties();
 
         // ═══════════════════════════════════════════════════════════
-        // ═══════════════════════════════════════════════════════════
         // G06 — BOTTOM SHEET (Child of SafeArea)
         // ═══════════════════════════════════════════════════════════
         var sheetGo = CreateUIObject("BottomSheet", canvasStruct.SafeAreaGo);
         var sheetImg = sheetGo.AddComponent<Image>();
         sheetImg.sprite = roundTopSprite;
         sheetImg.type = Image.Type.Sliced;
-        sheetImg.color = WarmCream; // WarmCream background for the entire sheet
+        sheetImg.color = Color.white; // Clean white sheet background as in mockup
         var sheetRT = sheetGo.GetComponent<RectTransform>();
         sheetRT.anchorMin = new Vector2(0f, 0f);
         sheetRT.anchorMax = new Vector2(1f, 0f);
@@ -1434,27 +1433,14 @@ public static class SetupAndBuild
         sheetRT.anchoredPosition = new Vector2(0f, 0f);
         sheetRT.sizeDelta = new Vector2(0f, 752f);
 
-        // Header area — Transparent/WarmCream with thin border at bottom
+        // Header area — Transparent with no bottom separator
         var sheetHeaderGo = CreateUIObject("SheetHeader", sheetGo);
         var shRT = sheetHeaderGo.GetComponent<RectTransform>();
         shRT.anchorMin = new Vector2(0f, 1f);
         shRT.anchorMax = new Vector2(1f, 1f);
         shRT.pivot = new Vector2(0.5f, 1f);
         shRT.anchoredPosition = new Vector2(0f, -16f); // Offset slightly below grab handle
-        shRT.sizeDelta = new Vector2(0f, 64f); // height 64f for kicker + title + subtitle
-
-        // Bottom separator line for header
-        var sepGo = CreateUIObject("Separator", sheetHeaderGo);
-        var sepImg = sepGo.AddComponent<Image>();
-        sepImg.sprite = uiSolidRect;
-        sepImg.type = Image.Type.Simple;
-        sepImg.color = new Color(0.663f, 0.745f, 0.635f, 0.2f); // #A9BEA2 with 20% alpha
-        var sepRT = sepGo.GetComponent<RectTransform>();
-        sepRT.anchorMin = new Vector2(0f, 0f);
-        sepRT.anchorMax = new Vector2(1f, 0f);
-        sepRT.pivot = new Vector2(0.5f, 0f);
-        sepRT.anchoredPosition = Vector2.zero;
-        sepRT.sizeDelta = new Vector2(0f, 1f);
+        shRT.sizeDelta = new Vector2(0f, 64f); // height 64f for kicker + title
 
         // Grab handle
         var handleGo = CreateUIObject("GrabHandle", sheetGo);
@@ -1471,8 +1457,8 @@ public static class SetupAndBuild
         lgRT.anchorMin = new Vector2(0f, 0.5f);
         lgRT.anchorMax = new Vector2(0f, 0.5f);
         lgRT.pivot = new Vector2(0f, 0.5f);
-        lgRT.anchoredPosition = new Vector2(20f, 0f);
-        lgRT.sizeDelta = new Vector2(200f, 52f);
+        lgRT.anchoredPosition = new Vector2(20f, -4f);
+        lgRT.sizeDelta = new Vector2(240f, 52f);
 
         var leftVlg = leftGroupGo.AddComponent<VerticalLayoutGroup>();
         leftVlg.spacing = 2f;
@@ -1482,59 +1468,40 @@ public static class SetupAndBuild
         leftVlg.childForceExpandWidth = true;
         leftVlg.childForceExpandHeight = false;
 
-        // Kicker badge
-        var kickerBadgeGo = CreateUIObject("KickerBadge", leftGroupGo);
-        var kickerBadgeImg = kickerBadgeGo.AddComponent<Image>();
-        kickerBadgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png");
-        kickerBadgeImg.type = Image.Type.Sliced;
-        kickerBadgeImg.color = new Color(0.7215f, 0.4078f, 0.2902f, 0.12f); // Default Terracotta with 12% alpha
-
-        var badgeHlg = kickerBadgeGo.AddComponent<HorizontalLayoutGroup>();
-        badgeHlg.padding = new RectOffset(8, 8, 2, 2);
-        badgeHlg.childAlignment = TextAnchor.MiddleCenter;
-        badgeHlg.childControlWidth = true;
-        badgeHlg.childControlHeight = true;
-        badgeHlg.childForceExpandWidth = false;
-        badgeHlg.childForceExpandHeight = false;
-
-        var categoryGo = CreateUIObject("CategoryTypeLabel", kickerBadgeGo);
+        // Kicker label (plain text Category, no badge!)
+        var categoryGo = CreateUIObject("CategoryTypeLabel", leftGroupGo);
         var categoryTxt = categoryGo.AddComponent<TextMeshProUGUI>();
         categoryTxt.textWrappingMode = TextWrappingModes.Normal;
-        categoryTxt.text = "SQUAT";
-        categoryTxt.fontSize = 9f;
+        categoryTxt.text = "GERAKAN UTAMA";
+        categoryTxt.fontSize = 11f;
         categoryTxt.fontStyle = FontStyles.Bold;
-        categoryTxt.color = new Color(0.7215f, 0.4078f, 0.2902f, 1f); // Default Terracotta
-        categoryTxt.alignment = TextAlignmentOptions.Center;
+        categoryTxt.color = SecondaryText; // #716040
         if (fonts != null) categoryTxt.font = fonts.Heading;
+        var kickerLE = categoryGo.AddComponent<LayoutElement>();
+        kickerLE.preferredHeight = 14f;
 
-        var kickerLE = kickerBadgeGo.AddComponent<LayoutElement>();
-        kickerLE.preferredHeight = 16f;
-        kickerLE.flexibleWidth = 0f;
-
-        // Title
+        // Title (SQUAT, all caps)
         var sheetTitleGo = CreateUIObject("MovementTitle", leftGroupGo);
         var sheetTitleText = sheetTitleGo.AddComponent<TextMeshProUGUI>();
         sheetTitleText.textWrappingMode = TextWrappingModes.Normal;
-        sheetTitleText.text = "Squat";
-        sheetTitleText.fontSize = 18f;
+        sheetTitleText.text = "SQUAT";
+        sheetTitleText.fontSize = 22f;
         sheetTitleText.fontStyle = FontStyles.Bold;
-        sheetTitleText.color = DeepForest;
+        sheetTitleText.color = DeepForest; // #12372A
         sheetTitleText.alignment = TextAlignmentOptions.Left;
         if (fonts != null) sheetTitleText.font = fonts.Heading;
         var titleLE = sheetTitleGo.AddComponent<LayoutElement>();
-        titleLE.preferredHeight = 22f;
+        titleLE.preferredHeight = 26f;
 
-        // Subtitle
+        // Subtitle (not shown in mockup, but kept invisible or very small dummy for controller binding)
         var subtitleGo = CreateUIObject("MovementSubtitle", leftGroupGo);
         var subtitleTxt = subtitleGo.AddComponent<TextMeshProUGUI>();
         subtitleTxt.textWrappingMode = TextWrappingModes.Normal;
-        subtitleTxt.text = "Latihan kekuatan kaki dan keseimbangan.";
-        subtitleTxt.fontSize = 11f;
-        subtitleTxt.color = SecondaryText;
-        subtitleTxt.alignment = TextAlignmentOptions.Left;
-        if (fonts != null) subtitleTxt.font = fonts.Body;
+        subtitleTxt.text = "";
+        subtitleTxt.fontSize = 0.1f;
+        subtitleTxt.color = Color.clear;
         var subLE = subtitleGo.AddComponent<LayoutElement>();
-        subLE.preferredHeight = 14f;
+        subLE.preferredHeight = 0.1f;
 
         // Right buttons group
         var rightGroupGo = CreateUIObject("RightGroup", sheetHeaderGo);
@@ -1543,54 +1510,70 @@ public static class SetupAndBuild
         rgRT.anchorMax = new Vector2(1f, 0.5f);
         rgRT.pivot = new Vector2(1f, 0.5f);
         rgRT.anchoredPosition = new Vector2(-20f, 0f);
-        rgRT.sizeDelta = new Vector2(140f, 44f);
+        rgRT.sizeDelta = new Vector2(44f, 44f);
 
-        var rightHlg = rightGroupGo.AddComponent<HorizontalLayoutGroup>();
-        rightHlg.spacing = 8f;
-        rightHlg.childAlignment = TextAnchor.MiddleRight;
-        rightHlg.childControlWidth = false;
-        rightHlg.childControlHeight = false;
-        rightHlg.childForceExpandWidth = false;
-        rightHlg.childForceExpandHeight = false;
-
-        // Back to primary button (G07 -> G06)
-        var backBtnGo = CreateUIObject("BackToPrimaryButton", rightGroupGo);
-        var backBtnImg = backBtnGo.AddComponent<Image>();
-        backBtnImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png"); // pill shape
-        backBtnImg.type = Image.Type.Sliced;
-        backBtnImg.color = ForestGreen;
-        var backBtn = backBtnGo.AddComponent<Button>();
-        var backBtnRT = backBtnGo.GetComponent<RectTransform>();
-        backBtnRT.sizeDelta = new Vector2(72f, 32f); // compact pill size
-
-        var backBtnTextGo = CreateUIObject("Text", backBtnGo);
-        var backBtnText = backBtnTextGo.AddComponent<TextMeshProUGUI>();
-        backBtnText.textWrappingMode = TextWrappingModes.Normal;
-        backBtnText.text = "Kembali";
-        backBtnText.fontSize = 11f;
-        backBtnText.fontStyle = FontStyles.Bold;
-        backBtnText.color = WarmWhite;
-        backBtnText.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) backBtnText.font = fonts.Heading;
-        StretchRect(backBtnTextGo.GetComponent<RectTransform>());
-
-        // Close X button (circle visual 34 size, touch target 44)
+        // Close X button (rounded square visual 44 size with SoftSand color)
         var sheetCloseGo = CreateUIObject("SheetCloseX", rightGroupGo);
         var sheetCloseImg = sheetCloseGo.AddComponent<Image>();
-        sheetCloseImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png"); // perfect circle!
-        sheetCloseImg.type = Image.Type.Simple;
-        sheetCloseImg.color = new Color(0.125f, 0.149f, 0.125f, 0.05f); // #202620 with 5% alpha
+        sheetCloseImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png"); // Rounded square!
+        sheetCloseImg.type = Image.Type.Sliced;
+        sheetCloseImg.color = SoftSand;
         var sheetCloseBtn = sheetCloseGo.AddComponent<Button>();
         var closeRT = sheetCloseGo.GetComponent<RectTransform>();
-        closeRT.sizeDelta = new Vector2(34f, 34f); // visual size 34x34
+        closeRT.anchorMin = new Vector2(0.5f, 0.5f);
+        closeRT.anchorMax = new Vector2(0.5f, 0.5f);
+        closeRT.pivot = new Vector2(0.5f, 0.5f);
+        closeRT.anchoredPosition = Vector2.zero;
+        closeRT.sizeDelta = new Vector2(44f, 44f);
 
         var xIconGo = CreateUIObject("Icon", sheetCloseGo);
         var xIconImg = xIconGo.AddComponent<Image>();
         xIconImg.sprite = closeIcon;
         xIconImg.preserveAspect = true;
         xIconImg.raycastTarget = false;
-        xIconImg.color = new Color(0.125f, 0.149f, 0.125f, 1f); // #202620 (Charcoal)
-        SetCenterPosition(xIconGo.GetComponent<RectTransform>(), 0f, 0f, 16f, 16f);
+        xIconImg.color = DeepForest;
+        SetCenterPosition(xIconGo.GetComponent<RectTransform>(), 0f, 0f, 18f, 18f);
+
+        // Back to primary button (G07 -> G06) - now at the bottom of the Bottom Sheet
+        var backBtnGo = CreateUIObject("BackToPrimaryButton", sheetGo);
+        var backBtnImg = backBtnGo.AddComponent<Image>();
+        backBtnImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        backBtnImg.type = Image.Type.Sliced;
+        backBtnImg.color = SoftSand;
+        var backBtn = backBtnGo.AddComponent<Button>();
+        var backBtnRT = backBtnGo.GetComponent<RectTransform>();
+        backBtnRT.anchorMin = new Vector2(0.5f, 0f);
+        backBtnRT.anchorMax = new Vector2(0.5f, 0f);
+        backBtnRT.pivot = new Vector2(0.5f, 0f);
+        backBtnRT.anchoredPosition = new Vector2(0f, 20f);
+        backBtnRT.sizeDelta = new Vector2(320f, 48f); // full width CTA
+
+        var arrowIconGo = CreateUIObject("ArrowIcon", backBtnGo);
+        var arrowIconImg = arrowIconGo.AddComponent<Image>();
+        arrowIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/arrow-left.svg");
+        arrowIconImg.preserveAspect = true;
+        arrowIconImg.raycastTarget = false;
+        arrowIconImg.color = DeepForest;
+        var arrowRT = arrowIconGo.GetComponent<RectTransform>();
+        arrowRT.anchorMin = new Vector2(0f, 0.5f);
+        arrowRT.anchorMax = new Vector2(0f, 0.5f);
+        arrowRT.pivot = new Vector2(0f, 0.5f);
+        arrowRT.anchoredPosition = new Vector2(16f, 0f);
+        arrowRT.sizeDelta = new Vector2(16f, 16f);
+
+        var backBtnTextGo = CreateUIObject("Text", backBtnGo);
+        var backBtnText = backBtnTextGo.AddComponent<TextMeshProUGUI>();
+        backBtnText.textWrappingMode = TextWrappingModes.Normal;
+        backBtnText.text = "Kembali ke materi";
+        backBtnText.fontSize = 13f;
+        backBtnText.fontStyle = FontStyles.Bold;
+        backBtnText.color = DeepForest;
+        backBtnText.alignment = TextAlignmentOptions.Center;
+        if (fonts != null) backBtnText.font = fonts.Heading;
+        StretchRect(backBtnTextGo.GetComponent<RectTransform>());
+        var btnTxtRT = backBtnTextGo.GetComponent<RectTransform>();
+        btnTxtRT.offsetMin = new Vector2(40f, 0f);
+        btnTxtRT.offsetMax = new Vector2(-40f, 0f);
 
         // Bottom sheet scroll view
         var scrollViewGo = CreateUIObject("ScrollView", sheetGo);
@@ -1681,14 +1664,14 @@ public static class SetupAndBuild
         var safetyImg = safetyTipCardGo.AddComponent<Image>();
         safetyImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         safetyImg.type = Image.Type.Sliced;
-        safetyImg.color = new Color(0.12f, 0.365f, 0.259f, 0.08f); // 8% ForestGreen background
+        safetyImg.color = new Color(0.918f, 0.867f, 0.812f, 0.5f); // 50% SoftSand tint background
 
         var safetyOutline = safetyTipCardGo.AddComponent<Outline>();
         safetyOutline.effectColor = SoftSand;
         safetyOutline.effectDistance = new Vector2(1f, 1f);
 
         var safetyHlg = safetyTipCardGo.AddComponent<HorizontalLayoutGroup>();
-        safetyHlg.padding = new RectOffset(16, 16, 16, 16);
+        safetyHlg.padding = new RectOffset(16, 16, 12, 12);
         safetyHlg.spacing = 12f;
         safetyHlg.childAlignment = TextAnchor.MiddleLeft;
         safetyHlg.childControlWidth = true;
@@ -1696,25 +1679,57 @@ public static class SetupAndBuild
         safetyHlg.childForceExpandWidth = false;
         safetyHlg.childForceExpandHeight = false;
 
-        // Icon child
-        var safetyIconGo = CreateUIObject("Icon", safetyTipCardGo);
+        var safetyCsf = safetyTipCardGo.AddComponent<ContentSizeFitter>();
+        safetyCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        safetyCsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+        // Left Icon Badge (36x36 white rounded square)
+        var safetyBadgeGo = CreateUIObject("Badge", safetyTipCardGo);
+        var safetyBadgeImg = safetyBadgeGo.AddComponent<Image>();
+        safetyBadgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-08.png");
+        safetyBadgeImg.type = Image.Type.Sliced;
+        safetyBadgeImg.color = Color.white;
+        var badgeLE = safetyBadgeGo.AddComponent<LayoutElement>();
+        badgeLE.minWidth = 36f;
+        badgeLE.minHeight = 36f;
+        badgeLE.preferredWidth = 36f;
+        badgeLE.preferredHeight = 36f;
+
+        var safetyIconGo = CreateUIObject("Icon", safetyBadgeGo);
         var safetyIconImg = safetyIconGo.AddComponent<Image>();
         safetyIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/shield-check.svg");
-        safetyIconImg.color = ForestGreen;
         safetyIconImg.preserveAspect = true;
-        var safetyIconRT = safetyIconGo.GetComponent<RectTransform>();
-        safetyIconRT.sizeDelta = new Vector2(24f, 24f);
+        safetyIconImg.raycastTarget = false;
+        safetyIconImg.color = DeepForest;
+        SetCenterPosition(safetyIconGo.GetComponent<RectTransform>(), 0f, 0f, 20f, 20f);
 
-        // Text child
-        var safetyTextGo = CreateUIObject("Text", safetyTipCardGo);
+        // Right Text Container (Vertical layout group)
+        var safetyTextContainerGo = CreateUIObject("TextContainer", safetyTipCardGo);
+        var safetyVlg = safetyTextContainerGo.AddComponent<VerticalLayoutGroup>();
+        safetyVlg.spacing = 2f;
+        safetyVlg.childAlignment = TextAnchor.MiddleLeft;
+        safetyVlg.childControlWidth = true;
+        safetyVlg.childControlHeight = true;
+        safetyVlg.childForceExpandWidth = true;
+        safetyVlg.childForceExpandHeight = false;
+        var textContainerLE = safetyTextContainerGo.AddComponent<LayoutElement>();
+        textContainerLE.flexibleWidth = 1f;
+
+        var safetyTitleGo = CreateUIObject("Title", safetyTextContainerGo);
+        var safetyTitle = safetyTitleGo.AddComponent<TextMeshProUGUI>();
+        safetyTitle.text = "INGAT, YA!";
+        safetyTitle.fontSize = 11f;
+        safetyTitle.fontStyle = FontStyles.Bold;
+        safetyTitle.color = SecondaryText;
+        if (fonts != null) safetyTitle.font = fonts.Heading;
+
+        var safetyTextGo = CreateUIObject("Text", safetyTextContainerGo);
         var safetyText = safetyTextGo.AddComponent<TextMeshProUGUI>();
         safetyText.textWrappingMode = TextWrappingModes.Normal;
-        safetyText.fontSize = 12f;
-        safetyText.color = DeepForest;
-        safetyText.fontStyle = FontStyles.Bold;
-        if (fonts != null) safetyText.font = fonts.Heading;
-        var safetyTextLE = safetyTextGo.AddComponent<LayoutElement>();
-        safetyTextLE.flexibleWidth = 1f;
+        safetyText.text = "Lakukan gerakan perlahan.";
+        safetyText.fontSize = 11f;
+        safetyText.color = SecondaryText;
+        if (fonts != null) safetyText.font = fonts.Body;
 
         // Section: Full State Extras
         var fullExtrasGo = CreateUIObject("FullStateExtras", contentGo);
@@ -1831,7 +1846,7 @@ public static class SetupAndBuild
         var serialMat = new SerializedObject(matCtrl);
         serialMat.FindProperty("categoryTypeLabel").objectReferenceValue = categoryTxt;
         serialMat.FindProperty("movementNameText").objectReferenceValue = sheetTitleText;
-        serialMat.FindProperty("categoryAccentBar").objectReferenceValue = kickerBadgeImg;
+        serialMat.FindProperty("categoryAccentBar").objectReferenceValue = null;
         serialMat.FindProperty("movementSubtitleText").objectReferenceValue = subtitleTxt;
         serialMat.FindProperty("backToPrimaryButton").objectReferenceValue = backBtn;
         serialMat.FindProperty("shortDescriptionText").objectReferenceValue = descText;
