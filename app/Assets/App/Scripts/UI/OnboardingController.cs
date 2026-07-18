@@ -79,10 +79,14 @@ namespace GerakAR.UI
             if (onboardingPanel != null)
                 onboardingPanel.SetActive(false);
 
-            AppState nextState = BootstrapUIController.CameraPreparedForOnboarding
-                ? AppState.Scanning
-                : AppState.CheckingAR;
-            AppStateManager.Instance?.TransitionTo(nextState);
+            if (BootstrapUIController.CameraPreparedForOnboarding &&
+                BootstrapUIController.Instance != null)
+            {
+                BootstrapUIController.Instance.RevealPreparedCamera();
+                return;
+            }
+
+            AppStateManager.Instance?.TransitionTo(AppState.CheckingAR);
         }
     }
 }

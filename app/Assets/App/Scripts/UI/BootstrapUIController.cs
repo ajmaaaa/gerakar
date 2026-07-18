@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using GerakAR.Core;
 using GerakAR.Content;
@@ -58,6 +59,10 @@ namespace GerakAR.UI
         [SerializeField] private MovementDatabase movementDatabase;
 
         private readonly List<GameObject> _nonARSpawnedItems = new();
+        private readonly List<EventSystem> _disabledMainAREventSystems = new();
+        private bool _onboardingTransitionScheduled;
+        private bool _unloadingBootstrap;
+        private Canvas _bootstrapCanvas;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetSessionState()
@@ -68,6 +73,9 @@ namespace GerakAR.UI
         private void Awake()
         {
             Instance = this;
+            _bootstrapCanvas = onboardingPanel != null
+                ? onboardingPanel.GetComponentInParent<Canvas>()
+                : null;
 
             if (detailCloseButton != null)
             {
@@ -102,13 +110,11 @@ namespace GerakAR.UI
         {
             if (state == AppState.Scanning && !OnboardingController.IsCompleted)
             {
-                // The first-run camera is fully ready behind Bootstrap. Show G02
-                // now so MULAI only dismisses onboarding and reveals G03.
-                Scene preparedScene = SceneManager.GetSceneByName("MainAR");
-                if (preparedScene.IsValid())
-                    SceneManager.SetActiveScene(preparedScene);
-                CameraPreparedForOnboarding = true;
-                AppStateManager.Instance?.TransitionTo(AppState.Onboarding);
+                if (!_onboardingTransitionScheduled)
+                {
+                    _onboardingTransitionScheduled = true;
+                    StartCoroutine(ShowOnboardingOverPreparedCamera());
+                }
                 return;
             }
 
@@ -191,12 +197,109 @@ namespace GerakAR.UI
             }
             else if (state == AppState.Scanning)
             {
+                if (_unloadingBootstrap)
+                    return;
+
                 // Kamera sudah siap — fade out Bootstrap canvas lalu unload
                 Scene mainArScene = SceneManager.GetSceneByName("MainAR");
                 if (mainArScene.IsValid())
                     SceneManager.SetActiveScene(mainArScene);
                 if (introCanvasGroup != null)
                     StartCoroutine(FadeOutAndUnloadBootstrap());
+            }
+        }
+
+        private System.Collections.IEnumerator ShowOnboardingOverPreparedCamera()
+        {
+            Scene preparedScene = SceneManager.GetSceneByName("MainAR");
+            if (preparedScene.IsValid())
+                SceneManager.SetActiveScene(preparedScene);
+
+            CameraPreparedForOnboarding = true;
+            SetBootstrapCanvasPriority(true);
+            SetMainAREventSystemsEnabled(false);
+
+            // Avoid a nested state transition inside the Scanning event. Without
+            // this delay, a stale Scanning listener can show G03 after G02.
+            yield return null;
+            AppStateManager.Instance?.TransitionTo(AppState.Onboarding);
+            _onboardingTransitionScheduled = false;
+        }
+
+        public void RevealPreparedCamera()
+        {
+            if (!CameraPreparedForOnboarding || _unloadingBootstrap)
+                return;
+
+            _unloadingBootstrap = true;
+            CameraPreparedForOnboarding = false;
+
+            // Bootstrap owns input while G02 is visible. Transfer input to MainAR
+            // before unloading Bootstrap so the MULAI press cannot hit G03 below.
+            SetBootstrapEventSystemsEnabled(false);
+            SetMainAREventSystemsEnabled(true);
+            SetBootstrapCanvasPriority(false);
+
+            AppStateManager.Instance?.TransitionTo(AppState.Scanning);
+            SceneManager.UnloadSceneAsync("Bootstrap");
+        }
+
+        private void SetBootstrapCanvasPriority(bool elevated)
+        {
+            if (_bootstrapCanvas == null)
+                return;
+
+            _bootstrapCanvas.overrideSorting = elevated;
+            _bootstrapCanvas.sortingOrder = elevated ? 1000 : 0;
+
+            if (onboardingPanel == null)
+                return;
+
+            CanvasGroup group = onboardingPanel.GetComponent<CanvasGroup>();
+            if (group == null)
+                group = onboardingPanel.AddComponent<CanvasGroup>();
+            group.alpha = 1f;
+            group.interactable = elevated;
+            group.blocksRaycasts = elevated;
+        }
+
+        private void SetMainAREventSystemsEnabled(bool enabled)
+        {
+            Scene mainARScene = SceneManager.GetSceneByName("MainAR");
+            if (!mainARScene.IsValid() || !mainARScene.isLoaded)
+                return;
+
+            if (enabled)
+            {
+                foreach (EventSystem eventSystem in _disabledMainAREventSystems)
+                {
+                    if (eventSystem != null)
+                        eventSystem.enabled = true;
+                }
+                _disabledMainAREventSystems.Clear();
+                return;
+            }
+
+            _disabledMainAREventSystems.Clear();
+            foreach (GameObject root in mainARScene.GetRootGameObjects())
+            {
+                foreach (EventSystem eventSystem in root.GetComponentsInChildren<EventSystem>(true))
+                {
+                    if (!eventSystem.enabled)
+                        continue;
+                    eventSystem.enabled = false;
+                    _disabledMainAREventSystems.Add(eventSystem);
+                }
+            }
+        }
+
+        private void SetBootstrapEventSystemsEnabled(bool enabled)
+        {
+            Scene bootstrapScene = gameObject.scene;
+            foreach (GameObject root in bootstrapScene.GetRootGameObjects())
+            {
+                foreach (EventSystem eventSystem in root.GetComponentsInChildren<EventSystem>(true))
+                    eventSystem.enabled = enabled;
             }
         }
 
