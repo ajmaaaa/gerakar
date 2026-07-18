@@ -2286,7 +2286,8 @@ public static class SetupAndBuild
         videoConfig.configs[index] = config;
     }
 
-    private static void BuildAPK()
+    [MenuItem("Build/Build Current Scenes APK")]
+    public static void BuildAPK()
     {
         Debug.Log("[GerakAR] Menjalankan build Android APK...");
         ConfigurePlayerSettings();
