@@ -197,7 +197,7 @@ namespace GerakAR.UI
         {
             if (introStatusText == null) yield break;
             Color c = introStatusText.color;
-            float duration = 0.15f;
+            float duration = 0.08f;
             float t = 0f;
             while (t < duration)
             {
@@ -222,7 +222,7 @@ namespace GerakAR.UI
             if (fillRT == null) yield break;
             float startX = fillRT.anchorMax.x;
             float elapsed = 0f;
-            float duration = 6.0f;
+            float duration = 3.0f;
             while (elapsed < duration &&
                    AppStateManager.Instance != null &&
                    !AppStateManager.Instance.Is(AppState.Scanning))

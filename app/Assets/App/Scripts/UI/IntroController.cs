@@ -16,7 +16,7 @@ namespace GerakAR.UI
 
         [Header("Timing")]
         [Tooltip("How long to show the intro before advancing.")]
-        [SerializeField] [Range(1f, 4f)] private float introDuration = 1.8f;
+        [SerializeField] [Range(0.3f, 4f)] private float introDuration = 0.8f;
 
         [Header("UI References")]
         [SerializeField] private CanvasGroup introCanvasGroup;
