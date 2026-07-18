@@ -13,13 +13,6 @@ namespace GerakAR.AR
     {
         [SerializeField] private Camera foregroundCamera;
         [SerializeField] [Range(0.5f, 10f)] private float textureUpdateTimeoutSeconds = 5f;
-        [SerializeField] private int backgroundLayer = 8;
-
-        [Header("Flip Correction")]
-        [SerializeField] [Tooltip("Flip video horizontally (X axis) if camera appears mirrored.")]
-        private bool flipHorizontally = false;
-        [SerializeField] [Tooltip("Flip video vertically (Y axis) if camera appears upside down.")]
-        private bool flipVertically = false;
 
         /// <summary>Dipanggil ketika setup background gagal total.</summary>
         public System.Action<string> OnPresentFailed;
@@ -142,46 +135,44 @@ namespace GerakAR.AR
                 }
             }
 
-            // Perbaiki mirror/flip: toggle di Inspector untuk coba flip X/Y
-            if (videoMaterial != null)
+            // Keep ARUnityX's generated mesh UVs; they already encode the required
+            // Android vertical flip. Only replace its fixed-function shader.
+            Shader cameraShader = Resources.Load<Shader>("GerakARCameraBackground");
+            if (cameraShader == null || !cameraShader.isSupported)
             {
-                float sx = flipHorizontally ? -1f : 1f;
-                float sy = flipVertically ? -1f : 1f;
-                videoMaterial.mainTextureScale = new Vector2(sx, sy);
-                videoMaterial.mainTextureOffset = Vector2.zero;
-                Debug.Log($"[ARUnityXURPBackgroundPresenter] Texture scale set to ({sx}, {sy})");
+                string msg = "Bundled URP camera background shader is unavailable.";
+                Debug.LogError("[ARUnityXURPBackgroundPresenter] " + msg);
+                OnPresentFailed?.Invoke(msg);
+                _findBackgroundCoroutine = null;
+                _isPresenting = false;
+                yield break;
             }
 
-            // Ubah clear color background camera dari hijau (default ARUnityX) ke hitam
-            // agar area yang tidak tertutup quad tidak hijau.
+            Texture cameraTexture = videoMaterial.mainTexture;
+            videoMaterial.shader = cameraShader;
+            videoMaterial.mainTexture = cameraTexture;
+            videoMaterial.color = Color.white;
+
+            // ARUnityX uses Fill mode and an orthographic projection to crop a
+            // landscape sensor frame into a portrait viewport. Reapply this after
+            // changing the foreground camera to an URP overlay camera.
+            ARXCamera arxCamera = foregroundCamera.GetComponent<ARXCamera>();
+            ARXVideoBackground arxBackground = foregroundCamera.GetComponent<ARXVideoBackground>();
+            if (arxCamera == null || arxBackground == null)
+            {
+                string msg = "ARUnityX camera/background components are missing.";
+                Debug.LogError("[ARUnityXURPBackgroundPresenter] " + msg);
+                OnPresentFailed?.Invoke(msg);
+                _findBackgroundCoroutine = null;
+                _isPresenting = false;
+                yield break;
+            }
+
+            arxCamera.CameraContentMode = ARXCamera.ContentMode.Fill;
+            arxBackground.OnScreenGeometryChanged();
+
             _backgroundCamera.backgroundColor = Color.black;
-
-            // Shader VideoPlaneNoLight (Built-in) mungkin tidak render rotasi
-            // dengan benar di URP. Coba ganti ke shader URP native.
-            // Universal Render Pipeline/Unlit tidak masuk build (no material ref),
-            // jadi fallback ke Unlit/FeatheredPlaneShader dari AR Starter Assets.
-            if (videoMaterial != null && videoMaterial.shader != null)
-            {
-                string sn = videoMaterial.shader.name;
-                if (!sn.Contains("Universal Render Pipeline") && sn != "Unlit/FeatheredPlaneShader")
-                {
-                    Shader target = Shader.Find("Unlit/FeatheredPlaneShader");
-                    if (target != null && target.isSupported)
-                    {
-                        // Copy texture reference before switching shader
-                        Texture existingTex = videoMaterial.mainTexture;
-                        videoMaterial.shader = target;
-                        videoMaterial.mainTexture = existingTex;
-                        videoMaterial.SetColor("_TexTintColor", Color.white);
-                        videoMaterial.SetColor("_PlaneColor", Color.white);
-                        Debug.Log($"[ARUnityXURPBackgroundPresenter] Switched shader from '{sn}' to 'Unlit/FeatheredPlaneShader'.");
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[ARUnityXURPBackgroundPresenter] Fallback shader not found; keeping '{sn}'.");
-                    }
-                }
-            }
+            foregroundCamera.backgroundColor = Color.black;
 
             // AR Camera foreground: Depth Only agar tidak timpa background camera
             // Background camera tetap SolidColor (setting ARUnityX asli)
@@ -190,8 +181,10 @@ namespace GerakAR.AR
             // Diagnostic log untuk debug flip/orientasi
             {
                 Renderer r = videoObject.GetComponent<Renderer>();
-                Vector3 qScale = backgroundObject.transform.localScale;
-                Vector3 qRot = backgroundObject.transform.localEulerAngles;
+                Vector3 bgScale = backgroundObject.transform.localScale;
+                Vector3 bgRot = backgroundObject.transform.localEulerAngles;
+                Vector3 meshScale = videoObject.transform.localScale;
+                Vector3 meshRot = videoObject.transform.localEulerAngles;
                 Debug.Log(
                     $"[ARUnityXURPBackgroundPresenter] Camera feed configured: " +
                     $"tex={_videoTexture.width}x{_videoTexture.height}, " +
@@ -200,12 +193,16 @@ namespace GerakAR.AR
                     $"mask={_backgroundCamera.cullingMask}, " +
                     $"clearFlags={_backgroundCamera.clearFlags}, " +
                     $"fgCam='{foregroundCamera.name}', " +
-                    $"qScale=({qScale.x:F3},{qScale.y:F3},{qScale.z:F3}), " +
-                    $"qRot=({qRot.x:F1},{qRot.y:F1},{qRot.z:F1}), " +
+                    $"orientation={Screen.orientation}, " +
+                    $"bgScale=({bgScale.x:F3},{bgScale.y:F3},{bgScale.z:F3}), " +
+                    $"bgRot=({bgRot.x:F1},{bgRot.y:F1},{bgRot.z:F1}), " +
+                    $"meshScale=({meshScale.x:F3},{meshScale.y:F3},{meshScale.z:F3}), " +
+                    $"meshRot=({meshRot.x:F1},{meshRot.y:F1},{meshRot.z:F1}), " +
                     $"material={r?.sharedMaterial?.name}, " +
                     $"shader={r?.sharedMaterial?.shader?.name}, " +
-                    $"texScale={r?.sharedMaterial?.mainTextureScale}, " +
-                    $"flipH={flipHorizontally}, flipV={flipVertically}");
+                    $"contentMode={arxCamera.CameraContentMode}, " +
+                    $"bgOrtho={_backgroundCamera.orthographic}, " +
+                    $"bgRect={_backgroundCamera.pixelRect}");
             }
 
             // Validasi texture

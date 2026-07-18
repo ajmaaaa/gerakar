@@ -41,10 +41,13 @@ namespace GerakAR.AR
             BindingFlags.Instance | BindingFlags.NonPublic);
 
         private Coroutine _startupTimeout;
+        private Coroutine _unexpectedStopCheck;
         private AppStateManager _stateManager;
         private bool _videoStarted;
         private bool _sessionReady;
         private bool _routingAway;
+        private bool _applicationPaused;
+        private bool _applicationFocused = true;
 
         private void Start()
         {
@@ -92,6 +95,16 @@ namespace GerakAR.AR
             if (arController == null) return;
             arController.onVideoStarted.RemoveListener(OnVideoStarted);
             arController.onVideoStopped.RemoveListener(OnVideoStopped);
+        }
+
+        private void OnApplicationPause(bool paused)
+        {
+            _applicationPaused = paused;
+        }
+
+        private void OnApplicationFocus(bool focused)
+        {
+            _applicationFocused = focused;
         }
 
         private IEnumerator WaitForVideoStartup()
@@ -160,6 +173,12 @@ namespace GerakAR.AR
         private void OnVideoStarted()
         {
             _videoStarted = true;
+
+            if (_unexpectedStopCheck != null)
+            {
+                StopCoroutine(_unexpectedStopCheck);
+                _unexpectedStopCheck = null;
+            }
 
             if (backgroundPresenter == null)
             {
@@ -273,8 +292,28 @@ namespace GerakAR.AR
             if (_routingAway || AppStateManager.RunInNonARMode || !Application.isPlaying)
                 return;
 
-            Debug.LogWarning("[ARUnityXSessionController] Camera stream stopped.");
-            RouteToFallback("Camera stream stopped unexpectedly.", false);
+            Debug.LogWarning(
+                $"[ARUnityXSessionController] Camera stream stopped " +
+                $"(paused={_applicationPaused}, focused={_applicationFocused}).");
+
+            if (_unexpectedStopCheck != null)
+                StopCoroutine(_unexpectedStopCheck);
+            _unexpectedStopCheck = StartCoroutine(VerifyUnexpectedStop());
+        }
+
+        private IEnumerator VerifyUnexpectedStop()
+        {
+            // ARXController deliberately stops video on Android pause and starts it
+            // again on resume. Wait for those lifecycle callbacks to settle.
+            yield return new WaitForSecondsRealtime(1f);
+            _unexpectedStopCheck = null;
+
+            if (_routingAway || _applicationPaused || !_applicationFocused)
+                yield break;
+            if (arController != null && arController.IsRunning)
+                yield break;
+
+            RouteToFallback("Camera stream stopped while the application was active.", false);
         }
 
         private IEnumerator SimulateCameraStartup()
