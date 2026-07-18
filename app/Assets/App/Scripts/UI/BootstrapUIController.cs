@@ -183,64 +183,63 @@ namespace GerakAR.UI
 
         private System.Collections.IEnumerator LoadCameraSequence()
         {
-            // 1. Kembalikan alpha ke 1 SEKETIKA — tidak ada fade animasi seluruh layar
-            //    Panel sudah aktif (UpdatePanels), alpha=0 dari IntroController → langsung 1
-            if (introCanvasGroup != null)
-                introCanvasGroup.alpha = 1f;
-
-            // 2. Sembunyikan Onboarding
+            if (introCanvasGroup != null) introCanvasGroup.alpha = 1f;
             if (onboardingPanel != null) onboardingPanel.SetActive(false);
 
-            // 3. Crossfade HANYA warna alpha teks di bawah bar (bukan seluruh panel)
-            if (introStatusText != null)
-            {
-                // Fade out hanya alpha teks
-                Color c = introStatusText.color;
-                float t = 0f;
-                while (t < 0.25f)
-                {
-                    t += Time.deltaTime;
-                    introStatusText.color = new Color(c.r, c.g, c.b, 1f - Mathf.Clamp01(t / 0.25f));
-                    yield return null;
-                }
-                introStatusText.text = "Memuat kamera";
-                // Fade in teks baru
-                t = 0f;
-                while (t < 0.25f)
-                {
-                    t += Time.deltaTime;
-                    introStatusText.color = new Color(c.r, c.g, c.b, Mathf.Clamp01(t / 0.25f));
-                    yield return null;
-                }
-                introStatusText.color = c;
-            }
-
-            // 4. Muat MainAR secara additive — Bootstrap canvas tetap di atas menutupi kamera
+            // Muat MainAR segera — loading di background
             SceneManager.LoadSceneAsync("MainAR", LoadSceneMode.Additive);
 
-            // 5. Lanjutkan bar dari posisi saat ini (~45%) → 100% secara perlahan
-            //    Berhenti ketika AppState.Scanning (kamera sudah siap) atau timeout 6 detik
-            if (introLoadingFill != null)
+            // Crossfade teks + bar berjalan BERSAMAAN
+            float barDuration = 6.0f;
+            float textFadeDuration = 0.15f;
+            float elapsed = 0f;
+            bool textChanged = false;
+
+            RectTransform fillRT = introLoadingFill?.GetComponent<RectTransform>();
+            float barStartX = fillRT != null ? fillRT.anchorMax.x : 0.45f;
+            Color textColor = introStatusText != null ? introStatusText.color : Color.white;
+
+            while (AppStateManager.Instance != null &&
+                   !AppStateManager.Instance.Is(AppState.Scanning))
             {
-                RectTransform fillRT = introLoadingFill.GetComponent<RectTransform>();
-                if (fillRT != null)
+                elapsed += Time.deltaTime;
+
+                // Text crossfade — cepat (0.15s out + 0.15s in), berjalan saat bar bergerak
+                if (introStatusText != null)
                 {
-                    float startX = fillRT.anchorMax.x; // Dilanjutkan dari ~0.45
-                    float elapsed = 0f;
-                    float duration = 6.0f; // Maksimum 6 detik untuk inisialisasi kamera
-                    while (elapsed < duration &&
-                           AppStateManager.Instance != null &&
-                           !AppStateManager.Instance.Is(AppState.Scanning))
+                    if (elapsed < textFadeDuration)
                     {
-                        elapsed += Time.deltaTime;
-                        float t = Mathf.Clamp01(elapsed / duration);
-                        float newX = Mathf.Lerp(startX, 1f, Mathf.SmoothStep(0f, 1f, t));
-                        fillRT.anchorMax = new Vector2(newX, 1f);
-                        yield return null;
+                        float t = elapsed / textFadeDuration;
+                        introStatusText.color = new Color(textColor.r, textColor.g, textColor.b, 1f - t);
                     }
-                    fillRT.anchorMax = new Vector2(1f, 1f);
+                    else if (!textChanged)
+                    {
+                        textChanged = true;
+                        introStatusText.text = "Memuat kamera";
+                    }
+                    else if (elapsed < textFadeDuration * 2f)
+                    {
+                        float t = (elapsed - textFadeDuration) / textFadeDuration;
+                        introStatusText.color = new Color(textColor.r, textColor.g, textColor.b, t);
+                    }
+                    else
+                    {
+                        introStatusText.color = textColor;
+                    }
                 }
+
+                // Bar animation — berjalan dari awal bersamaan dengan crossfade teks
+                if (fillRT != null && elapsed < barDuration)
+                {
+                    float t = Mathf.Clamp01(elapsed / barDuration);
+                    float newX = Mathf.Lerp(barStartX, 1f, Mathf.SmoothStep(0f, 1f, t));
+                    fillRT.anchorMax = new Vector2(newX, 1f);
+                }
+
+                yield return null;
             }
+
+            if (fillRT != null) fillRT.anchorMax = new Vector2(1f, 1f);
         }
 
         private System.Collections.IEnumerator FadeOutAndUnloadBootstrap()

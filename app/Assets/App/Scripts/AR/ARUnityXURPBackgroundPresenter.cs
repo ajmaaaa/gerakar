@@ -15,6 +15,12 @@ namespace GerakAR.AR
         [SerializeField] [Range(0.5f, 10f)] private float textureUpdateTimeoutSeconds = 5f;
         [SerializeField] private int backgroundLayer = 8;
 
+        [Header("Flip Correction")]
+        [SerializeField] [Tooltip("Flip video horizontally (X axis) if camera appears mirrored.")]
+        private bool flipHorizontally = false;
+        [SerializeField] [Tooltip("Flip video vertically (Y axis) if camera appears upside down.")]
+        private bool flipVertically = false;
+
         /// <summary>Dipanggil ketika setup background gagal total.</summary>
         public System.Action<string> OnPresentFailed;
 
@@ -131,12 +137,14 @@ namespace GerakAR.AR
                 }
             }
 
-            // Perbaiki mirror/flip: reset texture transform ke identity
-            // Back camera tidak perlu horizontal flip
+            // Perbaiki mirror/flip: toggle di Inspector untuk coba flip X/Y
             if (videoMaterial != null)
             {
-                videoMaterial.mainTextureScale = new Vector2(1f, 1f);
+                float sx = flipHorizontally ? -1f : 1f;
+                float sy = flipVertically ? -1f : 1f;
+                videoMaterial.mainTextureScale = new Vector2(sx, sy);
                 videoMaterial.mainTextureOffset = Vector2.zero;
+                Debug.Log($"[ARUnityXURPBackgroundPresenter] Texture scale set to ({sx}, {sy})");
             }
 
             // Skala video quad untuk mengisi layar penuh (Scale to Fill)

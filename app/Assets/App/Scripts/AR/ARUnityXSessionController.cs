@@ -137,11 +137,23 @@ namespace GerakAR.AR
                 }
             }
 
-            imageTarget.ConfigureAsTwoD(cachedPath, physicalTargetWidthMeters);
-            imageTarget.enabled = true;
-            arController.onVideoStarted.AddListener(OnVideoStarted);
-            arController.onVideoStopped.AddListener(OnVideoStopped);
-            arController.enabled = true;
+            // Beri waktu satu frame agar native resources siap
+            yield return null;
+
+            try
+            {
+                imageTarget.ConfigureAsTwoD(cachedPath, physicalTargetWidthMeters);
+                imageTarget.enabled = true;
+                arController.onVideoStarted.AddListener(OnVideoStarted);
+                arController.onVideoStopped.AddListener(OnVideoStopped);
+                arController.enabled = true;
+            }
+            catch (System.Exception exception)
+            {
+                RouteToFallback($"Failed to initialize AR camera: {exception.Message}", false);
+                yield break;
+            }
+
             _startupTimeout = StartCoroutine(WaitForVideoStartup());
         }
 
