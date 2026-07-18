@@ -156,20 +156,23 @@ namespace GerakAR.AR
             // agar area yang tidak tertutup quad tidak hijau.
             _backgroundCamera.backgroundColor = Color.black;
 
-            // Shader VideoPlaneNoLight (Built-in) mungkin tidak render rotasi
-            // dengan benar di URP. Coba pakai Unlit/Texture yang URP native.
+            // Shader VideoPlaneNoLight (Built-in) tidak render transform/rotasi
+            // dengan benar di URP. Ganti ke Universal Render Pipeline/Unlit.
             if (videoMaterial != null && videoMaterial.shader != null)
             {
-                bool isURPShader = videoMaterial.shader.name.Contains("Universal Render Pipeline")
-                                || videoMaterial.shader.name.Contains("URP")
-                                || videoMaterial.shader.name == "Unlit/Texture";
-                if (!isURPShader)
+                string sn = videoMaterial.shader.name;
+                bool isURP = sn.Contains("Universal Render Pipeline") || sn == "Unlit/Texture";
+                if (!isURP)
                 {
-                    Shader unlit = Shader.Find("Unlit/Texture");
-                    if (unlit != null && unlit.isSupported)
+                    Shader urpUnlit = Shader.Find("Universal Render Pipeline/Unlit");
+                    if (urpUnlit != null && urpUnlit.isSupported)
                     {
-                        videoMaterial.shader = unlit;
-                        Debug.Log("[ARUnityXURPBackgroundPresenter] Switched to Unlit/Texture for URP compatibility.");
+                        videoMaterial.shader = urpUnlit;
+                        Debug.Log($"[ARUnityXURPBackgroundPresenter] Switched shader from '{sn}' to 'Universal Render Pipeline/Unlit'.");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[ARUnityXURPBackgroundPresenter] Could not find URP Unlit shader; keeping '{sn}'.");
                     }
                 }
             }

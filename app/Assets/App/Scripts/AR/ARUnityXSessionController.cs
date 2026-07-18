@@ -314,14 +314,8 @@ namespace GerakAR.AR
             _routingAway = true;
 
             Debug.LogWarning($"[ARUnityXSessionController] {diagnostic}");
-            StopAllCoroutines();
-            if (_startupTimeout != null)
-            {
-                StopCoroutine(_startupTimeout);
-                _startupTimeout = null;
-            }
 
-            // Nonaktifkan ARUnityX sebelum ganti scene untuk cegah native crash
+            // MATIKAN ARUnityX DULU sebelum cleanup apapun — cegah native crash
             if (arController != null)
             {
                 arController.onVideoStarted.RemoveListener(OnVideoStarted);
@@ -331,18 +325,13 @@ namespace GerakAR.AR
 
             backgroundPresenter?.ResetPresentation();
 
+            StopAllCoroutines();
+
             AppStateManager.RunInNonARMode = !permissionDenied;
             if (permissionDenied)
                 PermissionController.SetCameraPermissionDeniedForSimulation(true);
             _stateManager?.TransitionTo(permissionDenied ? AppState.CameraDenied : AppState.UnsupportedNotice);
 
-            // Beri jeda agar native cleanup selesai sebelum scene diganti
-            StartCoroutine(DelayedLoadBootstrap());
-        }
-
-        private System.Collections.IEnumerator DelayedLoadBootstrap()
-        {
-            yield return new WaitForSecondsRealtime(0.3f);
             SceneManager.LoadScene("Bootstrap");
         }
     }
