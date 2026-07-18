@@ -178,12 +178,14 @@ public static class ScreenshotCapturer
             if (bui != null)
             {
                 bui.ShowNonARDetail("squat");
+                RebuildAndScrollToBottom(nonARDetail);
             }
             else
             {
                 nonARDetail.SetActive(true);
             }
             SaveRTToPNG(cam, rt, Path.Combine(outDir, "G08_NonAR_Detail.png"));
+            SaveRTRegionToPNG(cam, rt, Path.Combine(outDir, "G08_RelatedCards.png"), new Rect(0f, 0f, 360f, 220f));
         }
         else
         {
@@ -350,7 +352,19 @@ public static class ScreenshotCapturer
             sheetRT.pivot = new Vector2(0.5f, 1f);
             sheetRT.offsetMin = Vector2.zero;
             sheetRT.offsetMax = Vector2.zero;
+
+            var materialContent = sheetGo.GetComponent<MaterialContentController>();
+            var database = AssetDatabase.LoadAssetAtPath<GerakAR.Content.MovementDatabase>(
+                "Assets/App/Content/MovementData/MovementDatabase.asset");
+            if (materialContent != null && database != null)
+            {
+                var squat = database.FindById("squat") ?? database.FindByReferenceImageName("squat_target");
+                materialContent.SetMovement(squat);
+            }
+
             SaveRTToPNG(cam, rt, Path.Combine(outDir, "G06_BottomSheet.png"));
+            RebuildAndScrollToBottom(sheetGo);
+            SaveRTRegionToPNG(cam, rt, Path.Combine(outDir, "G06_RelatedCards.png"), new Rect(0f, 0f, 360f, 220f));
         }
         else
         {
@@ -385,5 +399,41 @@ public static class ScreenshotCapturer
 
         File.WriteAllBytes(filePath, bytes);
         Debug.Log($"[ScreenshotCapturer] Saved screenshot to {filePath}");
+    }
+
+    private static void SaveRTRegionToPNG(Camera cam, RenderTexture rt, string filePath, Rect region)
+    {
+        cam.Render();
+
+        var oldActive = RenderTexture.active;
+        RenderTexture.active = rt;
+
+        var tex = new Texture2D(Mathf.RoundToInt(region.width), Mathf.RoundToInt(region.height), TextureFormat.RGB24, false);
+        tex.ReadPixels(region, 0, 0);
+        tex.Apply();
+
+        RenderTexture.active = oldActive;
+
+        var bytes = tex.EncodeToPNG();
+        Object.DestroyImmediate(tex);
+
+        File.WriteAllBytes(filePath, bytes);
+        Debug.Log($"[ScreenshotCapturer] Saved screenshot region to {filePath}");
+    }
+
+    private static void RebuildAndScrollToBottom(GameObject root)
+    {
+        if (root == null) return;
+
+        Canvas.ForceUpdateCanvases();
+        foreach (var rect in root.GetComponentsInChildren<RectTransform>(true))
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
+
+        foreach (var scroll in root.GetComponentsInChildren<ScrollRect>(true))
+        {
+            if (scroll.vertical)
+                scroll.verticalNormalizedPosition = 0f;
+        }
+        Canvas.ForceUpdateCanvases();
     }
 }

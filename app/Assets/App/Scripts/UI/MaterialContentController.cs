@@ -200,19 +200,13 @@ namespace GerakAR.UI
             if (relatedCardsContainer == null || relatedCardPrefab == null) return;
             if (related == null) return;
 
+            RelatedMovementCardView.ConfigureContainer(relatedCardsContainer);
+
             foreach (var rel in related)
             {
                 var card = Instantiate(relatedCardPrefab, relatedCardsContainer);
                 _spawnedCards.Add(card);
-
-                // Wire thumbnail
-                var thumbImg = card.transform.Find("Thumbnail")?.GetComponent<Image>();
-                if (thumbImg != null && rel.thumbnail != null)
-                    thumbImg.sprite = rel.thumbnail;
-
-                // Wire title
-                var titleTmp = card.transform.Find("Title")?.GetComponent<TextMeshProUGUI>();
-                if (titleTmp != null) titleTmp.text = rel.title;
+                RelatedMovementCardView.Configure(card, rel);
 
                 // Wire tap to show related movement inside the main sheet view
                 var btn = card.GetComponent<Button>();

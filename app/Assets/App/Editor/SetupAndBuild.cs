@@ -275,6 +275,8 @@ public static class SetupAndBuild
         if (fonts != null) titleText.font = fonts.Heading;
         SetCenterPosition(titleGo.GetComponent<RectTransform>(), 0f, -34f, 110f, 26f); // Bottom title positioning
 
+        RelatedMovementCardView.Configure(cardGo, null);
+
         PrefabUtility.SaveAsPrefabAsset(cardGo, "Assets/App/Prefabs/RelatedCard.prefab");
         Object.DestroyImmediate(cardGo);
 
@@ -1017,6 +1019,7 @@ public static class SetupAndBuild
         var drelCsf = drelContentGo.AddComponent<ContentSizeFitter>();
         drelCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         drelCsf.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+        RelatedMovementCardView.ConfigureContainer(drelContentGo.transform);
 
         // ── G09 — CAMERA DENIED ──
         var cameraErrorPanelGo = CreateUIObject("CameraErrorPanel", unsupGo);
@@ -2137,6 +2140,7 @@ public static class SetupAndBuild
         var relCsf = relContentGo.AddComponent<ContentSizeFitter>();
         relCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         relCsf.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+        RelatedMovementCardView.ConfigureContainer(relContentGo.transform);
 
         // Scrim
         var scrimGo = CreateUIObject("Scrim", canvasStruct.SafeAreaGo);
