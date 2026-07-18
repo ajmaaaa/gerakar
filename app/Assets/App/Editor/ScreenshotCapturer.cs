@@ -260,12 +260,49 @@ public static class ScreenshotCapturer
 
         var scanGo = safeAreaTrans.Find("ScanOverlay")?.gameObject;
         var arControlsGo = safeAreaTrans.Find("ARControls")?.gameObject;
+        var appHeaderGo = safeAreaTrans.Find("ARAppHeader")?.gameObject;
+        var centerContentTrans = safeAreaTrans.Find("CenterContent") ?? canvas.transform.Find("CenterContent");
+        var detectionToastGo = centerContentTrans?.Find("DetectionToast")?.gameObject;
+        ARUIController.ApplyDetectionChipStyle(detectionToastGo);
         var sheetGo = safeAreaTrans.Find("BottomSheet")?.gameObject;
         var fullBgGo = canvas.transform.Find("FullScreenBackground")?.gameObject;
         var readyCoverGo = canvas.transform.Find("CameraReadyCover")?.gameObject;
 
+        Transform legacyHeaderTitle = null;
+        Transform legacyHeaderSubtitle = null;
+        GameObject temporaryCheckIcon = null;
+        GameObject legacyCheckText = null;
+        Transform successCircle = detectionToastGo?.transform.Find("SuccessCircle");
+        if (successCircle != null && successCircle.Find("CheckIcon") == null)
+        {
+            legacyCheckText = successCircle.Find("Text")?.gameObject;
+            if (legacyCheckText != null)
+                legacyCheckText.SetActive(false);
+            temporaryCheckIcon = ARUIController.CreateProceduralCheckIcon(successCircle);
+        }
+
+        if (appHeaderGo == null && arControlsGo != null)
+        {
+            legacyHeaderTitle = arControlsGo.transform.Find("HeaderTitle");
+            legacyHeaderSubtitle = arControlsGo.transform.Find("HeaderSub");
+            if (legacyHeaderTitle != null || legacyHeaderSubtitle != null)
+            {
+                appHeaderGo = new GameObject("ARAppHeader", typeof(RectTransform));
+                var headerRect = appHeaderGo.GetComponent<RectTransform>();
+                headerRect.SetParent(safeAreaTrans, false);
+                headerRect.anchorMin = Vector2.zero;
+                headerRect.anchorMax = Vector2.one;
+                headerRect.offsetMin = Vector2.zero;
+                headerRect.offsetMax = Vector2.zero;
+                legacyHeaderTitle?.SetParent(headerRect, false);
+                legacyHeaderSubtitle?.SetParent(headerRect, false);
+            }
+        }
+
         System.Action deactivateAll = () => {
             if (scanGo != null) scanGo.SetActive(false);
+            if (appHeaderGo != null) appHeaderGo.SetActive(false);
+            if (detectionToastGo != null) detectionToastGo.SetActive(false);
             if (arControlsGo != null) arControlsGo.SetActive(false);
             if (sheetGo != null) sheetGo.SetActive(false);
             if (fullBgGo != null) fullBgGo.SetActive(false);
@@ -277,6 +314,7 @@ public static class ScreenshotCapturer
         {
             deactivateAll();
             scanGo.SetActive(true);
+            if (appHeaderGo != null) appHeaderGo.SetActive(true);
             SaveRTToPNG(cam, rt, Path.Combine(outDir, "G03_ScanGuide.png"));
         }
         else
@@ -284,11 +322,25 @@ public static class ScreenshotCapturer
             Debug.LogWarning("[ScreenshotCapturer] ScanOverlay not found in MainAR!");
         }
 
+        // G04 — Movement confirmation toast
+        if (detectionToastGo != null)
+        {
+            deactivateAll();
+            detectionToastGo.SetActive(true);
+            if (appHeaderGo != null) appHeaderGo.SetActive(true);
+            SaveRTToPNG(cam, rt, Path.Combine(outDir, "G04_DetectionToast.png"));
+        }
+        else
+        {
+            Debug.LogWarning("[ScreenshotCapturer] DetectionToast not found in MainAR!");
+        }
+
         // G05 — Controls HUD (Timeline active)
         if (arControlsGo != null)
         {
             deactivateAll();
             arControlsGo.SetActive(true);
+            if (appHeaderGo != null) appHeaderGo.SetActive(true);
 
             // Populate timeline with mock key poses
             var timelineCtrl = arControlsGo.GetComponentInChildren<GerakAR.UI.PoseTimelineController>();
@@ -373,6 +425,17 @@ public static class ScreenshotCapturer
 
         canvas.renderMode = origMode;
         canvas.worldCamera = origCam;
+
+        if (legacyHeaderTitle != null)
+            legacyHeaderTitle.SetParent(arControlsGo.transform, false);
+        if (legacyHeaderSubtitle != null)
+            legacyHeaderSubtitle.SetParent(arControlsGo.transform, false);
+        if (legacyHeaderTitle != null || legacyHeaderSubtitle != null)
+            Object.DestroyImmediate(appHeaderGo);
+        if (temporaryCheckIcon != null)
+            Object.DestroyImmediate(temporaryCheckIcon);
+        if (legacyCheckText != null)
+            legacyCheckText.SetActive(true);
 
         // Cleanup
         cam.targetTexture = null;

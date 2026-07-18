@@ -990,6 +990,8 @@ public static class SetupAndBuild
 
         var dRelatedScrollViewGo = CreateUIObject("RelatedScrollView", dRelatedGroupGo);
         var drelScroll = dRelatedScrollViewGo.AddComponent<ScrollRect>();
+        var nestedScrollRouter = dRelatedScrollViewGo.AddComponent<NestedScrollRouter>();
+        nestedScrollRouter.SetParentScrollRect(detailScrollRect);
         drelScroll.horizontal = true;
         drelScroll.vertical = false;
         dRelatedScrollViewGo.GetComponent<RectTransform>().sizeDelta = new Vector2(900f, 130f);
@@ -1329,6 +1331,7 @@ public static class SetupAndBuild
         var infoIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/info.svg");
         var chevronRightIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/chevron-right.svg");
         var shieldCheckIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/shield-check.svg");
+        var checkIcon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/check.svg");
 
         // ═══════════════════════════════════════════════════════════
         // G03 — SCANNER (Child of SafeArea)
@@ -1476,15 +1479,13 @@ public static class SetupAndBuild
         toastCircleImg.color = ForestGreen;
         SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 28f, 44f, 44f);
 
-        var toastCheckGo = CreateUIObject("Text", toastCircleGo);
-        var toastCheck = toastCheckGo.AddComponent<TextMeshProUGUI>();
-        toastCheck.text = "✓";
-        toastCheck.fontSize = 22f;
-        toastCheck.fontStyle = FontStyles.Bold;
+        var toastCheckGo = CreateUIObject("CheckIcon", toastCircleGo);
+        var toastCheck = toastCheckGo.AddComponent<Image>();
+        toastCheck.sprite = checkIcon;
+        toastCheck.preserveAspect = true;
+        toastCheck.raycastTarget = false;
         toastCheck.color = WarmWhite;
-        toastCheck.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) toastCheck.font = fonts.Medium;
-        StretchRect(toastCheckGo.GetComponent<RectTransform>());
+        SetCenterPosition(toastCheckGo.GetComponent<RectTransform>(), 0f, 0f, 22f, 22f);
 
         var toastTextGo = CreateUIObject("TitleText", toastGo);
         var toastText = toastTextGo.AddComponent<TextMeshProUGUI>();
@@ -1499,10 +1500,10 @@ public static class SetupAndBuild
 
         var toastPillGo = CreateUIObject("MovementPill", toastGo);
         var toastPillImg = toastPillGo.AddComponent<Image>();
-        toastPillImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        toastPillImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-08.png");
         toastPillImg.type = Image.Type.Sliced;
         toastPillImg.color = ForestGreen;
-        SetCenterPosition(toastPillGo.GetComponent<RectTransform>(), 0f, -40f, 100f, 22f);
+        SetCenterPosition(toastPillGo.GetComponent<RectTransform>(), 0f, -45f, 100f, 22f);
 
         var toastPillTextGo = CreateUIObject("Text", toastPillGo);
         var toastPillText = toastPillTextGo.AddComponent<TextMeshProUGUI>();
@@ -1523,8 +1524,11 @@ public static class SetupAndBuild
         StretchRect(arControlsGo.GetComponent<RectTransform>());
         arControlsGo.SetActive(false);
 
-        // G05 Header
-        var arHeaderTitleGo = CreateUIObject("HeaderTitle", arControlsGo); // parented under arControlsGo!
+        // Shared header remains visible through scanning, confirmation, and tracking.
+        var appHeaderGo = CreateUIObject("ARAppHeader", canvasStruct.SafeAreaGo);
+        StretchRect(appHeaderGo.GetComponent<RectTransform>());
+
+        var arHeaderTitleGo = CreateUIObject("HeaderTitle", appHeaderGo);
         var arHeaderTitle = arHeaderTitleGo.AddComponent<TextMeshProUGUI>();
         arHeaderTitle.textWrappingMode = TextWrappingModes.Normal;
         arHeaderTitle.text = "GerakAR";
@@ -1535,7 +1539,7 @@ public static class SetupAndBuild
         if (fonts != null) arHeaderTitle.font = fonts.Display;
         SetAnchorTop(arHeaderTitleGo.GetComponent<RectTransform>(), 0f, -48f, 200f, 28f);
 
-        var arHeaderSubGo = CreateUIObject("HeaderSub", arControlsGo); // parented under arControlsGo!
+        var arHeaderSubGo = CreateUIObject("HeaderSub", appHeaderGo);
         var arHeaderSub = arHeaderSubGo.AddComponent<TextMeshProUGUI>();
         arHeaderSub.textWrappingMode = TextWrappingModes.Normal;
         arHeaderSub.text = "Belajar Gerak Jadi Seru";
@@ -2192,6 +2196,7 @@ public static class SetupAndBuild
         serialUI.FindProperty("scanOverlay").objectReferenceValue = scanGo;
         serialUI.FindProperty("scanLine").objectReferenceValue = scanLineGo;
         serialUI.FindProperty("detectionToast").objectReferenceValue = toastGo;
+        serialUI.FindProperty("appHeader").objectReferenceValue = appHeaderGo;
         serialUI.FindProperty("arControls").objectReferenceValue = arControlsGo;
         serialUI.FindProperty("movementNameLabel").objectReferenceValue = null;
         serialUI.FindProperty("closeButton").objectReferenceValue = closeBtn;

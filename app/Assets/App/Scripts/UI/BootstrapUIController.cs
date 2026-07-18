@@ -78,6 +78,8 @@ namespace GerakAR.UI
                 ? onboardingPanel.GetComponentInParent<Canvas>()
                 : null;
             ConfigureOnboardingEdgeBackground();
+            ConfigureNonARScrolling();
+            ApplyFrameRatePolicy(AppState.Intro);
 
             if (detailCloseButton != null)
             {
@@ -92,9 +94,10 @@ namespace GerakAR.UI
         private void Start()
         {
             AppStateManager.OnStateChanged += OnStateChanged;
-            
-            // Set initial state visibility
-            UpdatePanels(AppStateManager.Instance != null ? AppStateManager.Instance.CurrentState : AppState.Intro);
+
+            AppState state = AppStateManager.Instance != null ? AppStateManager.Instance.CurrentState : AppState.Intro;
+            ApplyFrameRatePolicy(state);
+            UpdatePanels(state);
         }
 
         private void OnDestroy()
@@ -105,7 +108,45 @@ namespace GerakAR.UI
 
         private void OnStateChanged(AppState prev, AppState next)
         {
+            ApplyFrameRatePolicy(next);
             UpdatePanels(next);
+        }
+
+        private void ConfigureNonARScrolling()
+        {
+            Transform outerScrollTransform = nonARDetailPanel?.transform.Find("ScrollView");
+            ScrollRect outerScroll = outerScrollTransform?.GetComponent<ScrollRect>();
+            Transform relatedScrollTransform = outerScrollTransform?.Find("Viewport/Content/RelatedGroup/RelatedScrollView");
+            if (outerScroll == null || relatedScrollTransform == null)
+                return;
+
+            NestedScrollRouter router = relatedScrollTransform.GetComponent<NestedScrollRouter>();
+            if (router == null)
+                router = relatedScrollTransform.gameObject.AddComponent<NestedScrollRouter>();
+            router.SetParentScrollRect(outerScroll);
+        }
+
+        private static void ApplyFrameRatePolicy(AppState state)
+        {
+            bool nonAR = state is AppState.UnsupportedNotice or AppState.ARInstallFailed or
+                AppState.NonARCatalog or AppState.NonARMovementPlayer ||
+                (state == AppState.ShowingMaterial && AppStateManager.RunInNonARMode);
+            int refreshRate = Mathf.RoundToInt((float)Screen.currentResolution.refreshRateRatio.value);
+            if (refreshRate < 30)
+                refreshRate = 60;
+
+            Application.targetFrameRate = HighestRefreshDivisor(refreshRate, nonAR ? 90 : 60);
+        }
+
+        private static int HighestRefreshDivisor(int refreshRate, int ceiling)
+        {
+            for (int candidate = Mathf.Min(refreshRate, ceiling); candidate >= 30; candidate--)
+            {
+                float ratio = refreshRate / (float)candidate;
+                if (Mathf.Abs(ratio - Mathf.Round(ratio)) < 0.01f)
+                    return candidate;
+            }
+            return 30;
         }
 
         private void UpdatePanels(AppState state)
