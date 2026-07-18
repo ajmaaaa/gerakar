@@ -30,6 +30,7 @@ namespace GerakAR.AR
         private Texture _videoTexture;
         private Coroutine _textureValidation;
         private Coroutine _findBackgroundCoroutine;
+        private bool _isPresenting;
 
         /// <summary>
         /// Mulai pencarian background camera secara async.
@@ -38,11 +39,19 @@ namespace GerakAR.AR
         /// </summary>
         public bool Present()
         {
+            if (_isPresenting)
+            {
+                Debug.Log("[ARUnityXURPBackgroundPresenter] Already presenting; skipping duplicate call.");
+                return true;
+            }
+
             if (foregroundCamera == null)
             {
                 Debug.LogError("[ARUnityXURPBackgroundPresenter] Foreground camera is missing.");
                 return false;
             }
+
+            _isPresenting = true;
 
             // Pastikan foreground camera di-setup dengan benar untuk overlay
             if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset)
@@ -84,6 +93,7 @@ namespace GerakAR.AR
                 Debug.LogError("[ARUnityXURPBackgroundPresenter] " + msg);
                 OnPresentFailed?.Invoke(msg);
                 _findBackgroundCoroutine = null;
+                _isPresenting = false;
                 yield break;
             }
 
@@ -98,6 +108,7 @@ namespace GerakAR.AR
                 Debug.LogError("[ARUnityXURPBackgroundPresenter] " + msg);
                 OnPresentFailed?.Invoke(msg);
                 _findBackgroundCoroutine = null;
+                _isPresenting = false;
                 yield break;
             }
 
@@ -120,6 +131,7 @@ namespace GerakAR.AR
                 {
                     Debug.LogError("[ARUnityXURPBackgroundPresenter] Active URP renderer does not support camera stacking.");
                     _findBackgroundCoroutine = null;
+                    _isPresenting = false;
                     yield break;
                 }
 
@@ -140,21 +152,14 @@ namespace GerakAR.AR
                 Debug.Log($"[ARUnityXURPBackgroundPresenter] Texture scale set to ({sx}, {sy})");
             }
 
-            // Skala video quad untuk mengisi layar penuh (Scale to Fill)
-            // Mencegah green bar di tepi karena aspect ratio tidak cocok
-            ScaleQuadToFillScreen(backgroundObject, videoObject, _videoTexture);
+            // JANGAN scale quad secara manual — ARUnityX sudah handle sendiri.
+            // Quad di-rotate 90° oleh ARUnityX untuk menyesuaikan landscape camera
+            // ke portrait screen. Scaling manual akan merusak orientasi.
+            // Quad scale asli minimal (1,1,1) sudah cukup; ARUnityXVideoBackground
+            // akan menyesuaikan jika diperlukan.
 
-            // Pastikan material menggunakan shader yang tepat untuk URP
-            // Shader ARUnityX Built-In tidak kompatibel dengan URP, gunakan UnityUnlit
-            if (videoMaterial != null && videoMaterial.shader != null && videoMaterial.shader.name.Contains("Standard"))
-            {
-                Shader unlitShader = Shader.Find("Unlit/Texture");
-                if (unlitShader != null)
-                    videoMaterial.shader = unlitShader;
-            }
-
-            // Pastikan AR Camera foreground memiliki clear flags yang benar
-            // Depth Only agar tidak menimpa background dengan warna solid
+            // AR Camera foreground: Depth Only agar tidak timpa background camera
+            // Background camera tetap SolidColor (setting ARUnityX asli)
             foregroundCamera.clearFlags = CameraClearFlags.Depth;
 
             // Diagnostic log untuk debug flip/orientasi
@@ -183,43 +188,7 @@ namespace GerakAR.AR
                 StopCoroutine(_textureValidation);
             _textureValidation = StartCoroutine(ValidateTextureUpdates());
             _findBackgroundCoroutine = null;
-        }
-
-        private void ScaleQuadToFillScreen(GameObject backgroundObject, GameObject videoObject, Texture videoTex)
-        {
-            if (backgroundObject == null || videoObject == null || videoTex == null)
-                return;
-
-            float texAspect = (float)videoTex.width / videoTex.height;
-            float screenAspect = (float)Screen.width / Screen.height;
-
-            // Scale to Fill: pastikan quad menutupi seluruh layar
-            // Jika tex lebih lebar dari screen, sesuaikan height; jika lebih sempit, sesuaikan width
-            float scaleX = 1f;
-            float scaleY = 1f;
-            if (texAspect > screenAspect)
-            {
-                // Texture lebih lebar — samakan width, scale up height
-                scaleY = texAspect / screenAspect;
-            }
-            else
-            {
-                // Screen lebih lebar — samakan height, scale up width
-                scaleX = screenAspect / texAspect;
-            }
-
-            Transform bgTransform = backgroundObject.transform;
-            bgTransform.localScale = new Vector3(
-                bgTransform.localScale.x * scaleX,
-                bgTransform.localScale.y * scaleY,
-                bgTransform.localScale.z
-            );
-
-            Debug.Log(
-                $"[ARUnityXURPBackgroundPresenter] Quad scaled to fill: " +
-                $"texture {videoTex.width}x{videoTex.height}, " +
-                $"screen {Screen.width}x{Screen.height}, " +
-                $"scale {scaleX:F3}x{scaleY:F3}");
+            _isPresenting = false;
         }
 
         public void ResetPresentation()
