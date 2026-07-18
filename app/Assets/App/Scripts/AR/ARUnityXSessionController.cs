@@ -348,7 +348,7 @@ namespace GerakAR.AR
             arController.StartAR();
 
             float deadline = Time.realtimeSinceStartup + startupTimeoutSeconds;
-            int requiredFrame = firstFreshFrame + 2;
+            int requiredFrame = firstFreshFrame;
             while (!_routingAway && Time.realtimeSinceStartup < deadline)
             {
                 if (arController.IsRunning && _videoFrameCount >= requiredFrame)
