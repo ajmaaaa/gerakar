@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 
 namespace GerakAR.AR
 {
@@ -16,6 +17,7 @@ namespace GerakAR.AR
 
         /// <summary>Dipanggil ketika setup background gagal total.</summary>
         public System.Action<string> OnPresentFailed;
+        public System.Action OnTextureReady;
 
         private Camera _backgroundCamera;
         private UniversalAdditionalCameraData _backgroundCameraData;
@@ -105,6 +107,10 @@ namespace GerakAR.AR
                 _isPresenting = false;
                 yield break;
             }
+
+            Scene ownerScene = foregroundCamera.gameObject.scene;
+            MoveRuntimeRootToScene(backgroundObject, ownerScene);
+            MoveRuntimeRootToScene(videoObject, ownerScene);
 
             _videoRenderer = videoRenderer;
             _videoRenderer.enabled = false;
@@ -254,6 +260,19 @@ namespace GerakAR.AR
             _isPresenting = false;
         }
 
+        private static void MoveRuntimeRootToScene(GameObject runtimeObject, Scene ownerScene)
+        {
+            if (runtimeObject == null || runtimeObject.transform.parent != null)
+                return;
+            if (!ownerScene.IsValid() || !ownerScene.isLoaded || runtimeObject.scene == ownerScene)
+                return;
+
+            SceneManager.MoveGameObjectToScene(runtimeObject, ownerScene);
+            Debug.Log(
+                $"[ARUnityXURPBackgroundPresenter] Moved '{runtimeObject.name}' " +
+                $"from Bootstrap ownership to '{ownerScene.name}'.");
+        }
+
         private IEnumerator ValidateTextureUpdates()
         {
             uint initialUpdateCount = _videoTexture.updateCount;
@@ -265,6 +284,7 @@ namespace GerakAR.AR
                 {
                     if (_videoRenderer != null)
                         _videoRenderer.enabled = true;
+                    OnTextureReady?.Invoke();
                     Debug.Log(
                         $"[ARUnityXURPBackgroundPresenter] Camera texture is updating " +
                         $"(updateCount {initialUpdateCount} -> {_videoTexture.updateCount}).");

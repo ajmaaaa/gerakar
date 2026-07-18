@@ -6,7 +6,6 @@ using UnityEngine.EventSystems;
 using TMPro;
 using GerakAR.Core;
 using GerakAR.Content;
-using GerakAR.AR;
 
 namespace GerakAR.UI
 {
@@ -240,25 +239,6 @@ namespace GerakAR.UI
                 return;
 
             _unloadingBootstrap = true;
-            StartCoroutine(RestartAndRevealPreparedCamera());
-        }
-
-        private System.Collections.IEnumerator RestartAndRevealPreparedCamera()
-        {
-            ARUnityXSessionController sessionController = FindAnyObjectByType<ARUnityXSessionController>();
-            if (sessionController == null)
-            {
-                Debug.LogError("[BootstrapUIController] Prepared AR session controller is missing.");
-                _unloadingBootstrap = false;
-                yield break;
-            }
-
-            // Keep G02 rendered above MainAR until the prepared session supplies
-            // another live frame. Never restart native camera resources here.
-            yield return StartCoroutine(sessionController.WaitForPreparedCameraFrame());
-            if (!sessionController.PreparedRevealReady)
-                yield break;
-
             OnboardingController.MarkCompleted();
             CameraPreparedForOnboarding = false;
             if (onboardingPanel != null)
@@ -271,8 +251,17 @@ namespace GerakAR.UI
             SetBootstrapCanvasPriority(false);
             SetBootstrapRenderingEnabled(false);
 
-            Debug.Log("[BootstrapUIController] Revealing prepared MainAR without unloading Bootstrap.");
+            Debug.Log("[BootstrapUIController] Revealing prepared MainAR and unloading Bootstrap.");
             AppStateManager.Instance?.TransitionTo(AppState.Scanning);
+            StartCoroutine(UnloadBootstrapAfterPreparedReveal());
+        }
+
+        private System.Collections.IEnumerator UnloadBootstrapAfterPreparedReveal()
+        {
+            yield return null;
+            Scene bootstrapScene = gameObject.scene;
+            if (bootstrapScene.IsValid() && bootstrapScene.isLoaded)
+                SceneManager.UnloadSceneAsync(bootstrapScene);
         }
 
         private void SetBootstrapCanvasPriority(bool elevated)

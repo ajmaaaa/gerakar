@@ -1,9 +1,11 @@
 using System.Collections;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using GerakAR.Core;
 using GerakAR.UI;
 
@@ -13,6 +15,7 @@ namespace GerakAR.AR
     /// Owns the ARUnityX camera lifecycle and converts native startup failures
     /// into GerakAR states instead of leaving the user on a black camera view.
     /// </summary>
+    [DefaultExecutionOrder(-1000)]
     public sealed class ARUnityXSessionController : MonoBehaviour
     {
         [Header("ARUnityX")]
@@ -40,6 +43,14 @@ namespace GerakAR.AR
             "showGUIErrorDialogContent",
             BindingFlags.Instance | BindingFlags.NonPublic);
 
+        private static readonly FieldInfo RunningField = typeof(ARXController).GetField(
+            "_running",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static readonly FieldInfo RunOnUnpauseField = typeof(ARXController).GetField(
+            "_runOnUnpause",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
         private Coroutine _startupTimeout;
         private Coroutine _unexpectedStopCheck;
         private AppStateManager _stateManager;
@@ -49,12 +60,25 @@ namespace GerakAR.AR
         private bool _applicationPaused;
         private bool _applicationFocused = true;
         private int _videoFrameCount;
-
-        public bool PreparedRevealReady { get; private set; }
+        private Task<bool> _nativeStopTask;
+        private Coroutine _resumeRecovery;
+        private bool _asyncLifecycleStop;
+        private GameObject _cameraRestartCover;
 
         private void Start()
         {
             _stateManager = AppStateManager.Instance;
+
+            // ARUnityX creates its video camera/source as root objects in the
+            // active scene. MainAR must own them so unloading Bootstrap cannot
+            // destroy the native camera presentation.
+            Scene ownScene = gameObject.scene;
+            if (ownScene.IsValid() && ownScene.isLoaded)
+                SceneManager.SetActiveScene(ownScene);
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+            CreateCameraRestartCover();
+#endif
 
             if (AppStateManager.RunInNonARMode)
             {
@@ -104,11 +128,134 @@ namespace GerakAR.AR
         private void OnApplicationPause(bool paused)
         {
             _applicationPaused = paused;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+            if (paused)
+                BeginAsyncNativeStop();
+            else
+                BeginAsyncResume();
+#endif
         }
 
         private void OnApplicationFocus(bool focused)
         {
             _applicationFocused = focused;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+            if (focused)
+            {
+                if (_asyncLifecycleStop)
+                    BeginAsyncResume();
+            }
+            else
+            {
+                // Android focus loss arrives before ARXController's blocking
+                // pause callback, giving us time to take over native shutdown.
+                BeginAsyncNativeStop();
+            }
+#endif
+        }
+
+        private void BeginAsyncNativeStop()
+        {
+            if (_routingAway || arController == null || !arController.IsRunning)
+                return;
+            if (RunningField == null || RunOnUnpauseField == null)
+            {
+                Debug.LogError("[ARUnityXSessionController] ARUnityX lifecycle fields are unavailable.");
+                return;
+            }
+
+            _asyncLifecycleStop = true;
+            ShowCameraRestartCover();
+            backgroundPresenter?.ResetPresentation();
+
+            // ARXController stops synchronously in its own OnApplicationPause,
+            // which blocks Unity's Android pause handshake on this device. Mark
+            // it stopped first so that callback becomes a no-op, then close the
+            // native camera away from Unity's main thread.
+            RunningField.SetValue(arController, false);
+            RunOnUnpauseField.SetValue(arController, false);
+            Screen.sleepTimeout = SleepTimeout.SystemSetting;
+
+            _nativeStopTask = Task.Run(() => ARX_pinvoke.arwStopRunning());
+            Debug.Log("[ARUnityXSessionController] Native camera stop scheduled asynchronously.");
+        }
+
+        private void BeginAsyncResume()
+        {
+            if (_routingAway || arController == null || !_asyncLifecycleStop)
+                return;
+
+            if (_resumeRecovery != null)
+                StopCoroutine(_resumeRecovery);
+            _resumeRecovery = StartCoroutine(ResumeAfterNativeStop());
+        }
+
+        private IEnumerator ResumeAfterNativeStop()
+        {
+            while (_nativeStopTask != null && !_nativeStopTask.IsCompleted)
+                yield return null;
+
+            if (_nativeStopTask == null || _nativeStopTask.IsFaulted || !_nativeStopTask.Result)
+            {
+                string reason = _nativeStopTask?.Exception?.GetBaseException().Message
+                    ?? "Native camera stop failed.";
+                _nativeStopTask = null;
+                _resumeRecovery = null;
+                _asyncLifecycleStop = false;
+                RouteToFallback(reason, false);
+                yield break;
+            }
+
+            _nativeStopTask = null;
+            arController.onVideoStopped.Invoke();
+            yield return null;
+
+            arController.StartAR();
+            _asyncLifecycleStop = false;
+            _resumeRecovery = null;
+            Debug.Log("[ARUnityXSessionController] Native camera restart scheduled after resume.");
+        }
+
+        private void CreateCameraRestartCover()
+        {
+            if (_cameraRestartCover != null)
+                return;
+
+            _cameraRestartCover = new GameObject("CameraRestartCover", typeof(RectTransform), typeof(Canvas));
+            _cameraRestartCover.transform.SetParent(transform, false);
+
+            Canvas canvas = _cameraRestartCover.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = short.MaxValue;
+
+            var imageObject = new GameObject("Black", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            imageObject.transform.SetParent(_cameraRestartCover.transform, false);
+            RectTransform imageRect = imageObject.GetComponent<RectTransform>();
+            imageRect.anchorMin = Vector2.zero;
+            imageRect.anchorMax = Vector2.one;
+            imageRect.offsetMin = Vector2.zero;
+            imageRect.offsetMax = Vector2.zero;
+
+            Image image = imageObject.GetComponent<Image>();
+            image.color = Color.black;
+            image.raycastTarget = true;
+
+            _cameraRestartCover.SetActive(false);
+        }
+
+        private void ShowCameraRestartCover()
+        {
+            if (_cameraRestartCover != null)
+                _cameraRestartCover.SetActive(true);
+        }
+
+        private void HideCameraRestartCover()
+        {
+            if (_cameraRestartCover != null)
+                _cameraRestartCover.SetActive(false);
         }
 
         private IEnumerator WaitForVideoStartup()
@@ -197,6 +344,7 @@ namespace GerakAR.AR
                 if (!_routingAway)
                     RouteToFallback("Camera background setup failed: " + reason, false);
             };
+            backgroundPresenter.OnTextureReady = HideCameraRestartCover;
 
             if (!backgroundPresenter.Present())
             {
@@ -304,6 +452,9 @@ namespace GerakAR.AR
                 $"(paused={_applicationPaused}, focused={_applicationFocused}, " +
                 $"running={arController.IsRunning}).");
 
+            if (_asyncLifecycleStop)
+                return;
+
             if (_unexpectedStopCheck != null)
                 StopCoroutine(_unexpectedStopCheck);
             _unexpectedStopCheck = StartCoroutine(VerifyUnexpectedStop());
@@ -322,28 +473,6 @@ namespace GerakAR.AR
                 yield break;
 
             RouteToFallback("Camera stream stopped while the application was active.", false);
-        }
-
-        public IEnumerator WaitForPreparedCameraFrame()
-        {
-            PreparedRevealReady = false;
-            if (_routingAway || arController == null)
-                yield break;
-
-            int firstFreshFrame = _videoFrameCount + 1;
-            float deadline = Time.realtimeSinceStartup + startupTimeoutSeconds;
-            while (!_routingAway && Time.realtimeSinceStartup < deadline)
-            {
-                if (arController.IsRunning && _videoFrameCount >= firstFreshFrame)
-                {
-                    PreparedRevealReady = true;
-                    break;
-                }
-                yield return null;
-            }
-
-            if (!PreparedRevealReady && !_routingAway)
-                RouteToFallback("Prepared camera did not produce a fresh frame.", false);
         }
 
         private IEnumerator SimulateCameraStartup()
