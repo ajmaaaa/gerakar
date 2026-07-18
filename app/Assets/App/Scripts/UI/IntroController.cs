@@ -82,7 +82,9 @@ namespace GerakAR.UI
                     yield return null;
                 }
                 introCanvasGroup.alpha = 0f;
-                introCanvasGroup.gameObject.SetActive(false);
+                // Sengaja TIDAK menonaktifkan GO-nya agar BootstrapUIController bisa memakai
+                // ulang panel yang sama tanpa SetActive(true) yang menyebabkan "pop" visual.
+                // introCanvasGroup.gameObject.SetActive(false); // DIHAPUS
             }
 
             // Hand off to onboarding flow

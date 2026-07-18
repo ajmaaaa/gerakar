@@ -158,49 +158,109 @@ namespace GerakAR.UI
 
             if (state == AppState.LoadingARScene)
             {
-                // Tetap di panel G01 yang sama, hanya teks loading yang diganti
-                if (introPanel != null)
-                    introPanel.SetActive(true);
+                // Panel introPanel sudah aktif (IntroController hanya set alpha=0, tidak SetActive(false))
+                // Cukup fade in alpha — TANPA SetActive, tidak ada "pop" visual
+                StartCoroutine(LoadCameraSequence());
+            }
+            else if (state == AppState.Scanning)
+            {
+                // Kamera sudah siap — fade out Bootstrap canvas lalu unload scene
+                Scene mainArScene = SceneManager.GetSceneByName("MainAR");
+                if (mainArScene.IsValid())
+                    SceneManager.SetActiveScene(mainArScene);
 
                 if (introCanvasGroup != null)
-                {
-                    introCanvasGroup.alpha = 1f;
-                    introCanvasGroup.gameObject.SetActive(true);
-                }
-
-                // Ganti teks menjadi "Memuat kamera"
-                if (introStatusText != null)
-                    introStatusText.text = "Memuat kamera";
-
-                // Animasi loading bar ulang lalu pindah ke MainAR
-                StartCoroutine(LoadCameraSequence());
+                    StartCoroutine(FadeOutAndUnloadBootstrap());
             }
         }
 
         private System.Collections.IEnumerator LoadCameraSequence()
         {
-            // Animasikan loading bar selama 1 detik sebelum pindah scene
+            // 1. Fade in panel G01 yang sama (dari alpha=0 ke alpha=1, 0.25 detik)
+            if (introCanvasGroup != null)
+            {
+                float t = 0f;
+                while (t < 0.25f)
+                {
+                    t += Time.deltaTime;
+                    introCanvasGroup.alpha = Mathf.Clamp01(t / 0.25f);
+                    yield return null;
+                }
+                introCanvasGroup.alpha = 1f;
+            }
+
+            // 2. Sembunyikan panel lain (Onboarding dll)
+            if (onboardingPanel != null) onboardingPanel.SetActive(false);
+
+            // 3. Crossfade HANYA teks label: fade out → ganti teks → fade in
+            if (introStatusText != null)
+            {
+                Color originalColor = introStatusText.color;
+                // Fade out teks lama
+                float t = 0f;
+                while (t < 0.25f)
+                {
+                    t += Time.deltaTime;
+                    introStatusText.color = new Color(originalColor.r, originalColor.g, originalColor.b,
+                        1f - Mathf.Clamp01(t / 0.25f));
+                    yield return null;
+                }
+                // Ganti teks
+                introStatusText.text = "Memuat kamera";
+                // Fade in teks baru
+                t = 0f;
+                while (t < 0.25f)
+                {
+                    t += Time.deltaTime;
+                    introStatusText.color = new Color(originalColor.r, originalColor.g, originalColor.b,
+                        Mathf.Clamp01(t / 0.25f));
+                    yield return null;
+                }
+                introStatusText.color = originalColor;
+            }
+
+            // 4. Muat MainAR secara ADDITIVE — Bootstrap Canvas tetap di atas menutupi kamera
+            SceneManager.LoadSceneAsync("MainAR", LoadSceneMode.Additive);
+
+            // 5. Animasikan loading bar perlahan (dari posisi saat ini → penuh, ~4 detik)
+            //    sambil menunggu AppState.Scanning (kamera siap)
             if (introLoadingFill != null)
             {
                 RectTransform fillRT = introLoadingFill.GetComponent<RectTransform>();
                 if (fillRT != null)
                 {
-                    fillRT.anchorMax = new Vector2(0f, 1f); // Reset
+                    float startX = fillRT.anchorMax.x;
                     float elapsed = 0f;
-                    float duration = 1.0f;
-                    while (elapsed < duration)
+                    float duration = 4.0f;
+                    while (elapsed < duration &&
+                           AppStateManager.Instance != null &&
+                           !AppStateManager.Instance.Is(AppState.Scanning))
                     {
                         elapsed += Time.deltaTime;
-                        float t = Mathf.Clamp01(elapsed / duration);
-                        fillRT.anchorMax = new Vector2(Mathf.SmoothStep(0f, 1f, t), 1f);
+                        float newX = Mathf.Lerp(startX, 1f, Mathf.SmoothStep(0f, 1f, elapsed / duration));
+                        fillRT.anchorMax = new Vector2(newX, 1f);
                         yield return null;
                     }
                     fillRT.anchorMax = new Vector2(1f, 1f);
                 }
             }
+        }
 
-            // Setelah loading bar selesai, pindah ke MainAR (Bootstrap otomatis tergantikan)
-            SceneManager.LoadSceneAsync("MainAR");
+        private System.Collections.IEnumerator FadeOutAndUnloadBootstrap()
+        {
+            if (introCanvasGroup != null)
+            {
+                float elapsed = 0f;
+                float duration = 0.35f;
+                while (elapsed < duration)
+                {
+                    elapsed += Time.deltaTime;
+                    introCanvasGroup.alpha = 1f - Mathf.Clamp01(elapsed / duration);
+                    yield return null;
+                }
+                introCanvasGroup.alpha = 0f;
+            }
+            SceneManager.UnloadSceneAsync("Bootstrap");
         }
 
         private void RouteToNonARCatalog()
