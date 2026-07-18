@@ -408,19 +408,21 @@ public static class SetupAndBuild
         if (fonts != null) subtitleText.font = fonts.Medium;
         SetCenterPosition(subtitleGo.GetComponent<RectTransform>(), 0f, 15f, 266.7f, 16.7f);
 
-        // StraightProgressBar — Capsule style progress bar
+        // StraightProgressBar — UISolidRectangle anti-taper
         var progressTrackGo = CreateUIObject("ProgressTrack", brandGroupGo);
         var trackImg = progressTrackGo.AddComponent<Image>();
-        trackImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
-        trackImg.type = Image.Type.Sliced;
+        trackImg.sprite = uiSolidRect;
+        trackImg.type = Image.Type.Simple;
+        trackImg.preserveAspect = false;
         trackImg.color = SoftSand;
         trackImg.GetComponent<RectTransform>().localScale = Vector3.one;
-        SetCenterPosition(progressTrackGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 8f); // height 8 for rounded ends
+        SetCenterPosition(progressTrackGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 4f); // height 4 units, ujung datar
 
         var progressFillGo = CreateUIObject("ProgressFill", progressTrackGo);
         var fillImg = progressFillGo.AddComponent<Image>();
-        fillImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
-        fillImg.type = Image.Type.Sliced;
+        fillImg.sprite = uiSolidRect;
+        fillImg.type = Image.Type.Simple;
+        fillImg.preserveAspect = false;
         fillImg.color = WarmWhite;
         fillImg.GetComponent<RectTransform>().localScale = Vector3.one;
         var fillRT = progressFillGo.GetComponent<RectTransform>();
@@ -513,6 +515,7 @@ public static class SetupAndBuild
         startBtnImg.color = ForestGreen;
         startBtnGo.AddComponent<Button>();
         startBtnGo.AddComponent<OnboardingButtonWirer>();
+        AddSoftShadow(startBtnGo, 2f, -3f, 0.12f); // Shadow on ForestGreen button
         SetCenterPosition(startBtnGo.GetComponent<RectTransform>(), 0f, 20f, 306.7f, 50f);
 
         var btnTextGo = CreateUIObject("Text", startBtnGo);
@@ -661,6 +664,7 @@ public static class SetupAndBuild
         var catalogBackOutline = catalogBackGo.AddComponent<Outline>();
         catalogBackOutline.effectColor = SoftSand;
         catalogBackOutline.effectDistance = new Vector2(1f, 1f);
+        AddSoftShadow(catalogBackGo, 2f, -2f, 0.06f); // Soft shadow
         var catalogBackBtn = catalogBackGo.AddComponent<Button>();
         SetAnchorBottom(catalogBackGo.GetComponent<RectTransform>(), 0f, 32f, 320f, 48f); // Wide card style
 
@@ -738,6 +742,7 @@ public static class SetupAndBuild
         settingsImg.type = Image.Type.Sliced;
         settingsImg.color = DeepForest; // Dark DeepForest background button
         var settingsBtn = settingsGo.AddComponent<Button>();
+        AddSoftShadow(settingsGo, 2f, -3f, 0.12f); // Shadow on settings button
         SetCenterPosition(settingsGo.GetComponent<RectTransform>(), 0f, -40f, 260f, 48f);
 
         var settingsIconGo = CreateUIObject("Icon", settingsGo);
@@ -766,6 +771,7 @@ public static class SetupAndBuild
         retryBtnImg.type = Image.Type.Sliced;
         retryBtnImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // SoftSand 60% opacity background
         var retryBtn = retryGo.AddComponent<Button>();
+        AddSoftShadow(retryGo, 2f, -2f, 0.06f); // Shadow on retry button
         SetCenterPosition(retryGo.GetComponent<RectTransform>(), 0f, -96f, 260f, 48f);
 
         var retryIconGo = CreateUIObject("Icon", retryGo);
@@ -978,15 +984,17 @@ public static class SetupAndBuild
 
         var readyProgressGo = CreateUIObject("ProgressTrack", readyBrandGroup);
         var readyProgressImg = readyProgressGo.AddComponent<Image>();
-        readyProgressImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
-        readyProgressImg.type = Image.Type.Sliced;
+        readyProgressImg.sprite = uiSolidRect;
+        readyProgressImg.type = Image.Type.Simple;
+        readyProgressImg.preserveAspect = false;
         readyProgressImg.color = SoftSand;
-        SetCenterPosition(readyProgressGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 8f);
+        SetCenterPosition(readyProgressGo.GetComponent<RectTransform>(), 0f, -20f, 180f, 4f);
 
         var readyProgressFill = CreateUIObject("ProgressFill", readyProgressGo);
         var readyFillImg = readyProgressFill.AddComponent<Image>();
-        readyFillImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
-        readyFillImg.type = Image.Type.Sliced;
+        readyFillImg.sprite = uiSolidRect;
+        readyFillImg.type = Image.Type.Simple;
+        readyFillImg.preserveAspect = false;
         readyFillImg.color = WarmWhite;
         var rFillRT = readyProgressFill.GetComponent<RectTransform>();
         rFillRT.anchorMin = new Vector2(0f, 0f);
@@ -1121,43 +1129,34 @@ public static class SetupAndBuild
         if (fonts != null) scanPillText.font = fonts.Heading;
         StretchRect(scanPillTextGo.GetComponent<RectTransform>());
 
-        // Instruction card — Dark grey horizontal card matching attached image
+        // Instruction card — White semi-transparent background card positioned at the bottom
         var instructionCardGo = CreateUIObject("InstructionCard", scanGo);
         var instCardImg = instructionCardGo.AddComponent<Image>();
         instCardImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         instCardImg.type = Image.Type.Sliced;
-        instCardImg.color = new Color(0.29f, 0.30f, 0.33f, 1f); // Dark slate grey background
-        SetAnchorBottom(instructionCardGo.GetComponent<RectTransform>(), 0f, 80f, 320f, 64f);
-
-        // Left scan-line outline icon
-        var scanIconGo = CreateUIObject("ScanIcon", instructionCardGo);
-        var scanIconImg = scanIconGo.AddComponent<Image>();
-        scanIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/scan-line.svg");
-        scanIconImg.preserveAspect = true;
-        scanIconImg.raycastTarget = false;
-        scanIconImg.color = Color.white;
-        SetCenterPosition(scanIconGo.GetComponent<RectTransform>(), -128f, 0f, 28f, 28f);
+        instCardImg.color = new Color(1f, 1f, 1f, 0.85f); // White semi-transparent background restored
+        SetAnchorBottom(instructionCardGo.GetComponent<RectTransform>(), 0f, 80f, 320f, 72f);
 
         var hintGo = CreateUIObject("HintText", instructionCardGo);
         var hintText = hintGo.AddComponent<TextMeshProUGUI>();
         hintText.textWrappingMode = TextWrappingModes.Normal;
         hintText.text = "Arahkan kamera ke gambar gerakan";
-        hintText.fontSize = 11.5f;
+        hintText.fontSize = 13f;
         hintText.fontStyle = FontStyles.Bold;
-        hintText.color = Color.white;
-        hintText.alignment = TextAlignmentOptions.Left;
+        hintText.color = DeepForest; // DeepForest text color restored
+        hintText.alignment = TextAlignmentOptions.Center; // Centered text alignment restored
         if (fonts != null) hintText.font = fonts.Heading;
-        SetCenterPosition(hintGo.GetComponent<RectTransform>(), 16f, 10f, 230f, 20f);
+        SetCenterPosition(hintGo.GetComponent<RectTransform>(), 0f, 14f, 280f, 20f);
 
         var instSubtitleGo = CreateUIObject("InstructionSubtitle", instructionCardGo);
         var instSubtitle = instSubtitleGo.AddComponent<TextMeshProUGUI>();
         instSubtitle.textWrappingMode = TextWrappingModes.Normal;
-        instSubtitle.text = "Pastikan seluruh gambar terlihat jelas";
-        instSubtitle.fontSize = 9.5f;
-        instSubtitle.color = new Color(0.918f, 0.867f, 0.812f, 0.8f); // light SoftSand text
-        instSubtitle.alignment = TextAlignmentOptions.Left;
+        instSubtitle.text = "Pastikan seluruh gambar terlihat dengan jelas";
+        instSubtitle.fontSize = 10f;
+        instSubtitle.color = ForestGreen; // ForestGreen subtitle text color restored
+        instSubtitle.alignment = TextAlignmentOptions.Center; // Centered subtitle alignment restored
         if (fonts != null) instSubtitle.font = fonts.Medium;
-        SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 16f, -12f, 230f, 16f);
+        SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 0f, -14f, 280f, 16f);
 
         // ═══════════════════════════════════════════════════════════
         // G04 — DETECTION TOAST (Child of CenterContent)
@@ -1447,6 +1446,7 @@ public static class SetupAndBuild
         sheetImg.sprite = roundTopSprite;
         sheetImg.type = Image.Type.Sliced;
         sheetImg.color = WarmCream; // Consistent WarmCream background
+        AddSoftShadow(sheetGo, 0f, 4f, 0.15f); // Upward shadow for sheet depth
         var sheetRT = sheetGo.GetComponent<RectTransform>();
         sheetRT.anchorMin = new Vector2(0f, 0f);
         sheetRT.anchorMax = new Vector2(1f, 0f);
@@ -1496,7 +1496,7 @@ public static class SetupAndBuild
         categoryTxt.text = "GERAKAN UTAMA";
         categoryTxt.fontSize = 11f;
         categoryTxt.fontStyle = FontStyles.Bold;
-        categoryTxt.color = SecondaryText; // #716040
+        categoryTxt.color = ForestGreen; // ForestGreen category text
         if (fonts != null) categoryTxt.font = fonts.Heading;
         var kickerLE = categoryGo.AddComponent<LayoutElement>();
         kickerLE.preferredHeight = 14f;
@@ -1533,12 +1533,12 @@ public static class SetupAndBuild
         rgRT.anchoredPosition = new Vector2(-20f, 0f);
         rgRT.sizeDelta = new Vector2(44f, 44f);
 
-        // Close X button (rounded square visual 44 size with SoftSand color)
+        // Close X button (rounded square visual 44 size with ForestGreen color)
         var sheetCloseGo = CreateUIObject("SheetCloseX", rightGroupGo);
         var sheetCloseImg = sheetCloseGo.AddComponent<Image>();
         sheetCloseImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png"); // Rounded square!
         sheetCloseImg.type = Image.Type.Sliced;
-        sheetCloseImg.color = SoftSand;
+        sheetCloseImg.color = ForestGreen; // ForestGreen close button background
         var sheetCloseBtn = sheetCloseGo.AddComponent<Button>();
         var closeRT = sheetCloseGo.GetComponent<RectTransform>();
         closeRT.anchorMin = new Vector2(0.5f, 0.5f);
@@ -1552,7 +1552,7 @@ public static class SetupAndBuild
         xIconImg.sprite = closeIcon;
         xIconImg.preserveAspect = true;
         xIconImg.raycastTarget = false;
-        xIconImg.color = DeepForest;
+        xIconImg.color = Color.white; // White X icon
         SetCenterPosition(xIconGo.GetComponent<RectTransform>(), 0f, 0f, 18f, 18f);
 
         // Back to primary button (G07 -> G06) - now at the bottom of the Bottom Sheet
@@ -1560,8 +1560,9 @@ public static class SetupAndBuild
         var backBtnImg = backBtnGo.AddComponent<Image>();
         backBtnImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         backBtnImg.type = Image.Type.Sliced;
-        backBtnImg.color = SoftSand;
+        backBtnImg.color = ForestGreen; // ForestGreen CTA button background
         var backBtn = backBtnGo.AddComponent<Button>();
+        AddSoftShadow(backBtnGo, 2f, -2f, 0.1f); // Shadow on back CTA button
         var backBtnRT = backBtnGo.GetComponent<RectTransform>();
         backBtnRT.anchorMin = new Vector2(0.5f, 0f);
         backBtnRT.anchorMax = new Vector2(0.5f, 0f);
@@ -1574,7 +1575,7 @@ public static class SetupAndBuild
         arrowIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/arrow-left.svg");
         arrowIconImg.preserveAspect = true;
         arrowIconImg.raycastTarget = false;
-        arrowIconImg.color = DeepForest;
+        arrowIconImg.color = WarmWhite; // White arrow icon
         var arrowRT = arrowIconGo.GetComponent<RectTransform>();
         arrowRT.anchorMin = new Vector2(0f, 0.5f);
         arrowRT.anchorMax = new Vector2(0f, 0.5f);
@@ -1588,7 +1589,7 @@ public static class SetupAndBuild
         backBtnText.text = "Kembali ke materi";
         backBtnText.fontSize = 13f;
         backBtnText.fontStyle = FontStyles.Bold;
-        backBtnText.color = DeepForest;
+        backBtnText.color = WarmWhite; // White CTA text
         backBtnText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) backBtnText.font = fonts.Heading;
         StretchRect(backBtnTextGo.GetComponent<RectTransform>());
@@ -2047,6 +2048,8 @@ public static class SetupAndBuild
         cardOutline.effectColor = SoftSand;
         cardOutline.effectDistance = new Vector2(1f, 1f);
 
+        AddSoftShadow(cardGo, 2f, -2f, 0.06f); // Soft shadow for modern depth
+
         SetCenterPosition(cardGo.GetComponent<RectTransform>(), x, y, 320f, 56f); // 320x56 Card
 
         var numCircleGo = CreateUIObject("NumCircle", cardGo);
@@ -2090,6 +2093,8 @@ public static class SetupAndBuild
         var cardOutline = cardGo.AddComponent<Outline>();
         cardOutline.effectColor = SoftSand;
         cardOutline.effectDistance = new Vector2(1f, 1f);
+
+        AddSoftShadow(cardGo, 2f, -2f, 0.06f); // Soft shadow for depth
 
         SetCenterPosition(cardGo.GetComponent<RectTransform>(), x, y, 320f, 76f); // 320x76
 
@@ -2499,6 +2504,13 @@ public static class SetupAndBuild
             }
         }
         AssetDatabase.Refresh();
+    }
+
+    private static void AddSoftShadow(GameObject go, float xOffset = 2f, float yOffset = -2f, float opacity = 0.08f)
+    {
+        var shadow = go.AddComponent<Shadow>();
+        shadow.effectColor = new Color(0f, 0f, 0f, opacity);
+        shadow.effectDistance = new Vector2(xOffset, yOffset);
     }
 
     private static void AssignRelatedMovementsSprites()
