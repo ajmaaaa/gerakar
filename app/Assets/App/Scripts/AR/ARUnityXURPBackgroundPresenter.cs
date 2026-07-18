@@ -131,28 +131,25 @@ namespace GerakAR.AR
                 }
             }
 
-            // Perbaiki mirror/flip: back camera tidak perlu horizontal flip
-            // Namun jika terlihat terbalik (mirror), flip horizontal pada material video
+            // Perbaiki mirror/flip: reset texture transform ke identity
+            // Back camera tidak perlu horizontal flip
             if (videoMaterial != null)
             {
-                Vector2 scale = videoMaterial.mainTextureScale;
-                // Jika kamera terlihat mirror, flip horizontal
-                // Back camera biasanya tidak perlu flip, tapi beberapa device perlu
-                if (scale.x > 0)
-                {
-                    // Set scale agar video mengisi layar penuh (Fill)
-                    videoMaterial.mainTextureScale = new Vector2(1f, 1f);
-                    videoMaterial.mainTextureOffset = Vector2.zero;
-                }
+                videoMaterial.mainTextureScale = new Vector2(1f, 1f);
+                videoMaterial.mainTextureOffset = Vector2.zero;
+            }
 
-                // Pastikan material menggunakan shader yang tepat untuk URP
-                // Shader ARUnityX Built-In tidak kompatibel dengan URP, gunakan UnityUnlit
-                if (videoMaterial.shader != null && videoMaterial.shader.name.Contains("Standard"))
-                {
-                    Shader unlitShader = Shader.Find("Unlit/Texture");
-                    if (unlitShader != null)
-                        videoMaterial.shader = unlitShader;
-                }
+            // Skala video quad untuk mengisi layar penuh (Scale to Fill)
+            // Mencegah green bar di tepi karena aspect ratio tidak cocok
+            ScaleQuadToFillScreen(backgroundObject, videoObject, _videoTexture);
+
+            // Pastikan material menggunakan shader yang tepat untuk URP
+            // Shader ARUnityX Built-In tidak kompatibel dengan URP, gunakan UnityUnlit
+            if (videoMaterial != null && videoMaterial.shader != null && videoMaterial.shader.name.Contains("Standard"))
+            {
+                Shader unlitShader = Shader.Find("Unlit/Texture");
+                if (unlitShader != null)
+                    videoMaterial.shader = unlitShader;
             }
 
             // Pastikan AR Camera foreground memiliki clear flags yang benar
@@ -169,6 +166,43 @@ namespace GerakAR.AR
                 StopCoroutine(_textureValidation);
             _textureValidation = StartCoroutine(ValidateTextureUpdates());
             _findBackgroundCoroutine = null;
+        }
+
+        private void ScaleQuadToFillScreen(GameObject backgroundObject, GameObject videoObject, Texture videoTex)
+        {
+            if (backgroundObject == null || videoObject == null || videoTex == null)
+                return;
+
+            float texAspect = (float)videoTex.width / videoTex.height;
+            float screenAspect = (float)Screen.width / Screen.height;
+
+            // Scale to Fill: pastikan quad menutupi seluruh layar
+            // Jika tex lebih lebar dari screen, sesuaikan height; jika lebih sempit, sesuaikan width
+            float scaleX = 1f;
+            float scaleY = 1f;
+            if (texAspect > screenAspect)
+            {
+                // Texture lebih lebar — samakan width, scale up height
+                scaleY = texAspect / screenAspect;
+            }
+            else
+            {
+                // Screen lebih lebar — samakan height, scale up width
+                scaleX = screenAspect / texAspect;
+            }
+
+            Transform bgTransform = backgroundObject.transform;
+            bgTransform.localScale = new Vector3(
+                bgTransform.localScale.x * scaleX,
+                bgTransform.localScale.y * scaleY,
+                bgTransform.localScale.z
+            );
+
+            Debug.Log(
+                $"[ARUnityXURPBackgroundPresenter] Quad scaled to fill: " +
+                $"texture {videoTex.width}x{videoTex.height}, " +
+                $"screen {Screen.width}x{Screen.height}, " +
+                $"scale {scaleX:F3}x{scaleY:F3}");
         }
 
         public void ResetPresentation()

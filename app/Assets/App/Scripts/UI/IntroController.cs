@@ -21,10 +21,8 @@ namespace GerakAR.UI
         [Header("UI References")]
         [SerializeField] private CanvasGroup introCanvasGroup;
         [SerializeField] private Image loadingFillImage; // Progress bar fill reference
-        [SerializeField] private float fadeOutDuration = 0.35f;
 
         private RectTransform _fillRT;
-        private float _trackWidth;
 
         // ── Unity lifecycle ───────────────────────────────────────────
 
@@ -73,24 +71,9 @@ namespace GerakAR.UI
             if (_fillRT != null)
                 _fillRT.anchorMax = new Vector2(0.45f, 1f); // Berhenti di 45%
 
-            // Fade out
-            if (introCanvasGroup != null)
-            {
-                float fadeElapsed = 0f;
-                while (fadeElapsed < fadeOutDuration)
-                {
-                    fadeElapsed += Time.deltaTime;
-                    introCanvasGroup.alpha = 1f - Mathf.Clamp01(fadeElapsed / fadeOutDuration);
-                    yield return null;
-                }
-                introCanvasGroup.alpha = 0f;
-                // Sengaja TIDAK menonaktifkan GO-nya agar BootstrapUIController bisa memakai
-                // ulang panel yang sama tanpa SetActive(true) yang menyebabkan "pop" visual.
-                // introCanvasGroup.gameObject.SetActive(false); // DIHAPUS
-            }
-
-            // Hand off to onboarding flow
-            AppStateManager.Instance?.TransitionTo(AppState.Onboarding);
+            // Hapus fadeOut panel — tetap alpha=1, hanya teks yang crossfade nanti
+            // Langsung lanjut ke flow AR (skip G02 Onboarding)
+            AppStateManager.Instance?.TransitionTo(AppState.CheckingAR);
         }
     }
 }

@@ -145,26 +145,6 @@ namespace GerakAR.AR
             _startupTimeout = StartCoroutine(WaitForVideoStartup());
         }
 
-        private bool IsFrameValidColor(Texture texture)
-        {
-            if (texture is Texture2D tex2D)
-            {
-                try
-                {
-                    Color pixel = tex2D.GetPixel(tex2D.width / 2, tex2D.height / 2);
-                    if (pixel.g > 0.8f && pixel.b < 0.2f)
-                    {
-                        return false;
-                    }
-                }
-                catch
-                {
-                    // Texture not CPU-readable, assume valid
-                }
-            }
-            return true;
-        }
-
         private void OnVideoStarted()
         {
             _videoStarted = true;

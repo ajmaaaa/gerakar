@@ -48,14 +48,8 @@ namespace GerakAR.UI
         {
             if (next != AppState.Onboarding) return;
 
-            if (!PlayerPrefs.HasKey(OnboardingKey) || PlayerPrefs.GetInt(OnboardingKey) == 0)
-            {
-                ShowOnboarding();
-            }
-            else
-            {
-                AppStateManager.Instance?.TransitionTo(AppState.CheckingAR);
-            }
+            // G02 Onboarding dilewati total — langsung ke CheckingAR
+            AppStateManager.Instance?.TransitionTo(AppState.CheckingAR);
         }
 
         // ── Onboarding panel ──────────────────────────────────────────
