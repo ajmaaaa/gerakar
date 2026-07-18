@@ -609,20 +609,21 @@ public static class SetupAndBuild
         if (fonts != null) g08BadgeText.font = fonts.Heading;
         StretchRect(g08BadgeTextGo.GetComponent<RectTransform>());
 
-        // G08 Collapsible Warning
-        var collapsibleWarnGo = CreateCollapsibleWarning(
-            nonARModePanelGo, btnSprite, fonts, "Assets/App/UI/Icons/Lucide/info.svg");
-        var collapsibleWarnRT = collapsibleWarnGo.GetComponent<RectTransform>();
-        collapsibleWarnRT.anchorMin = new Vector2(0.5f, 1f);
-        collapsibleWarnRT.anchorMax = new Vector2(0.5f, 1f);
-        collapsibleWarnRT.pivot = new Vector2(0.5f, 1f);
-        collapsibleWarnRT.anchoredPosition = new Vector2(0f, -70f);
-        collapsibleWarnRT.sizeDelta = new Vector2(320f, 48f); // collapsed height
-        collapsibleWarnGo.SetActive(false); // Hidden by default, toggled via NON-AR MODE badge
+        // G08 Collapsible Warning (Popup Dialog Modal style)
+        var warnOverlayGo = CreateUIObject("WarningPopupOverlay", nonARModePanelGo);
+        var warnOverlayImg = warnOverlayGo.AddComponent<Image>();
+        warnOverlayImg.color = new Color(0.07f, 0.216f, 0.165f, 0.32f); // #12372A with 32% opacity dim
+        StretchRect(warnOverlayGo.GetComponent<RectTransform>());
+        warnOverlayGo.SetActive(false); // Hidden by default
 
-        // G08 Catalog Content
+        var collapsibleWarnGo = CreateCollapsibleWarning(
+            warnOverlayGo, btnSprite, fonts, "Assets/App/UI/Icons/Lucide/info.svg");
+        var collapsibleWarnRT = collapsibleWarnGo.GetComponent<RectTransform>();
+        SetCenterPosition(collapsibleWarnRT, 0f, 0f, 300f, 140f); // Centered modal dialog popup
+
+        // G08 Catalog Content (shifted up to fill the empty top space)
         var catalogCatalogGo = CreateUIObject("CatalogCatalog", nonARModePanelGo);
-        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, -20f, 320f, 320f);
+        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, 40f, 320f, 320f);
 
         var catTitleGo = CreateUIObject("CatTitleText", catalogCatalogGo);
         var catTitle = catTitleGo.AddComponent<TextMeshProUGUI>();
@@ -823,7 +824,7 @@ public static class SetupAndBuild
         serialBtn.FindProperty("ladderDrillBukaBtn").objectReferenceValue = ladderDrillBukaBtn;
         serialBtn.FindProperty("catalogBackBtn").objectReferenceValue = catalogBackBtn;
         serialBtn.FindProperty("infoBadgeButton").objectReferenceValue = g08BadgeGo.GetComponent<Button>();
-        serialBtn.FindProperty("warningPanel").objectReferenceValue = collapsibleWarnGo;
+        serialBtn.FindProperty("warningPanel").objectReferenceValue = warnOverlayGo;
         serialBtn.FindProperty("settingsBtn").objectReferenceValue = settingsBtn;
         serialBtn.FindProperty("retryBtn").objectReferenceValue = retryBtn;
         serialBtn.ApplyModifiedProperties();
