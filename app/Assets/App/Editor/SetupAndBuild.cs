@@ -806,9 +806,8 @@ public static class SetupAndBuild
         detailXIconImg.preserveAspect = true;
         detailXIconImg.raycastTarget = false;
         detailXIconImg.color = Color.white;
-        SetCenterPosition(detailXIconGo.GetComponent<RectTransform>(), 0f, 0f, 18f, 18f);
+        SetCenterPosition(detailXIconGo.GetComponent<RectTransform>(), 0f, 0f, 14f, 14f);
 
-        // Scroll view under header
         var detailScrollViewGo = CreateUIObject("ScrollView", nonARDetailPanelGo);
         var detailScrollRect = detailScrollViewGo.AddComponent<ScrollRect>();
         detailScrollRect.horizontal = false;
@@ -1382,6 +1381,8 @@ public static class SetupAndBuild
         // G03 — SCANNER (Child of SafeArea)
         // ═══════════════════════════════════════════════════════════
         var scanGo = CreateUIObject("ScanOverlay", canvasStruct.SafeAreaGo);
+        var scanBgImg = scanGo.AddComponent<Image>();
+        scanBgImg.color = new Color(1f, 1f, 1f, 0.25f); // Soft transparent white background wash
         StretchRect(scanGo.GetComponent<RectTransform>());
 
         // G03 Header
@@ -1391,7 +1392,7 @@ public static class SetupAndBuild
         scanTitle.text = "GerakAR";
         scanTitle.fontSize = 20f;
         scanTitle.fontStyle = FontStyles.Bold;
-        scanTitle.color = WarmWhite;
+        scanTitle.color = DeepForest; // Green text so it's visible on white background
         scanTitle.alignment = TextAlignmentOptions.Center;
         if (fonts != null) scanTitle.font = fonts.Display;
         SetAnchorTop(scanTitleGo.GetComponent<RectTransform>(), 0f, -48f, 200f, 28f);
@@ -1401,7 +1402,7 @@ public static class SetupAndBuild
         scanSub.textWrappingMode = TextWrappingModes.Normal;
         scanSub.text = "Belajar Gerak Jadi Seru";
         scanSub.fontSize = 10f;
-        scanSub.color = SoftSand;
+        scanSub.color = ForestGreen; // Green subtitle so it's visible on white background
         scanSub.alignment = TextAlignmentOptions.Center;
         if (fonts != null) scanSub.font = fonts.Medium;
         SetAnchorTop(scanSubGo.GetComponent<RectTransform>(), 0f, -76f, 200f, 16f);
@@ -1496,11 +1497,12 @@ public static class SetupAndBuild
         StretchRect(scanPillTextGo.GetComponent<RectTransform>());
 
         // Instruction card — White semi-transparent background card positioned at the bottom
+        // Instruction card — Transparent green background card positioned at the bottom to contrast white text
         var instructionCardGo = CreateUIObject("InstructionCard", scanGo);
         var instCardImg = instructionCardGo.AddComponent<Image>();
         instCardImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         instCardImg.type = Image.Type.Sliced;
-        instCardImg.color = new Color(1f, 1f, 1f, 0.85f); // White semi-transparent background restored
+        instCardImg.color = new Color(0.07f, 0.22f, 0.16f, 0.75f); // Deep Forest transparent green background
         SetAnchorBottom(instructionCardGo.GetComponent<RectTransform>(), 0f, 80f, 320f, 72f);
 
         var hintGo = CreateUIObject("HintText", instructionCardGo);
@@ -1509,7 +1511,7 @@ public static class SetupAndBuild
         hintText.text = "Arahkan kamera ke gambar gerakan";
         hintText.fontSize = 13f;
         hintText.fontStyle = FontStyles.Bold;
-        hintText.color = DeepForest; // DeepForest text color restored
+        hintText.color = Color.white; // White text restored
         hintText.alignment = TextAlignmentOptions.Center; // Centered text alignment restored
         if (fonts != null) hintText.font = fonts.Heading;
         SetCenterPosition(hintGo.GetComponent<RectTransform>(), 0f, 14f, 280f, 20f);
@@ -1519,7 +1521,7 @@ public static class SetupAndBuild
         instSubtitle.textWrappingMode = TextWrappingModes.Normal;
         instSubtitle.text = "Pastikan seluruh gambar terlihat dengan jelas";
         instSubtitle.fontSize = 10f;
-        instSubtitle.color = ForestGreen; // ForestGreen subtitle text color restored
+        instSubtitle.color = Color.white; // White subtitle text color restored
         instSubtitle.alignment = TextAlignmentOptions.Center; // Centered subtitle alignment restored
         if (fonts != null) instSubtitle.font = fonts.Medium;
         SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 0f, -14f, 280f, 16f);
@@ -1919,7 +1921,7 @@ public static class SetupAndBuild
         xIconImg.preserveAspect = true;
         xIconImg.raycastTarget = false;
         xIconImg.color = Color.white; // White X icon
-        SetCenterPosition(xIconGo.GetComponent<RectTransform>(), 0f, 0f, 18f, 18f);
+        SetCenterPosition(xIconGo.GetComponent<RectTransform>(), 0f, 0f, 14f, 14f);
 
         // Back to primary button (G07 -> G06) - now at the bottom of the Bottom Sheet (hidden per user request)
         var backBtnGo = CreateUIObject("BackToPrimaryButton", sheetGo);
@@ -2575,7 +2577,7 @@ public static class SetupAndBuild
         
         var iconRT = iconGo.GetComponent<RectTransform>();
         iconRT.localScale = Vector3.one;
-        SetCenterPosition(iconRT, 0f, 0f, 24f, 24f);
+        SetCenterPosition(iconRT, 0f, 0f, 16f, 16f);
 
         return go;
     }
