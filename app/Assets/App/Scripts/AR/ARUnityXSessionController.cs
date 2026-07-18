@@ -48,6 +48,10 @@ namespace GerakAR.AR
         private bool _routingAway;
         private bool _applicationPaused;
         private bool _applicationFocused = true;
+        private bool _controlledRestart;
+        private int _videoFrameCount;
+
+        public bool LastControlledRestartSucceeded { get; private set; }
 
         private void Start()
         {
@@ -95,6 +99,7 @@ namespace GerakAR.AR
             if (arController == null) return;
             arController.onVideoStarted.RemoveListener(OnVideoStarted);
             arController.onVideoStopped.RemoveListener(OnVideoStopped);
+            arController.onVideoFrame.RemoveListener(OnVideoFrame);
         }
 
         private void OnApplicationPause(bool paused)
@@ -159,6 +164,7 @@ namespace GerakAR.AR
                 imageTarget.enabled = true;
                 arController.onVideoStarted.AddListener(OnVideoStarted);
                 arController.onVideoStopped.AddListener(OnVideoStopped);
+                arController.onVideoFrame.AddListener(OnVideoFrame);
                 arController.enabled = true;
             }
             catch (System.Exception exception)
@@ -200,6 +206,11 @@ namespace GerakAR.AR
             }
 
             StartCoroutine(WaitForCameraReady());
+        }
+
+        private void OnVideoFrame()
+        {
+            _videoFrameCount++;
         }
 
         private IEnumerator WaitForCameraReady()
@@ -294,7 +305,11 @@ namespace GerakAR.AR
 
             Debug.LogWarning(
                 $"[ARUnityXSessionController] Camera stream stopped " +
-                $"(paused={_applicationPaused}, focused={_applicationFocused}).");
+                $"(paused={_applicationPaused}, focused={_applicationFocused}, " +
+                $"controlled={_controlledRestart}).");
+
+            if (_controlledRestart)
+                return;
 
             if (_unexpectedStopCheck != null)
                 StopCoroutine(_unexpectedStopCheck);
@@ -314,6 +329,39 @@ namespace GerakAR.AR
                 yield break;
 
             RouteToFallback("Camera stream stopped while the application was active.", false);
+        }
+
+        public IEnumerator RestartSessionForPreparedReveal()
+        {
+            LastControlledRestartSucceeded = false;
+            if (_routingAway || arController == null)
+                yield break;
+
+            _controlledRestart = true;
+            int firstFreshFrame = _videoFrameCount + 1;
+
+            if (arController.IsRunning)
+                arController.StopAR();
+
+            // Match the recovery path ARUnityX uses after Android pause/resume.
+            yield return null;
+            arController.StartAR();
+
+            float deadline = Time.realtimeSinceStartup + startupTimeoutSeconds;
+            int requiredFrame = firstFreshFrame + 2;
+            while (!_routingAway && Time.realtimeSinceStartup < deadline)
+            {
+                if (arController.IsRunning && _videoFrameCount >= requiredFrame)
+                {
+                    LastControlledRestartSucceeded = true;
+                    break;
+                }
+                yield return null;
+            }
+
+            _controlledRestart = false;
+            if (!LastControlledRestartSucceeded && !_routingAway)
+                RouteToFallback("Camera restart did not produce fresh frames.", false);
         }
 
         private IEnumerator SimulateCameraStartup()
@@ -359,6 +407,7 @@ namespace GerakAR.AR
             {
                 arController.onVideoStarted.RemoveListener(OnVideoStarted);
                 arController.onVideoStopped.RemoveListener(OnVideoStopped);
+                arController.onVideoFrame.RemoveListener(OnVideoFrame);
                 arController.enabled = false;
             }
 

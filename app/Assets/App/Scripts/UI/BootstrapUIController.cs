@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 using GerakAR.Core;
 using GerakAR.Content;
+using GerakAR.AR;
 
 namespace GerakAR.UI
 {
@@ -239,10 +240,32 @@ namespace GerakAR.UI
                 return;
 
             _unloadingBootstrap = true;
+            StartCoroutine(RestartAndRevealPreparedCamera());
+        }
+
+        private System.Collections.IEnumerator RestartAndRevealPreparedCamera()
+        {
+            ARUnityXSessionController sessionController = FindAnyObjectByType<ARUnityXSessionController>();
+            if (sessionController == null)
+            {
+                Debug.LogError("[BootstrapUIController] Prepared AR session controller is missing.");
+                _unloadingBootstrap = false;
+                yield break;
+            }
+
+            // Keep G02 rendered above MainAR until a restarted camera session has
+            // supplied fresh frames. This prevents any solid-color transition.
+            yield return StartCoroutine(sessionController.RestartSessionForPreparedReveal());
+            if (!sessionController.LastControlledRestartSucceeded)
+                yield break;
+
+            OnboardingController.MarkCompleted();
             CameraPreparedForOnboarding = false;
+            if (onboardingPanel != null)
+                onboardingPanel.SetActive(false);
 
             // Bootstrap owns input while G02 is visible. Transfer input to MainAR
-            // before unloading Bootstrap so the MULAI press cannot hit G03 below.
+            // only after fresh frames arrive so MULAI cannot hit G03 below.
             SetBootstrapEventSystemsEnabled(false);
             SetMainAREventSystemsEnabled(true);
             SetBootstrapCanvasPriority(false);

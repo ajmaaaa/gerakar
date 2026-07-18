@@ -73,12 +73,6 @@ namespace GerakAR.UI
         /// </summary>
         public void OnMulaiPressed()
         {
-            PlayerPrefs.SetInt(OnboardingKey, 1);
-            PlayerPrefs.Save();
-
-            if (onboardingPanel != null)
-                onboardingPanel.SetActive(false);
-
             if (BootstrapUIController.CameraPreparedForOnboarding &&
                 BootstrapUIController.Instance != null)
             {
@@ -86,7 +80,16 @@ namespace GerakAR.UI
                 return;
             }
 
+            MarkCompleted();
+            if (onboardingPanel != null)
+                onboardingPanel.SetActive(false);
             AppStateManager.Instance?.TransitionTo(AppState.CheckingAR);
+        }
+
+        public static void MarkCompleted()
+        {
+            PlayerPrefs.SetInt(OnboardingKey, 1);
+            PlayerPrefs.Save();
         }
     }
 }
