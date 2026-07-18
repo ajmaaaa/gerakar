@@ -270,8 +270,11 @@ namespace GerakAR.AR
         private void OnVideoStopped()
         {
             backgroundPresenter?.ResetPresentation();
-            if (!_routingAway && !AppStateManager.RunInNonARMode && Application.isPlaying)
-                Debug.LogWarning("[ARUnityXSessionController] Camera stream stopped.");
+            if (_routingAway || AppStateManager.RunInNonARMode || !Application.isPlaying)
+                return;
+
+            Debug.LogWarning("[ARUnityXSessionController] Camera stream stopped.");
+            RouteToFallback("Camera stream stopped unexpectedly.", false);
         }
 
         private IEnumerator SimulateCameraStartup()
