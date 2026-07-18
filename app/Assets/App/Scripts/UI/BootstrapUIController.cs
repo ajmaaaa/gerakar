@@ -94,7 +94,7 @@ namespace GerakAR.UI
         private void UpdatePanels(AppState state)
         {
             if (introPanel != null)
-                introPanel.SetActive(state == AppState.Intro);
+                introPanel.SetActive(state == AppState.Intro || state == AppState.LoadingARScene);
 
             if (state == AppState.UnsupportedNotice || state == AppState.ARInstallFailed)
             {
@@ -158,109 +158,83 @@ namespace GerakAR.UI
 
             if (state == AppState.LoadingARScene)
             {
-                // Panel introPanel sudah aktif (IntroController hanya set alpha=0, tidak SetActive(false))
-                // Cukup fade in alpha — TANPA SetActive, tidak ada "pop" visual
+                // introPanel sudah diaktifkan oleh UpdatePanels di atas
+                // introCanvasGroup.alpha = 0 (disisakan oleh IntroController)
+                // Langsung jalankan sequence
                 StartCoroutine(LoadCameraSequence());
-            }
-            else if (state == AppState.Scanning)
-            {
-                // Kamera sudah siap — fade out Bootstrap canvas lalu unload scene
-                Scene mainArScene = SceneManager.GetSceneByName("MainAR");
-                if (mainArScene.IsValid())
-                    SceneManager.SetActiveScene(mainArScene);
-
-                if (introCanvasGroup != null)
-                    StartCoroutine(FadeOutAndUnloadBootstrap());
             }
         }
 
         private System.Collections.IEnumerator LoadCameraSequence()
         {
-            // 1. Fade in panel G01 yang sama (dari alpha=0 ke alpha=1, 0.25 detik)
+            // 1. Fade in panel G01 yang SAMA (alpha 0 → 1, tanpa SetActive baru)
             if (introCanvasGroup != null)
             {
                 float t = 0f;
-                while (t < 0.25f)
+                while (t < 0.2f)
                 {
                     t += Time.deltaTime;
-                    introCanvasGroup.alpha = Mathf.Clamp01(t / 0.25f);
+                    introCanvasGroup.alpha = Mathf.Clamp01(t / 0.2f);
                     yield return null;
                 }
                 introCanvasGroup.alpha = 1f;
             }
 
-            // 2. Sembunyikan panel lain (Onboarding dll)
+            // 2. Sembunyikan panel Onboarding
             if (onboardingPanel != null) onboardingPanel.SetActive(false);
 
-            // 3. Crossfade HANYA teks label: fade out → ganti teks → fade in
+            // 3. Crossfade HANYA teks label
             if (introStatusText != null)
             {
-                Color originalColor = introStatusText.color;
-                // Fade out teks lama
+                Color c = introStatusText.color;
                 float t = 0f;
-                while (t < 0.25f)
+                // Fade out teks lama
+                while (t < 0.2f)
                 {
                     t += Time.deltaTime;
-                    introStatusText.color = new Color(originalColor.r, originalColor.g, originalColor.b,
-                        1f - Mathf.Clamp01(t / 0.25f));
+                    introStatusText.color = new Color(c.r, c.g, c.b, 1f - Mathf.Clamp01(t / 0.2f));
                     yield return null;
                 }
-                // Ganti teks
                 introStatusText.text = "Memuat kamera";
                 // Fade in teks baru
                 t = 0f;
-                while (t < 0.25f)
+                while (t < 0.2f)
                 {
                     t += Time.deltaTime;
-                    introStatusText.color = new Color(originalColor.r, originalColor.g, originalColor.b,
-                        Mathf.Clamp01(t / 0.25f));
+                    introStatusText.color = new Color(c.r, c.g, c.b, Mathf.Clamp01(t / 0.2f));
                     yield return null;
                 }
-                introStatusText.color = originalColor;
+                introStatusText.color = c;
             }
 
-            // 4. Muat MainAR secara ADDITIVE — Bootstrap Canvas tetap di atas menutupi kamera
-            SceneManager.LoadSceneAsync("MainAR", LoadSceneMode.Additive);
+            // 4. Muat MainAR di background, tahan aktivasi sampai bar selesai
+            var asyncOp = SceneManager.LoadSceneAsync("MainAR");
+            asyncOp.allowSceneActivation = false;
 
-            // 5. Animasikan loading bar perlahan (dari posisi saat ini → penuh, ~4 detik)
-            //    sambil menunggu AppState.Scanning (kamera siap)
-            if (introLoadingFill != null)
+            // 5. Animasi loading bar: proporsional dengan progress aktual + waktu minimum 1.5 detik
+            float elapsed = 0f;
+            float minTime = 1.5f;
+            RectTransform fillRT = introLoadingFill != null
+                ? introLoadingFill.GetComponent<RectTransform>() : null;
+            float startX = fillRT != null ? fillRT.anchorMax.x : 0f;
+
+            while (!asyncOp.isDone)
             {
-                RectTransform fillRT = introLoadingFill.GetComponent<RectTransform>();
+                elapsed += Time.deltaTime;
+                float loadProg = Mathf.Clamp01(asyncOp.progress / 0.9f);
+                float timeProg = Mathf.Clamp01(elapsed / minTime);
+                // Gunakan progress yang lebih lambat antara loading actual dan waktu minimum
+                float barProg = Mathf.Min(loadProg, timeProg);
                 if (fillRT != null)
-                {
-                    float startX = fillRT.anchorMax.x;
-                    float elapsed = 0f;
-                    float duration = 4.0f;
-                    while (elapsed < duration &&
-                           AppStateManager.Instance != null &&
-                           !AppStateManager.Instance.Is(AppState.Scanning))
-                    {
-                        elapsed += Time.deltaTime;
-                        float newX = Mathf.Lerp(startX, 1f, Mathf.SmoothStep(0f, 1f, elapsed / duration));
-                        fillRT.anchorMax = new Vector2(newX, 1f);
-                        yield return null;
-                    }
-                    fillRT.anchorMax = new Vector2(1f, 1f);
-                }
-            }
-        }
+                    fillRT.anchorMax = new Vector2(Mathf.Lerp(startX, 1f, barProg), 1f);
 
-        private System.Collections.IEnumerator FadeOutAndUnloadBootstrap()
-        {
-            if (introCanvasGroup != null)
-            {
-                float elapsed = 0f;
-                float duration = 0.35f;
-                while (elapsed < duration)
+                if (asyncOp.progress >= 0.9f && elapsed >= minTime)
                 {
-                    elapsed += Time.deltaTime;
-                    introCanvasGroup.alpha = 1f - Mathf.Clamp01(elapsed / duration);
-                    yield return null;
+                    if (fillRT != null) fillRT.anchorMax = new Vector2(1f, 1f);
+                    asyncOp.allowSceneActivation = true;
                 }
-                introCanvasGroup.alpha = 0f;
+                yield return null;
             }
-            SceneManager.UnloadSceneAsync("Bootstrap");
         }
 
         private void RouteToNonARCatalog()

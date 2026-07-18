@@ -1242,7 +1242,7 @@ public static class SetupAndBuild
         camGo.SetActive(false);
         var cam = camGo.AddComponent<Camera>();
         cam.clearFlags = CameraClearFlags.SolidColor;
-        cam.backgroundColor = DeepForest;
+        cam.backgroundColor = Color.black; // hitam, bukan hijau, untuk area di luar video kamera
         cam.nearClipPlane = 0.01f;
         cam.farClipPlane = 100f;
         cam.cullingMask &= ~(1 << 8);
