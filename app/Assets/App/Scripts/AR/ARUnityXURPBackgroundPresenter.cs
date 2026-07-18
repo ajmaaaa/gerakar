@@ -171,6 +171,15 @@ namespace GerakAR.AR
             arxCamera.CameraContentMode = ARXCamera.ContentMode.Fill;
             arxBackground.OnScreenGeometryChanged();
 
+            // ARUnityX rotates its background Camera GameObject for portrait.
+            // URP camera stacking does not apply that transform consistently,
+            // leaving the landscape mesh letterboxed. Move the same relative
+            // rotation onto the video mesh, which URP renders deterministically.
+            Quaternion screenRotation = _backgroundCamera.transform.localRotation;
+            videoObject.transform.localRotation =
+                Quaternion.Inverse(screenRotation) * videoObject.transform.localRotation;
+            _backgroundCamera.transform.localRotation = Quaternion.identity;
+
             _backgroundCamera.backgroundColor = Color.black;
             foregroundCamera.backgroundColor = Color.black;
 

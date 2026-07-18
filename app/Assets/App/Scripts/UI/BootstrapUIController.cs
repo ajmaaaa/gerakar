@@ -63,6 +63,7 @@ namespace GerakAR.UI
         private bool _onboardingTransitionScheduled;
         private bool _unloadingBootstrap;
         private Canvas _bootstrapCanvas;
+        private Image _onboardingEdgeBackground;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetSessionState()
@@ -76,6 +77,7 @@ namespace GerakAR.UI
             _bootstrapCanvas = onboardingPanel != null
                 ? onboardingPanel.GetComponentInParent<Canvas>()
                 : null;
+            ConfigureOnboardingEdgeBackground();
 
             if (detailCloseButton != null)
             {
@@ -121,13 +123,18 @@ namespace GerakAR.UI
             // Jangan pernah nonaktifkan introPanel selama transisi cepat (Intro → CheckingAR → LoadingARScene)
             // Panel tetap alpha=1 (tidak fadeOut), hanya teks yang crossfade di LoadCameraSequence.
             // Kita hanya nonaktifkan ketika state benar-benar meninggalkan flow loading (misalnya NonAR, CameraDenied, atau sudah Scanning).
+            bool showOnboarding = state == AppState.Onboarding && !OnboardingController.IsCompleted;
             if (introPanel != null)
             {
-                bool isIntroFlow = state == AppState.Intro || state == AppState.Onboarding ||
-                                   state == AppState.CheckingAR || state == AppState.RequestingPermission ||
-                                   state == AppState.LoadingARScene;
+                bool isIntroFlow = !showOnboarding &&
+                                   (state == AppState.Intro || state == AppState.Onboarding ||
+                                    state == AppState.CheckingAR || state == AppState.RequestingPermission ||
+                                    state == AppState.LoadingARScene);
                 introPanel.SetActive(isIntroFlow);
             }
+
+            if (_onboardingEdgeBackground != null)
+                _onboardingEdgeBackground.enabled = showOnboarding;
 
             if (state == AppState.UnsupportedNotice || state == AppState.ARInstallFailed)
             {
@@ -136,7 +143,7 @@ namespace GerakAR.UI
 
             // Onboarding panel — hanya tampil saat Onboarding state (sekali seumur instalasi)
             if (onboardingPanel != null)
-                onboardingPanel.SetActive(state == AppState.Onboarding);
+                onboardingPanel.SetActive(showOnboarding);
 
             if (unsupportedPanel != null)
             {
@@ -261,6 +268,24 @@ namespace GerakAR.UI
             group.alpha = 1f;
             group.interactable = elevated;
             group.blocksRaycasts = elevated;
+        }
+
+        private void ConfigureOnboardingEdgeBackground()
+        {
+            if (_bootstrapCanvas == null)
+                return;
+
+            Transform backgroundTransform = _bootstrapCanvas.transform.Find("FullScreenBackground");
+            if (backgroundTransform == null)
+                return;
+
+            _onboardingEdgeBackground = backgroundTransform.GetComponent<Image>();
+            if (_onboardingEdgeBackground == null)
+                _onboardingEdgeBackground = backgroundTransform.gameObject.AddComponent<Image>();
+
+            _onboardingEdgeBackground.color = new Color32(244, 240, 230, 255);
+            _onboardingEdgeBackground.raycastTarget = false;
+            _onboardingEdgeBackground.enabled = false;
         }
 
         private void SetMainAREventSystemsEnabled(bool enabled)
