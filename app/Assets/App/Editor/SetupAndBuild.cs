@@ -731,6 +731,269 @@ public static class SetupAndBuild
         if (fonts != null) catalogBackText.font = fonts.Heading;
         StretchRect(catalogBackTextGo.GetComponent<RectTransform>());
 
+        // ── G08 DETAIL — NON-AR DETAIL VIEW ──
+        var nonARDetailPanelGo = CreateUIObject("NonARDetailPanel", unsupGo);
+        var detailPanelImg = nonARDetailPanelGo.AddComponent<Image>();
+        detailPanelImg.color = WarmCream;
+        StretchRect(nonARDetailPanelGo.GetComponent<RectTransform>());
+        nonARDetailPanelGo.SetActive(false);
+
+        // Header for Non-AR Detail (consistent with G08 Catalog)
+        var detailHeaderGo = CreateUIObject("HeaderBar", nonARDetailPanelGo);
+        var detailHeaderImg = detailHeaderGo.AddComponent<Image>();
+        detailHeaderImg.color = Color.clear;
+        SetAnchorTop(detailHeaderGo.GetComponent<RectTransform>(), 0f, -16f, 360f, 56f);
+
+        var detailLeftGroupGo = CreateUIObject("LeftGroup", detailHeaderGo);
+        var dlgRT = detailLeftGroupGo.GetComponent<RectTransform>();
+        dlgRT.anchorMin = new Vector2(0f, 0.5f);
+        dlgRT.anchorMax = new Vector2(0f, 0.5f);
+        dlgRT.pivot = new Vector2(0f, 0.5f);
+        dlgRT.anchoredPosition = new Vector2(20f, -4f);
+        dlgRT.sizeDelta = new Vector2(240f, 52f);
+
+        var detailLeftVlg = detailLeftGroupGo.AddComponent<VerticalLayoutGroup>();
+        detailLeftVlg.spacing = 2f;
+        detailLeftVlg.childAlignment = TextAnchor.MiddleLeft;
+        detailLeftVlg.childControlWidth = true;
+        detailLeftVlg.childControlHeight = true;
+        detailLeftVlg.childForceExpandWidth = true;
+        detailLeftVlg.childForceExpandHeight = false;
+
+        var detailKickerGo = CreateUIObject("CategoryTypeLabel", detailLeftGroupGo);
+        var detailKickerTxt = detailKickerGo.AddComponent<TextMeshProUGUI>();
+        detailKickerTxt.textWrappingMode = TextWrappingModes.Normal;
+        detailKickerTxt.text = "GERAKAN UTAMA";
+        detailKickerTxt.fontSize = 11f;
+        detailKickerTxt.fontStyle = FontStyles.Bold;
+        detailKickerTxt.color = ForestGreen;
+        if (fonts != null) detailKickerTxt.font = fonts.Heading;
+        var detailKickerLE = detailKickerGo.AddComponent<LayoutElement>();
+        detailKickerLE.preferredHeight = 14f;
+
+        var detailTitleGo = CreateUIObject("MovementTitle", detailLeftGroupGo);
+        var detailTitleText = detailTitleGo.AddComponent<TextMeshProUGUI>();
+        detailTitleText.textWrappingMode = TextWrappingModes.Normal;
+        detailTitleText.text = "SQUAT";
+        detailTitleText.fontSize = 22f;
+        detailTitleText.fontStyle = FontStyles.Bold;
+        detailTitleText.color = DeepForest;
+        if (fonts != null) detailTitleText.font = fonts.Heading;
+        var detailTitleLE = detailTitleGo.AddComponent<LayoutElement>();
+        detailTitleLE.preferredHeight = 26f;
+
+        // Right group close button
+        var detailRightGroupGo = CreateUIObject("RightGroup", detailHeaderGo);
+        var drgRT = detailRightGroupGo.GetComponent<RectTransform>();
+        drgRT.anchorMin = new Vector2(1f, 0.5f);
+        drgRT.anchorMax = new Vector2(1f, 0.5f);
+        drgRT.pivot = new Vector2(1f, 0.5f);
+        drgRT.anchoredPosition = new Vector2(-20f, 0f);
+        drgRT.sizeDelta = new Vector2(44f, 44f);
+
+        var detailCloseGo = CreateUIObject("DetailCloseX", detailRightGroupGo);
+        var detailCloseImg = detailCloseGo.AddComponent<Image>();
+        detailCloseImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        detailCloseImg.type = Image.Type.Sliced;
+        detailCloseImg.color = ForestGreen;
+        AddSoftShadow(detailCloseGo, 2f, -2f, 0.1f);
+        var detailCloseBtn = detailCloseGo.AddComponent<Button>();
+        SetCenterPosition(detailCloseGo.GetComponent<RectTransform>(), 0f, 0f, 44f, 44f);
+
+        var detailXIconGo = CreateUIObject("Icon", detailCloseGo);
+        var detailXIconImg = detailXIconGo.AddComponent<Image>();
+        detailXIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/x.svg");
+        detailXIconImg.preserveAspect = true;
+        detailXIconImg.raycastTarget = false;
+        detailXIconImg.color = Color.white;
+        SetCenterPosition(detailXIconGo.GetComponent<RectTransform>(), 0f, 0f, 18f, 18f);
+
+        // Scroll view under header
+        var detailScrollViewGo = CreateUIObject("ScrollView", nonARDetailPanelGo);
+        var detailScrollRect = detailScrollViewGo.AddComponent<ScrollRect>();
+        detailScrollRect.horizontal = false;
+        detailScrollRect.vertical = true;
+        var dsvRT = detailScrollViewGo.GetComponent<RectTransform>();
+        dsvRT.anchorMin = new Vector2(0f, 0f);
+        dsvRT.anchorMax = new Vector2(1f, 1f);
+        dsvRT.pivot = new Vector2(0.5f, 0.5f);
+        dsvRT.offsetMin = new Vector2(0f, 0f);
+        dsvRT.offsetMax = new Vector2(0f, -80f); // Leave space for header
+
+        var dsvViewportGo = CreateUIObject("Viewport", detailScrollViewGo);
+        dsvViewportGo.AddComponent<RectMask2D>();
+        var dsvViewportRT = dsvViewportGo.GetComponent<RectTransform>();
+        StretchRect(dsvViewportRT);
+        detailScrollRect.viewport = dsvViewportRT;
+
+        var dsvContentGo = CreateUIObject("Content", dsvViewportGo);
+        var dsvContentRT = dsvContentGo.GetComponent<RectTransform>();
+        dsvContentRT.anchorMin = new Vector2(0f, 1f);
+        dsvContentRT.anchorMax = new Vector2(1f, 1f);
+        dsvContentRT.pivot = new Vector2(0.5f, 1f);
+        dsvContentRT.anchoredPosition = Vector2.zero;
+        dsvContentRT.sizeDelta = new Vector2(0f, 1200f);
+        detailScrollRect.content = dsvContentRT;
+
+        var dsvContentVlg = dsvContentGo.AddComponent<VerticalLayoutGroup>();
+        dsvContentVlg.spacing = 20f;
+        dsvContentVlg.padding = new RectOffset(20, 20, 20, 20);
+        dsvContentVlg.childControlWidth = true;
+        dsvContentVlg.childControlHeight = true;
+        dsvContentVlg.childForceExpandWidth = true;
+        dsvContentVlg.childForceExpandHeight = false;
+
+        var dsvContentCsf = dsvContentGo.AddComponent<ContentSizeFitter>();
+        dsvContentCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        dsvContentCsf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+        // Preview Illustration Box (2D Mannequin Visual)
+        var detailPreviewCardGo = CreateUIObject("PreviewCard", dsvContentGo);
+        var dpcImg = detailPreviewCardGo.AddComponent<Image>();
+        dpcImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-16.png");
+        dpcImg.type = Image.Type.Sliced;
+        dpcImg.color = WarmWhite;
+        var dpcOutline = detailPreviewCardGo.AddComponent<Outline>();
+        dpcOutline.effectColor = SoftSand;
+        dpcOutline.effectDistance = new Vector2(1f, 1f);
+        AddSoftShadow(detailPreviewCardGo, 2f, -2f, 0.06f);
+        var dpcLE = detailPreviewCardGo.AddComponent<LayoutElement>();
+        dpcLE.preferredHeight = 160f;
+
+        var detailPreviewImgGo = CreateUIObject("PreviewImage", detailPreviewCardGo);
+        var detailPreviewImg = detailPreviewImgGo.AddComponent<Image>();
+        detailPreviewImg.preserveAspect = true;
+        detailPreviewImg.raycastTarget = false;
+        StretchRect(detailPreviewImgGo.GetComponent<RectTransform>());
+        var dpiRT = detailPreviewImgGo.GetComponent<RectTransform>();
+        dpiRT.offsetMin = new Vector2(8f, 8f);
+        dpiRT.offsetMax = new Vector2(-8f, -8f);
+
+        // Short Description
+        var detailDescGo = CreateUIObject("ShortDescription", dsvContentGo);
+        var detailDescText = detailDescGo.AddComponent<TextMeshProUGUI>();
+        detailDescText.textWrappingMode = TextWrappingModes.Normal;
+        detailDescText.text = "Description";
+        detailDescText.fontSize = 12f;
+        detailDescText.color = SecondaryText;
+        detailDescText.alignment = TextAlignmentOptions.Left;
+        if (fonts != null) detailDescText.font = fonts.Medium;
+        var ddescLE = detailDescGo.AddComponent<LayoutElement>();
+        ddescLE.preferredHeight = 40f;
+
+        // Steps Container
+        var detailStepsGo = CreateUIObject("StepsContainer", dsvContentGo);
+        var dstepsVlg = detailStepsGo.AddComponent<VerticalLayoutGroup>();
+        dstepsVlg.spacing = 8f;
+        dstepsVlg.childControlWidth = true;
+        dstepsVlg.childControlHeight = true;
+
+        // Safety tip card (consistent with G06)
+        var detailSafetyCardGo = CreateUIObject("SafetyCard", dsvContentGo);
+        var dscImg = detailSafetyCardGo.AddComponent<Image>();
+        dscImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        dscImg.type = Image.Type.Sliced;
+        dscImg.color = new Color(0.918f, 0.867f, 0.812f, 0.5f); // 50% SoftSand tint
+        var dscOutline = detailSafetyCardGo.AddComponent<Outline>();
+        dscOutline.effectColor = SoftSand;
+        dscOutline.effectDistance = new Vector2(1f, 1f);
+        var dscVlg = detailSafetyCardGo.AddComponent<VerticalLayoutGroup>();
+        dscVlg.padding = new RectOffset(16, 16, 12, 12);
+        dscVlg.spacing = 4f;
+        dscVlg.childControlWidth = true;
+        dscVlg.childControlHeight = true;
+
+        var dscTitleGo = CreateUIObject("Title", detailSafetyCardGo);
+        var dscTitleText = dscTitleGo.AddComponent<TextMeshProUGUI>();
+        dscTitleText.text = "TIPS KEAMANAN";
+        dscTitleText.fontSize = 10f;
+        dscTitleText.fontStyle = FontStyles.Bold;
+        dscTitleText.color = ForestGreen;
+        if (fonts != null) dscTitleText.font = fonts.Heading;
+
+        var dscTextGo = CreateUIObject("Text", detailSafetyCardGo);
+        var detailSafetyText = dscTextGo.AddComponent<TextMeshProUGUI>();
+        detailSafetyText.textWrappingMode = TextWrappingModes.Normal;
+        detailSafetyText.text = "Tips";
+        detailSafetyText.fontSize = 11f;
+        detailSafetyText.color = DeepForest;
+        if (fonts != null) detailSafetyText.font = fonts.Medium;
+
+        // Mistakes list section
+        var dMistakesTitleGo = CreateUIObject("MistakesTitle", dsvContentGo);
+        var dMistakesTitle = dMistakesTitleGo.AddComponent<TextMeshProUGUI>();
+        dMistakesTitle.text = "HINDARI INI";
+        dMistakesTitle.fontSize = 13f;
+        dMistakesTitle.fontStyle = FontStyles.Bold;
+        dMistakesTitle.color = DeepForest;
+        if (fonts != null) dMistakesTitle.font = fonts.Heading;
+
+        var detailMistakesGo = CreateUIObject("MistakesContainer", dsvContentGo);
+        var dmistakesVlg = detailMistakesGo.AddComponent<VerticalLayoutGroup>();
+        dmistakesVlg.spacing = 8f;
+        dmistakesVlg.childControlWidth = true;
+        dmistakesVlg.childControlHeight = true;
+
+        // Trained muscles section
+        var dTrainedTitleGo = CreateUIObject("TrainedTitle", dsvContentGo);
+        var dTrainedTitle = dTrainedTitleGo.AddComponent<TextMeshProUGUI>();
+        dTrainedTitle.text = "OTOT YANG TERLATIH";
+        dTrainedTitle.fontSize = 13f;
+        dTrainedTitle.fontStyle = FontStyles.Bold;
+        dTrainedTitle.color = DeepForest;
+        if (fonts != null) dTrainedTitle.font = fonts.Heading;
+
+        var detailTrainedGo = CreateUIObject("TrainedContainer", dsvContentGo);
+        var dtrainedVlg = detailTrainedGo.AddComponent<VerticalLayoutGroup>();
+        dtrainedVlg.spacing = 8f;
+        dtrainedVlg.childControlWidth = true;
+        dtrainedVlg.childControlHeight = true;
+
+        // Related movements section (horizontal swiping cards)
+        var dRelatedGroupGo = CreateUIObject("RelatedGroup", dsvContentGo);
+        var drgVlg = dRelatedGroupGo.AddComponent<VerticalLayoutGroup>();
+        drgVlg.spacing = 12f;
+        drgVlg.childControlWidth = true;
+        drgVlg.childControlHeight = true;
+
+        var dRelatedTitleGo = CreateUIObject("Title", dRelatedGroupGo);
+        var dRelatedTitle = dRelatedTitleGo.AddComponent<TextMeshProUGUI>();
+        dRelatedTitle.text = "GERAKAN SERUPA";
+        dRelatedTitle.fontSize = 13f;
+        dRelatedTitle.fontStyle = FontStyles.Bold;
+        dRelatedTitle.color = DeepForest;
+        if (fonts != null) dRelatedTitle.font = fonts.Heading;
+
+        var dRelatedScrollViewGo = CreateUIObject("RelatedScrollView", dRelatedGroupGo);
+        var drelScroll = dRelatedScrollViewGo.AddComponent<ScrollRect>();
+        drelScroll.horizontal = true;
+        drelScroll.vertical = false;
+        dRelatedScrollViewGo.GetComponent<RectTransform>().sizeDelta = new Vector2(900f, 130f);
+
+        var drelViewportGo = CreateUIObject("Viewport", dRelatedScrollViewGo);
+        drelViewportGo.AddComponent<RectMask2D>();
+        StretchRect(drelViewportGo.GetComponent<RectTransform>());
+        drelScroll.viewport = drelViewportGo.GetComponent<RectTransform>();
+
+        var drelContentGo = CreateUIObject("Content", drelViewportGo);
+        var drelContentRT = drelContentGo.GetComponent<RectTransform>();
+        drelContentRT.anchorMin = new Vector2(0f, 0.5f);
+        drelContentRT.anchorMax = new Vector2(0f, 0.5f);
+        drelContentRT.pivot = new Vector2(0f, 0.5f);
+        drelContentRT.anchoredPosition = Vector2.zero;
+        drelContentRT.sizeDelta = new Vector2(800f, 120f);
+        drelScroll.content = drelContentRT;
+
+        var dhlg = drelContentGo.AddComponent<HorizontalLayoutGroup>();
+        dhlg.padding = new RectOffset(4, 4, 4, 4);
+        dhlg.spacing = 12f;
+        dhlg.childControlWidth = true;
+        dhlg.childControlHeight = true;
+
+        var drelCsf = drelContentGo.AddComponent<ContentSizeFitter>();
+        drelCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        drelCsf.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+
         // ── G09 — CAMERA DENIED ──
         var cameraErrorPanelGo = CreateUIObject("CameraErrorPanel", unsupGo);
         StretchRect(cameraErrorPanelGo.GetComponent<RectTransform>());
@@ -868,6 +1131,32 @@ public static class SetupAndBuild
         serialBUI.FindProperty("errorDescText").objectReferenceValue = camErrorDesc;
         serialBUI.FindProperty("primaryBtnText").objectReferenceValue = settingsText;
         serialBUI.FindProperty("secondaryBtnText").objectReferenceValue = retryText;
+
+        // Serialize new G08 detail fields
+        serialBUI.FindProperty("nonARDetailPanel").objectReferenceValue = nonARDetailPanelGo;
+        serialBUI.FindProperty("detailCategoryText").objectReferenceValue = detailKickerTxt;
+        serialBUI.FindProperty("detailTitleText").objectReferenceValue = detailTitleText;
+        serialBUI.FindProperty("detailDescText").objectReferenceValue = detailDescText;
+        serialBUI.FindProperty("detailSafetyText").objectReferenceValue = detailSafetyText;
+        serialBUI.FindProperty("detailStepsContainer").objectReferenceValue = detailStepsGo.transform;
+        serialBUI.FindProperty("detailMistakesContainer").objectReferenceValue = detailMistakesGo.transform;
+        serialBUI.FindProperty("detailTrainedContainer").objectReferenceValue = detailTrainedGo.transform;
+        serialBUI.FindProperty("detailRelatedContainer").objectReferenceValue = drelContentGo.transform;
+        serialBUI.FindProperty("detailPreviewImage").objectReferenceValue = detailPreviewImg;
+        serialBUI.FindProperty("detailCloseButton").objectReferenceValue = detailCloseBtn;
+
+        // Prefabs and database
+        var stepItemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/App/Prefabs/StepItem.prefab");
+        var bulletItemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/App/Prefabs/BulletItem.prefab");
+        var muscleItemPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/App/Prefabs/MuscleItem.prefab");
+        var relatedCardPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/App/Prefabs/RelatedCard.prefab");
+
+        serialBUI.FindProperty("stepItemPrefab").objectReferenceValue = stepItemPrefab;
+        serialBUI.FindProperty("bulletItemPrefab").objectReferenceValue = bulletItemPrefab;
+        serialBUI.FindProperty("muscleItemPrefab").objectReferenceValue = muscleItemPrefab;
+        serialBUI.FindProperty("relatedCardPrefab").objectReferenceValue = relatedCardPrefab;
+        serialBUI.FindProperty("movementDatabase").objectReferenceValue = AssetDatabase.LoadAssetAtPath<MovementDatabase>("Assets/App/Content/MovementData/MovementDatabase.asset");
+
         serialBUI.ApplyModifiedProperties();
 
         // BootstrapButtonController wiring

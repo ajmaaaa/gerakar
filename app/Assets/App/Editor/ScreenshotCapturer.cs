@@ -3,6 +3,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using GerakAR.UI;
 
 public static class ScreenshotCapturer
 {
@@ -100,6 +101,7 @@ public static class ScreenshotCapturer
         
         var cameraError = unsupTrans != null ? unsupTrans.Find("CameraErrorPanel")?.gameObject : null;
         var nonARMode = unsupTrans != null ? unsupTrans.Find("NonARModePanel")?.gameObject : null;
+        var nonARDetail = unsupTrans != null ? unsupTrans.Find("NonARDetailPanel")?.gameObject : null;
 
         // Helper to reset states
         System.Action deactivateAll = () => {
@@ -108,6 +110,7 @@ public static class ScreenshotCapturer
             if (unsup != null) unsup.SetActive(false);
             if (cameraError != null) cameraError.SetActive(false);
             if (nonARMode != null) nonARMode.SetActive(false);
+            if (nonARDetail != null) nonARDetail.SetActive(false);
         };
 
         // G01 — Intro
@@ -164,6 +167,27 @@ public static class ScreenshotCapturer
         else
         {
             Debug.LogWarning("[ScreenshotCapturer] G09 panels not found!");
+        }
+
+        // G08 Detail — Non-AR Detail View
+        if (unsup != null && nonARDetail != null)
+        {
+            deactivateAll();
+            unsup.SetActive(true);
+            var bui = Object.FindAnyObjectByType<BootstrapUIController>();
+            if (bui != null)
+            {
+                bui.ShowNonARDetail("squat");
+            }
+            else
+            {
+                nonARDetail.SetActive(true);
+            }
+            SaveRTToPNG(cam, rt, Path.Combine(outDir, "G08_NonAR_Detail.png"));
+        }
+        else
+        {
+            Debug.LogWarning("[ScreenshotCapturer] NonARDetailPanel not found!");
         }
 
         // Revert

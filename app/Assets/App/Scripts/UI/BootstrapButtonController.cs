@@ -94,10 +94,17 @@ namespace GerakAR.UI
 
         private static void OpenNonARMovement(string movementId)
         {
-            AppStateManager.RunInNonARMode = true;
-            ActiveMovementContext.ActiveId = movementId;
-            ActiveMovementContext.ActiveData = null;
-            SceneManager.LoadScene("MainAR");
+            if (BootstrapUIController.Instance != null)
+            {
+                BootstrapUIController.Instance.ShowNonARDetail(movementId);
+            }
+            else
+            {
+                AppStateManager.RunInNonARMode = true;
+                ActiveMovementContext.ActiveId = movementId;
+                ActiveMovementContext.ActiveData = null;
+                SceneManager.LoadScene("MainAR");
+            }
         }
 
         private void OnCatalogBackClicked()
