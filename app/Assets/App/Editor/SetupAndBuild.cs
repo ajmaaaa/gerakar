@@ -2321,7 +2321,7 @@ public static class SetupAndBuild
         Debug.Log("[MoveMotion] Menjalankan build Android APK...");
         ConfigurePlayerSettings();
 
-        string targetPath = "Builds/GerakAR.apk";
+        string targetPath = "Builds/MoveMotion.apk";
         System.IO.Directory.CreateDirectory("Builds");
 
         var buildPlayerOptions = new BuildPlayerOptions
