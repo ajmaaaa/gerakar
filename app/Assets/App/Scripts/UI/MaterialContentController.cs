@@ -1,5 +1,5 @@
 // ============================================================
-// GerakAR – MaterialContentController.cs
+// MoveMotion – MaterialContentController.cs
 // Populates the bottom sheet with content from MovementData.
 // Handles the half/full state display and related movement cards.
 // ============================================================
@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using GerakAR.Content;
-using GerakAR.Core;
+using MoveMotion.Content;
+using MoveMotion.Core;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     /// <summary>
     /// Populates the bottom sheet UI from a <see cref="MovementData"/> asset.
@@ -75,7 +75,7 @@ namespace GerakAR.UI
         {
             UIRuntimeStyler.NormalizeMuscleContainer(trainedAreasContainer);
             BottomSheetController.OnSheetStateChanged += OnSheetStateChanged;
-            GerakAREvents.OnMovementDetected += OnMovementDetected;
+            MoveMotionEvents.OnMovementDetected += OnMovementDetected;
 
             if (backToPrimaryButton != null)
             {
@@ -90,7 +90,7 @@ namespace GerakAR.UI
         private void OnDestroy()
         {
             BottomSheetController.OnSheetStateChanged -= OnSheetStateChanged;
-            GerakAREvents.OnMovementDetected -= OnMovementDetected;
+            MoveMotionEvents.OnMovementDetected -= OnMovementDetected;
         }
 
         // ── Public API ────────────────────────────────────────────────

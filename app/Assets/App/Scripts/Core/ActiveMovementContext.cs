@@ -1,6 +1,6 @@
-using GerakAR.Content;
+using MoveMotion.Content;
 
-namespace GerakAR.Core
+namespace MoveMotion.Core
 {
     /// <summary>
     /// Authoritative context for the currently active movement across the app.

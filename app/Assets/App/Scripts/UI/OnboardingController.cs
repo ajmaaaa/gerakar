@@ -1,12 +1,12 @@
 // ============================================================
-// GerakAR – OnboardingController.cs
+// MoveMotion – OnboardingController.cs
 // Shows the first-use instructions panel ("Sebelum Mulai").
 // Uses PlayerPrefs to display only once per installation.
 // ============================================================
 using UnityEngine;
-using GerakAR.Core;
+using MoveMotion.Core;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     /// <summary>
     /// Manages the first-time onboarding panel that appears between

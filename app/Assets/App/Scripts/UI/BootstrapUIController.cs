@@ -4,10 +4,10 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
-using GerakAR.Core;
-using GerakAR.Content;
+using MoveMotion.Core;
+using MoveMotion.Content;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     /// <summary>
     /// Coordinates UI panel visibility in the Bootstrap scene.
@@ -219,7 +219,7 @@ namespace GerakAR.UI
                         
                         if (errorDescText != null)
                             errorDescText.text = permissionDenied 
-                                ? "Izinkan akses kamera agar GerakAR dapat melihat gambar gerakan."
+                                ? "Izinkan akses kamera agar MoveMotion dapat melihat gambar gerakan."
                                 : "Periksa izin kamera, atau gunakan mode tanpa kamera.";
                         
                         if (primaryBtnText != null)

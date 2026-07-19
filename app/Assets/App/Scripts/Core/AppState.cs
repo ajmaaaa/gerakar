@@ -1,11 +1,11 @@
 // ============================================================
-// GerakAR – AppState.cs
+// MoveMotion – AppState.cs
 // Defines all application states used by the state machine.
 // ============================================================
-namespace GerakAR.Core
+namespace MoveMotion.Core
 {
     /// <summary>
-    /// All mutually-exclusive states of the GerakAR application.
+    /// All mutually-exclusive states of the MoveMotion application.
     /// Transitions are managed by <see cref="AppStateManager"/>.
     /// </summary>
     public enum AppState

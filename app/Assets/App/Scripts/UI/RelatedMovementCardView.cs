@@ -1,9 +1,9 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using GerakAR.Content;
+using MoveMotion.Content;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     public static class RelatedMovementCardView
     {

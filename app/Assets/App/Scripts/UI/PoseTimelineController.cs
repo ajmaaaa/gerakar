@@ -1,5 +1,5 @@
 // ============================================================
-// GerakAR – PoseTimelineController.cs
+// MoveMotion – PoseTimelineController.cs
 // Thin horizontal slider that controls the MovementController
 // pose scrubbing. Touch → InspectingPose. Release → EndInspect.
 // Shows key-pose markers and a hint label while dragging.
@@ -9,11 +9,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
-using GerakAR.Core;
-using GerakAR.Content;
-using GerakAR.Animation;
+using MoveMotion.Core;
+using MoveMotion.Content;
+using MoveMotion.Animation;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     /// <summary>
     /// Wraps a UI Slider to drive <see cref="MovementController"/>.
@@ -179,7 +179,7 @@ namespace GerakAR.UI
                 if (img != null)
                 {
                     float t = _markerTimes[i];
-                    img.color = (t <= sliderValue) ? GerakARTheme.Primary : _accentColor;
+                    img.color = (t <= sliderValue) ? MoveMotionTheme.Primary : _accentColor;
                 }
             }
         }

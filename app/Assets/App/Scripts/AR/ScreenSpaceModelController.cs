@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
-namespace GerakAR.AR
+namespace MoveMotion.AR
 {
     public sealed class ScreenSpaceModelController : MonoBehaviour
     {

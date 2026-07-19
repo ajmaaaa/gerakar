@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     /// <summary>
     /// Adjusts the anchors of its RectTransform to match the screen's safe area (notches).

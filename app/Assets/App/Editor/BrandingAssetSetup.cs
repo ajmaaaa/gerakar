@@ -2,7 +2,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace GerakAR.Editor
+namespace MoveMotion.Editor
 {
     public static class BrandingAssetSetup
     {

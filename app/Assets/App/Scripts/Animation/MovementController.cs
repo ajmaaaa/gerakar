@@ -1,5 +1,5 @@
 // ============================================================
-// GerakAR – MovementController.cs
+// MoveMotion – MovementController.cs
 // Controls the Animator on the active model.
 //
 // Loop mode  : animator.speed = 1, clip plays from beginning.
@@ -11,10 +11,10 @@
 // ============================================================
 using System.Collections;
 using UnityEngine;
-using GerakAR.Core;
-using GerakAR.Content;
+using MoveMotion.Core;
+using MoveMotion.Content;
 
-namespace GerakAR.Animation
+namespace MoveMotion.Animation
 {
     /// <summary>
     /// Attached (or addressed) to the model root. Receives MovementData
@@ -66,7 +66,7 @@ namespace GerakAR.Animation
 
         /// <summary>
         /// Called by <see cref="AR.ARImageTrackingController"/> (via
-        /// <see cref="GerakAREvents.OnMovementDetected"/>) to attach this
+        /// <see cref="MoveMotionEvents.OnMovementDetected"/>) to attach this
         /// controller to a specific model's Animator.
         /// </summary>
         public void Attach(GameObject modelGo, MovementData data)
@@ -110,7 +110,7 @@ namespace GerakAR.Animation
             _currentNormalizedTime = 0f;
 
             if (ActiveMovementContext.ActiveId != null)
-                GerakAREvents.RaiseLoopStarted(ActiveMovementContext.ActiveId);
+                MoveMotionEvents.RaiseLoopStarted(ActiveMovementContext.ActiveId);
         }
 
         /// <summary>Pause or resume the loop (used when bottom sheet opens/closes).</summary>
@@ -136,7 +136,7 @@ namespace GerakAR.Animation
             _animator.speed = 0f;
             ScrubTo(normalizedTime);
 
-            GerakAREvents.RaisePoseInspectionStarted(normalizedTime);
+            MoveMotionEvents.RaisePoseInspectionStarted(normalizedTime);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace GerakAR.Animation
         {
             if (_animator == null) return;
 
-            GerakAREvents.RaisePoseInspectionEnded();
+            MoveMotionEvents.RaisePoseInspectionEnded();
             _returnToLoopCo = StartCoroutine(ReturnToLoopSequence());
         }
 

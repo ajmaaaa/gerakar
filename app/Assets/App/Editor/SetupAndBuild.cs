@@ -3,12 +3,12 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using GerakAR.Core;
-using GerakAR.AR;
-using GerakAR.Animation;
-using GerakAR.UI;
-using GerakAR.Audio;
-using GerakAR.Content;
+using MoveMotion.Core;
+using MoveMotion.AR;
+using MoveMotion.Animation;
+using MoveMotion.UI;
+using MoveMotion.Audio;
+using MoveMotion.Content;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor.Build;
@@ -42,7 +42,7 @@ public static class SetupAndBuild
         CreateUIShapeSprites.Execute();
         ImportRelatedMovementsSprites();
         AssignRelatedMovementsSprites();
-        Debug.Log("[GerakAR] Memulai setup scene...");
+        Debug.Log("[MoveMotion] Memulai setup scene...");
 
         var poppinsRegular = FontSetupHelper.LoadPoppinsFont("Regular") ??
             AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
@@ -1220,7 +1220,7 @@ public static class SetupAndBuild
         serialBtn.ApplyModifiedProperties();
 
         EditorSceneManager.SaveScene(scene, "Assets/App/Scenes/Bootstrap.unity");
-        Debug.Log("[GerakAR] Scene Bootstrap selesai dibuat.");
+        Debug.Log("[MoveMotion] Scene Bootstrap selesai dibuat.");
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -2244,7 +2244,7 @@ public static class SetupAndBuild
         camGo.SetActive(true);
 
         EditorSceneManager.SaveScene(scene, "Assets/App/Scenes/MainAR.unity");
-        Debug.Log("[GerakAR] Scene MainAR selesai dibuat.");
+        Debug.Log("[MoveMotion] Scene MainAR selesai dibuat.");
     }
 
     // ── Helper methods ────────────────────────────────────────────────
@@ -2257,7 +2257,7 @@ public static class SetupAndBuild
             new EditorBuildSettingsScene("Assets/App/Scenes/MainAR.unity", true)
         };
         EditorBuildSettings.scenes = scenes.ToArray();
-        Debug.Log("[GerakAR] Build Settings scenes updated.");
+        Debug.Log("[MoveMotion] Build Settings scenes updated.");
     }
 
     [MenuItem("Build/Validate ARUnityX Setup")]
@@ -2293,7 +2293,7 @@ public static class SetupAndBuild
         if (Object.FindAnyObjectByType<ARUnityXURPBackgroundPresenter>() == null)
             throw new BuildFailedException("ARUnityX URP background presenter is missing.");
 
-        Debug.Log("[GerakAR] ARUnityX scene validation passed.");
+        Debug.Log("[MoveMotion] ARUnityX scene validation passed.");
     }
 
     private static void ConfigureRearCamera(ARXVideoConfig videoConfig)
@@ -2318,7 +2318,7 @@ public static class SetupAndBuild
     [MenuItem("Build/Build Current Scenes APK")]
     public static void BuildAPK()
     {
-        Debug.Log("[GerakAR] Menjalankan build Android APK...");
+        Debug.Log("[MoveMotion] Menjalankan build Android APK...");
         ConfigurePlayerSettings();
 
         string targetPath = "Builds/GerakAR.apk";
@@ -2340,11 +2340,11 @@ public static class SetupAndBuild
 
         if (summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
         {
-            Debug.Log($"[GerakAR] Build berhasil! File APK: {targetPath} ({summary.totalSize} bytes)");
+            Debug.Log($"[MoveMotion] Build berhasil! File APK: {targetPath} ({summary.totalSize} bytes)");
         }
         else
         {
-            Debug.LogError($"[GerakAR] Build gagal dengan status: {summary.result}");
+            Debug.LogError($"[MoveMotion] Build gagal dengan status: {summary.result}");
         }
     }
 
@@ -2741,7 +2741,7 @@ public static class SetupAndBuild
         // SafeArea
         var safeArea = CreateUIObject("SafeArea", canvasGo);
         StretchRect(safeArea.GetComponent<RectTransform>());
-        safeArea.AddComponent<GerakAR.UI.SafeAreaController>();
+        safeArea.AddComponent<MoveMotion.UI.SafeAreaController>();
 
         // TopContent
         var top = CreateUIObject("TopContent", safeArea);

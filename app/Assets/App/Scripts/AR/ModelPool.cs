@@ -1,13 +1,13 @@
 // ============================================================
-// GerakAR – ModelPool.cs
+// MoveMotion – ModelPool.cs
 // Simple cache that instantiates one GameObject per MovementData
 // and reuses it on subsequent detections to avoid GC spikes.
 // ============================================================
 using System.Collections.Generic;
 using UnityEngine;
-using GerakAR.Content;
+using MoveMotion.Content;
 
-namespace GerakAR.AR
+namespace MoveMotion.AR
 {
     /// <summary>
     /// Manages a pool of model GameObjects (one per MovementData).

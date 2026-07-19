@@ -3,7 +3,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
-using GerakAR.UI;
+using MoveMotion.UI;
 
 public static class ScreenshotCapturer
 {
@@ -349,7 +349,7 @@ public static class ScreenshotCapturer
             if (appHeaderGo != null) appHeaderGo.SetActive(true);
 
             // Populate timeline with mock key poses
-            var timelineCtrl = arControlsGo.GetComponentInChildren<GerakAR.UI.PoseTimelineController>();
+            var timelineCtrl = arControlsGo.GetComponentInChildren<MoveMotion.UI.PoseTimelineController>();
             var slider = arControlsGo.GetComponentInChildren<UnityEngine.UI.Slider>();
             if (slider != null)
             {
@@ -358,16 +358,16 @@ public static class ScreenshotCapturer
 
             if (timelineCtrl != null)
             {
-                var mockData = ScriptableObject.CreateInstance<GerakAR.Content.MovementData>();
+                var mockData = ScriptableObject.CreateInstance<MoveMotion.Content.MovementData>();
                 mockData.displayName = "Squat";
-                mockData.keyPoses = new System.Collections.Generic.List<GerakAR.Content.KeyPoseData>
+                mockData.keyPoses = new System.Collections.Generic.List<MoveMotion.Content.KeyPoseData>
                 {
-                    new GerakAR.Content.KeyPoseData { normalizedTime = 0.0f, label = "Mulai" },
-                    new GerakAR.Content.KeyPoseData { normalizedTime = 0.2f, label = "Turun" },
-                    new GerakAR.Content.KeyPoseData { normalizedTime = 0.4f, label = "Tahan" },
-                    new GerakAR.Content.KeyPoseData { normalizedTime = 0.6f, label = "Naik" },
-                    new GerakAR.Content.KeyPoseData { normalizedTime = 0.8f, label = "Hampir" },
-                    new GerakAR.Content.KeyPoseData { normalizedTime = 1.0f, label = "Selesai" }
+                    new MoveMotion.Content.KeyPoseData { normalizedTime = 0.0f, label = "Mulai" },
+                    new MoveMotion.Content.KeyPoseData { normalizedTime = 0.2f, label = "Turun" },
+                    new MoveMotion.Content.KeyPoseData { normalizedTime = 0.4f, label = "Tahan" },
+                    new MoveMotion.Content.KeyPoseData { normalizedTime = 0.6f, label = "Naik" },
+                    new MoveMotion.Content.KeyPoseData { normalizedTime = 0.8f, label = "Hampir" },
+                    new MoveMotion.Content.KeyPoseData { normalizedTime = 1.0f, label = "Selesai" }
                 };
                 timelineCtrl.SetMovementData(mockData);
             }
@@ -412,7 +412,7 @@ public static class ScreenshotCapturer
             sheetRT.offsetMax = Vector2.zero;
 
             var materialContent = sheetGo.GetComponent<MaterialContentController>();
-            var database = AssetDatabase.LoadAssetAtPath<GerakAR.Content.MovementDatabase>(
+            var database = AssetDatabase.LoadAssetAtPath<MoveMotion.Content.MovementDatabase>(
                 "Assets/App/Content/MovementData/MovementDatabase.asset");
             if (materialContent != null && database != null)
             {

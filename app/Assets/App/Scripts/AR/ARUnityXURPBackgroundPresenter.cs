@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
-namespace GerakAR.AR
+namespace MoveMotion.AR
 {
     /// <summary>
     /// Adapts ARUnityX's Built-In two-camera video background to URP camera stacking.

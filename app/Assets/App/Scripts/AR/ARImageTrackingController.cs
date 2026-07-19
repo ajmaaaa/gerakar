@@ -1,15 +1,15 @@
 using System.Collections;
 using UnityEngine;
-using GerakAR.Animation;
-using GerakAR.Content;
-using GerakAR.Core;
-using GerakAR.UI;
+using MoveMotion.Animation;
+using MoveMotion.Content;
+using MoveMotion.Core;
+using MoveMotion.UI;
 
-namespace GerakAR.AR
+namespace MoveMotion.AR
 {
     /// <summary>
     /// Adapts ARUnityX tracked-object events to the provider-independent
-    /// GerakAR movement and UI lifecycle.
+    /// MoveMotion movement and UI lifecycle.
     /// </summary>
     public sealed class ARImageTrackingController : MonoBehaviour
     {
@@ -124,7 +124,7 @@ namespace GerakAR.AR
         {
             modelPool?.HideActive();
             _stateManager?.TransitionTo(AppState.TargetConfirmed);
-            GerakAREvents.RaiseDetectionStarted(movement.movementId);
+            MoveMotionEvents.RaiseDetectionStarted(movement.movementId);
 
             yield return new WaitForSeconds(confirmationDuration);
 
@@ -152,7 +152,7 @@ namespace GerakAR.AR
             materialController?.SetMovement(movement);
             uiController?.SetMovementName(movement.displayName);
 
-            GerakAREvents.RaiseMovementDetected(movement.movementId);
+            MoveMotionEvents.RaiseMovementDetected(movement.movementId);
             _stateManager?.TransitionTo(presentationState);
         }
 
@@ -165,7 +165,7 @@ namespace GerakAR.AR
             CancelDetection();
 
             if (_targetMovement != null && modelPool?.ActiveMovementId == _targetMovement.movementId)
-                GerakAREvents.RaiseTrackingLost(_targetMovement.movementId);
+                MoveMotionEvents.RaiseTrackingLost(_targetMovement.movementId);
 
             movementController?.CancelReturnTimer();
             modelPool?.HideActive();

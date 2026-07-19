@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 95fa3c8e12f34bc097125b4eb26dd75f, type: 3}
   m_Name: MovementData_DynamicStretch
-  m_EditorClassIdentifier: GerakAR.Content.MovementData
+  m_EditorClassIdentifier: MoveMotion.Content.MovementData
   movementId: dynamic_stretch
   referenceImageName: dynamic_stretch_target
   displayName: Dynamic Stretching

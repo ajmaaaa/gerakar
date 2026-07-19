@@ -1,5 +1,5 @@
 // ============================================================
-// GerakAR – BottomSheetController.cs
+// MoveMotion – BottomSheetController.cs
 // Draggable bottom sheet with three snap points:
 //   Closed  → panel completely below screen
 //   Half    → ~48% of screen height (default material state)
@@ -12,10 +12,10 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using GerakAR.Core;
-using GerakAR.Animation;
+using MoveMotion.Core;
+using MoveMotion.Animation;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     /// <summary>
     /// Three-state draggable bottom sheet.

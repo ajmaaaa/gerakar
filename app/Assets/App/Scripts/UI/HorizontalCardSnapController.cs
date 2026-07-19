@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     public sealed class HorizontalCardSnapController : MonoBehaviour, IEndDragHandler
     {

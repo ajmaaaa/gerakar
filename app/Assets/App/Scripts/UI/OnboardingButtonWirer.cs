@@ -1,5 +1,5 @@
 // ============================================================
-// GerakAR – OnboardingButtonWirer.cs
+// MoveMotion – OnboardingButtonWirer.cs
 // Memasang listener tombol MULAI ke OnboardingController
 // secara runtime untuk menghindari masalah serialisasi
 // persistent listener dari Editor script.
@@ -7,7 +7,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     /// <summary>
     /// Dipasang langsung di GameObject tombol MULAI.
@@ -26,13 +26,13 @@ namespace GerakAR.UI
             var controller = FindAnyObjectByType<OnboardingController>();
             if (controller == null)
             {
-                Debug.LogWarning("[GerakAR] OnboardingButtonWirer: OnboardingController tidak ditemukan di scene.");
+                Debug.LogWarning("[MoveMotion] OnboardingButtonWirer: OnboardingController tidak ditemukan di scene.");
                 return;
             }
 
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(controller.OnMulaiPressed);
-            Debug.Log("[GerakAR] OnboardingButtonWirer: Tombol MULAI berhasil disambungkan.");
+            Debug.Log("[MoveMotion] OnboardingButtonWirer: Tombol MULAI berhasil disambungkan.");
         }
     }
 }

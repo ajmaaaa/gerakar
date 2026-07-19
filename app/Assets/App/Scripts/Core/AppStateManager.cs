@@ -1,12 +1,12 @@
 // ============================================================
-// GerakAR – AppStateManager.cs
+// MoveMotion – AppStateManager.cs
 // Singleton that owns the current AppState and broadcasts
 // state-change events to all listening systems.
 // ============================================================
 using System;
 using UnityEngine;
 
-namespace GerakAR.Core
+namespace MoveMotion.Core
 {
     /// <summary>
     /// Central state machine. All state transitions go through

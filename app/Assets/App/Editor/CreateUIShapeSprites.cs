@@ -26,7 +26,7 @@ public static class CreateUIShapeSprites
         GenerateRoundTopRect(Path.Combine(dir, "RoundTop-24.png"), 96, 24);
 
         AssetDatabase.Refresh();
-        Debug.Log("[GerakAR] Shape sprite generation complete.");
+        Debug.Log("[MoveMotion] Shape sprite generation complete.");
     }
 
     private static void GenerateSolidRectangle(string path)

@@ -1,12 +1,12 @@
 // ============================================================
-// GerakAR – MovementDatabase.cs
+// MoveMotion – MovementDatabase.cs
 // ScriptableObject registry that maps referenceImageName →
 // MovementData. Assign via the Inspector on the MainAR scene.
 // ============================================================
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GerakAR.Content
+namespace MoveMotion.Content
 {
     /// <summary>
     /// Container for all three (or more) MovementData assets.

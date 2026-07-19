@@ -1,5 +1,5 @@
 // ============================================================
-// GerakAR – PermissionController.cs
+// MoveMotion – PermissionController.cs
 // Requests camera permission on Android via Unity's permission API
 // and advances the AppState accordingly.
 // ============================================================
@@ -8,9 +8,9 @@ using UnityEngine;
 #if UNITY_ANDROID
 using UnityEngine.Android;
 #endif
-using GerakAR.Core;
+using MoveMotion.Core;
 
-namespace GerakAR.Core
+namespace MoveMotion.Core
 {
     /// <summary>
     /// Checks and requests camera permission on Android.

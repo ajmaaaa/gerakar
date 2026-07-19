@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8747828832dc4665bff40c19578df8e2, type: 3}
   m_Name: MovementDatabase
-  m_EditorClassIdentifier: GerakAR.Content.MovementDatabase
+  m_EditorClassIdentifier: MoveMotion.Content.MovementDatabase
   movements:
   - {fileID: 11400000, guid: 377675cef1374419a0d50646f272b809, type: 2}
   - {fileID: 11400000, guid: fa1f8a9734b44da5b56ca3ce23dc6c3d, type: 2}

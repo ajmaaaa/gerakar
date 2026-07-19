@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using GerakAR.Core;
+using MoveMotion.Core;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     /// <summary>
     /// Handles wiring and click logic for Bootstrap scene fallback and simulation buttons (G02, G08, G09).

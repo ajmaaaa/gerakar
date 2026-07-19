@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     public class LaserLineAnimator : MonoBehaviour
     {

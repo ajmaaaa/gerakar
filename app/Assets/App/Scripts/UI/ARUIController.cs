@@ -1,5 +1,5 @@
 // ============================================================
-// GerakAR – ARUIController.cs
+// MoveMotion – ARUIController.cs
 // Manages visibility of all AR-screen UI elements based on
 // AppState changes: scan overlay, movement label, timeline,
 // and floating action buttons.
@@ -8,14 +8,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
-using GerakAR.Core;
-using GerakAR.Content;
+using MoveMotion.Core;
+using MoveMotion.Content;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     /// <summary>
     /// Listens to <see cref="AppStateManager.OnStateChanged"/> and
-    /// <see cref="GerakAREvents"/> to show/hide the correct UI elements
+    /// <see cref="MoveMotionEvents"/> to show/hide the correct UI elements
     /// for each state. No game logic lives here – only visibility control.
     ///
     /// Wiring (Inspector):
@@ -72,8 +72,8 @@ namespace GerakAR.UI
             ApplyDetectionChipStyle(detectionToast);
 
             AppStateManager.OnStateChanged += OnStateChanged;
-            GerakAREvents.OnMovementDetected += OnMovementDetected;
-            GerakAREvents.OnLoopStarted += OnLoopStarted;
+            MoveMotionEvents.OnMovementDetected += OnMovementDetected;
+            MoveMotionEvents.OnLoopStarted += OnLoopStarted;
             Audio.AudioGuideController.OnAudioAvailabilityChanged += OnAudioAvailabilityChanged;
 
             // Wire buttons
@@ -94,8 +94,8 @@ namespace GerakAR.UI
         private void OnDestroy()
         {
             AppStateManager.OnStateChanged -= OnStateChanged;
-            GerakAREvents.OnMovementDetected -= OnMovementDetected;
-            GerakAREvents.OnLoopStarted -= OnLoopStarted;
+            MoveMotionEvents.OnMovementDetected -= OnMovementDetected;
+            MoveMotionEvents.OnLoopStarted -= OnLoopStarted;
             Audio.AudioGuideController.OnAudioAvailabilityChanged -= OnAudioAvailabilityChanged;
         }
 
@@ -308,7 +308,7 @@ namespace GerakAR.UI
         {
             _stateMgr?.TransitionTo(AppState.ShowingMaterial);
             string activeId = ActiveMovementContext.ActiveId ?? string.Empty;
-            GerakAREvents.RaiseMaterialOpened(activeId);
+            MoveMotionEvents.RaiseMaterialOpened(activeId);
         }
 
         private void OnPlayPausePressed()

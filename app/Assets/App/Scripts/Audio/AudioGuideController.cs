@@ -1,5 +1,5 @@
 // ============================================================
-// GerakAR – AudioGuideController.cs
+// MoveMotion – AudioGuideController.cs
 // Manages playback of the voice guide audio clip for each movement.
 // Playback starts only after the user presses the audio control.
 // Pauses when the user scrubs the timeline or target is lost.
@@ -7,10 +7,10 @@
 // ============================================================
 using UnityEngine;
 using System;
-using GerakAR.Core;
-using GerakAR.Content;
+using MoveMotion.Core;
+using MoveMotion.Content;
 
-namespace GerakAR.Audio
+namespace MoveMotion.Audio
 {
     [RequireComponent(typeof(AudioSource))]
     public class AudioGuideController : MonoBehaviour
@@ -53,19 +53,19 @@ namespace GerakAR.Audio
             _stateMgr = AppStateManager.Instance;
 
             // Subscribe to event bus
-            GerakAREvents.OnMovementDetected += PrepareAudioForMovement;
-            GerakAREvents.OnTrackingLost += StopAudio;
-            GerakAREvents.OnPoseInspectionStarted += PauseAudioOnScrub;
-            GerakAREvents.OnPoseInspectionEnded += ResumeAudioAfterScrub;
+            MoveMotionEvents.OnMovementDetected += PrepareAudioForMovement;
+            MoveMotionEvents.OnTrackingLost += StopAudio;
+            MoveMotionEvents.OnPoseInspectionStarted += PauseAudioOnScrub;
+            MoveMotionEvents.OnPoseInspectionEnded += ResumeAudioAfterScrub;
             AppStateManager.OnStateChanged += OnAppStateChanged;
         }
 
         private void OnDestroy()
         {
-            GerakAREvents.OnMovementDetected -= PrepareAudioForMovement;
-            GerakAREvents.OnTrackingLost -= StopAudio;
-            GerakAREvents.OnPoseInspectionStarted -= PauseAudioOnScrub;
-            GerakAREvents.OnPoseInspectionEnded -= ResumeAudioAfterScrub;
+            MoveMotionEvents.OnMovementDetected -= PrepareAudioForMovement;
+            MoveMotionEvents.OnTrackingLost -= StopAudio;
+            MoveMotionEvents.OnPoseInspectionStarted -= PauseAudioOnScrub;
+            MoveMotionEvents.OnPoseInspectionEnded -= ResumeAudioAfterScrub;
             AppStateManager.OnStateChanged -= OnAppStateChanged;
         }
 

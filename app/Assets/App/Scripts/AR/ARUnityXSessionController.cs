@@ -6,14 +6,14 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using GerakAR.Core;
-using GerakAR.UI;
+using MoveMotion.Core;
+using MoveMotion.UI;
 
-namespace GerakAR.AR
+namespace MoveMotion.AR
 {
     /// <summary>
     /// Owns the ARUnityX camera lifecycle and converts native startup failures
-    /// into GerakAR states instead of leaving the user on a black camera view.
+    /// into MoveMotion states instead of leaving the user on a black camera view.
     /// </summary>
     [DefaultExecutionOrder(-1000)]
     public sealed class ARUnityXSessionController : MonoBehaviour
@@ -30,7 +30,7 @@ namespace GerakAR.AR
         [Tooltip("ARUnityX image width in Unity units, where 1.0 equals 1 metre.")]
         private float physicalTargetWidthMeters = 0.12f;
 
-        [Header("GerakAR")]
+        [Header("MoveMotion")]
         [SerializeField] private ARImageTrackingController trackingController;
         [SerializeField] private ARUnityXURPBackgroundPresenter backgroundPresenter;
         [SerializeField] [Range(4f, 15f)] private float startupTimeoutSeconds = 8f;

@@ -1,6 +1,6 @@
 using TMPro;
 
-namespace GerakAR.Core
+namespace MoveMotion.Core
 {
     public sealed class FontSet
     {

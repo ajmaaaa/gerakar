@@ -34,6 +34,6 @@ public static class CreateUISolidRectangle
             importer.SaveAndReimport();
         }
 
-        Debug.Log("[GerakAR] UISolidRectangle sprite created at " + path);
+        Debug.Log("[MoveMotion] UISolidRectangle sprite created at " + path);
     }
 }

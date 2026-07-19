@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace GerakAR.UI
+namespace MoveMotion.UI
 {
     public class CollapsibleWarningToggle : MonoBehaviour
     {
