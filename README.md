@@ -38,16 +38,50 @@ Aplikasi mobile Augmented Reality untuk anak Sekolah Dasar. Arahkan kamera ke ga
 
 ## Tech Stack
 
+### Engine & Render
+
 | Bagian | Teknologi |
 |--------|-----------|
 | Engine | Unity 6000.5.3f1 |
 | Bahasa | C# (namespace `MoveMotion.*`) |
-| AR Image Tracking | ARToolkitX (ARUnityX) 1.3.1 via OpenUPM |
+| Render Pipeline | URP 17.5.0 (Forward Renderer, mobile minimal) |
+| Timeline | Unity Timeline 1.8.12 (animasi pose) |
+| Input | Input System 1.19.0 (touch & pointer) |
+
+### Augmented Reality
+
+| Bagian | Teknologi |
+|--------|-----------|
+| Image Tracking | ARToolkitX (ARUnityX) 1.3.1 via OpenUPM |
 | AR Abstraction | AR Foundation 6.5.0 + ARCore XR Plugin 6.5.0 (AR Optional) |
-| Render | URP 17.5.0 (mobile minimal) |
-| UI | uGUI + TextMeshPro |
-| Build | IL2CPP, ARM64 + ARMv7, Android min API 26 |
+| XR Management | XR Management 4.5.4 |
+| XR Interaction | XR Interaction Toolkit 3.5.1 |
+
+### UI & Teks
+
+| Bagian | Teknologi |
+|--------|-----------|
+| UI System | uGUI (Unity Canvas, RectTransform, ScrollRect) |
+| Teks / Font | TextMeshPro (Poppins — Body, Medium, Heading, Display) |
+| Ikon | SVG via Lucide Icons (play.svg) |
+
+### Build & Deployment
+
+| Bagian | Teknologi |
+|--------|-----------|
+| Scripting Backend | IL2CPP |
+| Arsitektur | ARM64 + ARMv7 |
+| Target SDK | Android API 26+ (min), API 35 (target) |
 | Bundle ID | `id.ac.unp.gerakar` |
+| Logging | Android Logcat 1.4.7 |
+| CI / Editor Tooling | Unity Editor scripting via `SetupAndBuild` (menu `Build →`) |
+
+### Version Control
+
+| Bagian | Teknologi |
+|--------|-----------|
+| VCS | Git + GitHub |
+| Package Manager | OpenUPM (scoped registry untuk ARToolkitX) |
 
 ---
 
