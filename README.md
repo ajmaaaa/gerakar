@@ -111,11 +111,97 @@ gerakar/
 
 ---
 
-## Setup
+## Setup & Build
 
-Butuh **Unity 6000.5.3f1**. Buka project dari folder `app/`, bukan dari root repository.
+### Prasyarat
 
-Panduan lengkap → [`docs/ENVIRONMENT.md`](docs/ENVIRONMENT.md)
+- **Unity 6000.5.3f1** dengan modul **Android Build Support**, **OpenJDK**, dan **Android SDK & NDK Tools**
+- Buka project dari folder `app/` (bukan root repository)
+- Android SDK minimum API **26** sudah terinstall
+
+---
+
+### 1. Buka Project di Unity
+
+1. Buka **Unity Hub**
+2. Klik **Add → Add project from disk**
+3. Pilih folder `app/` (bukan root repo)
+4. Unity Hub akan mendeteksi versi otomatis → buka dengan `6000.5.3f1`
+5. Tunggu import package selesai (5–10 menit untuk pertama kali)
+
+---
+
+### 2. Setup Scene & Konfigurasi (wajib setelah clone)
+
+Di Unity Editor, jalankan menu:
+
+```
+Build → Setup Scenes Only
+```
+
+Perintah ini akan:
+- Membuat/memperbarui scene `Bootstrap.unity` dan `MainAR.unity`
+- Men-generate prefab UI, sprite shape, dan font Poppins
+- Mengatur player settings, orientasi, dan scripting backend
+- Mendaftarkan scene ke Build Settings
+
+> **Catatan**: Harus dijalankan ulang jika melakukan clone baru atau scene hilang.
+
+---
+
+### 3. Build APK (Development / Testing)
+
+#### Cara cepat via menu Unity:
+
+```
+Build → Setup and Build APK
+```
+
+APK akan tersimpan di:
+
+```
+app/MoveMotion.apk
+```
+
+#### Atau manual via Build Settings:
+
+1. **File → Build Settings**
+2. Pastikan platform = **Android**
+3. Pastikan daftar scene sudah berisi `Bootstrap` dan `MainAR`
+4. Klik **Build** → pilih lokasi output
+
+#### CLI (batch mode, tanpa buka editor):
+
+```bash
+/path/to/Unity \
+  -batchmode -quit \
+  -projectPath /path/to/gerakar/app \
+  -buildTarget Android \
+  -executeMethod SetupAndBuild.ExecuteSetupAndBuild \
+  -logFile build.log
+```
+
+---
+
+### 4. Install ke Perangkat Android
+
+Hubungkan perangkat Android via USB, aktifkan **USB Debugging**, lalu:
+
+```bash
+adb install app/MoveMotion.apk
+```
+
+Atau drag & drop file `.apk` ke perangkat.
+
+> **Catatan**: AR tracking membutuhkan perangkat dengan kamera dan dukungan sensor yang memadai. Pada perangkat tanpa dukungan penuh, aplikasi otomatis masuk Mode Pembelajaran Mandiri (Non-AR).
+
+---
+
+### 5. Build AAB (Google Play Store)
+
+1. **File → Build Settings**
+2. Centang **Build App Bundle (Google Play)**
+3. Klik **Build**
 
 ---
 
