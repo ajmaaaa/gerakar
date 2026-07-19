@@ -69,6 +69,9 @@ namespace GerakAR.Content
         [Tooltip("Display name shown in the AR label and bottom sheet heading.")]
         public string displayName;
 
+        [Tooltip("Primary illustration used by the Non-AR catalog and detail preview.")]
+        public Sprite thumbnail;
+
         // ── Category color ───────────────────────────────────────────
 
         [Header("Category")]

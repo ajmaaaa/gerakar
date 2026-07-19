@@ -73,6 +73,7 @@ namespace GerakAR.UI
 
         private void Start()
         {
+            UIRuntimeStyler.NormalizeMuscleContainer(trainedAreasContainer);
             BottomSheetController.OnSheetStateChanged += OnSheetStateChanged;
             GerakAREvents.OnMovementDetected += OnMovementDetected;
 
@@ -97,6 +98,7 @@ namespace GerakAR.UI
         /// <summary>Load content for a new movement (called by tracking controller bridge).</summary>
         public void SetMovement(MovementData data)
         {
+            UIRuntimeStyler.NormalizeMuscleContainer(trainedAreasContainer);
             _currentMovement = data;
             if (backToPrimaryButton != null)
                 backToPrimaryButton.gameObject.SetActive(false);
@@ -178,6 +180,7 @@ namespace GerakAR.UI
                 if (muscleItemPrefab != null)
                 {
                     GameObject item = Instantiate(muscleItemPrefab, trainedAreasContainer);
+                    UIRuntimeStyler.NormalizeMuscleItem(item);
                     var tmp = item.GetComponentInChildren<TextMeshProUGUI>();
                     if (tmp != null) tmp.text = area;
                     _spawnedItems.Add(item);

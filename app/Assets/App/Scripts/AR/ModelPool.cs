@@ -21,11 +21,16 @@ namespace GerakAR.AR
         [Tooltip("Parent transform under which all pooled models are placed.")]
         [SerializeField] private Transform modelRoot;
 
+        [Tooltip("Camera used to keep the detected model centered after scanning.")]
+        [SerializeField] private Camera presentationCamera;
+
         // ── Private state ─────────────────────────────────────────────
 
         private readonly Dictionary<string, GameObject> _pool = new();
         private GameObject _activeModel;
         private string _activeMovementId;
+        private Transform _screenSpaceRoot;
+        private ScreenSpaceModelController _screenSpaceController;
 
         // ── Public API ────────────────────────────────────────────────
 
@@ -63,6 +68,7 @@ namespace GerakAR.AR
             }
 
             model.SetActive(true);
+            MoveToScreenSpace(model);
             _activeModel = model;
             _activeMovementId = data.movementId;
             return model;
@@ -76,6 +82,8 @@ namespace GerakAR.AR
 
             _activeModel = null;
             _activeMovementId = null;
+            if (_screenSpaceController != null)
+                _screenSpaceController.SetInteractionEnabled(false);
         }
 
         /// <summary>
@@ -124,6 +132,53 @@ namespace GerakAR.AR
 
             go.SetActive(false);
             return go;
+        }
+
+        private void MoveToScreenSpace(GameObject model)
+        {
+            EnsureScreenSpaceRoot();
+            if (_screenSpaceRoot == null)
+                return;
+
+            model.transform.SetParent(_screenSpaceRoot, false);
+            model.transform.localPosition = Vector3.zero;
+            model.transform.localRotation = Quaternion.identity;
+            CenterModel(model);
+            _screenSpaceController.ResetView();
+            _screenSpaceController.SetInteractionEnabled(true);
+        }
+
+        private void EnsureScreenSpaceRoot()
+        {
+            if (_screenSpaceRoot != null)
+                return;
+
+            if (presentationCamera == null)
+                presentationCamera = Camera.main;
+            if (presentationCamera == null)
+            {
+                Debug.LogError("[ModelPool] Main presentation camera was not found.");
+                return;
+            }
+
+            var root = new GameObject("ScreenSpaceModelRoot");
+            _screenSpaceRoot = root.transform;
+            _screenSpaceRoot.SetParent(presentationCamera.transform, false);
+            _screenSpaceController = root.AddComponent<ScreenSpaceModelController>();
+        }
+
+        private void CenterModel(GameObject model)
+        {
+            Renderer[] renderers = model.GetComponentsInChildren<Renderer>(true);
+            if (renderers.Length == 0)
+                return;
+
+            Bounds bounds = renderers[0].bounds;
+            for (int i = 1; i < renderers.Length; i++)
+                bounds.Encapsulate(renderers[i].bounds);
+
+            Vector3 localCenter = _screenSpaceRoot.InverseTransformPoint(bounds.center);
+            model.transform.localPosition -= localCenter;
         }
     }
 }

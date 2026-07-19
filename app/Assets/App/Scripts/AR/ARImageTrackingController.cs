@@ -33,6 +33,7 @@ namespace GerakAR.AR
         private MovementData _targetMovement;
         private Coroutine _detectionSequence;
         private bool _targetVisible;
+        private bool _movementPresented;
         private bool _nonARPreviewStarted;
 
         private void OnEnable()
@@ -99,7 +100,13 @@ namespace GerakAR.AR
 
         private void OnTargetFound(Object trackedObjectEvent)
         {
-            if (AppStateManager.RunInNonARMode || _targetVisible) return;
+            if (AppStateManager.RunInNonARMode) return;
+            if (_movementPresented)
+            {
+                _targetVisible = true;
+                return;
+            }
+            if (_targetVisible) return;
             _targetVisible = true;
             _targetMovement ??= movementDatabase?.FindByReferenceImageName(referenceImageName);
 
@@ -138,6 +145,7 @@ namespace GerakAR.AR
             {
                 movementController?.Attach(model, movement);
                 movementController?.StartLoop();
+                _movementPresented = true;
             }
 
             timelineController?.SetMovementData(movement);
@@ -152,6 +160,8 @@ namespace GerakAR.AR
         {
             if (AppStateManager.RunInNonARMode) return;
             _targetVisible = false;
+            if (_movementPresented)
+                return;
             CancelDetection();
 
             if (_targetMovement != null && modelPool?.ActiveMovementId == _targetMovement.movementId)
@@ -172,6 +182,7 @@ namespace GerakAR.AR
             movementController?.CancelReturnTimer();
             modelPool?.HideActive();
             ActiveMovementContext.Clear();
+            _movementPresented = false;
         }
 
         private void CancelDetection()

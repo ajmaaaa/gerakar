@@ -79,6 +79,7 @@ namespace GerakAR.UI
                 : null;
             ConfigureOnboardingEdgeBackground();
             ConfigureNonARScrolling();
+            RefreshNonARPresentation();
             ApplyFrameRatePolicy(AppState.Intro);
 
             if (detailCloseButton != null)
@@ -165,6 +166,8 @@ namespace GerakAR.UI
             // Panel tetap alpha=1 (tidak fadeOut), hanya teks yang crossfade di LoadCameraSequence.
             // Kita hanya nonaktifkan ketika state benar-benar meninggalkan flow loading (misalnya NonAR, CameraDenied, atau sudah Scanning).
             bool showOnboarding = state == AppState.Onboarding && !OnboardingController.IsCompleted;
+            bool showNonAR = state == AppState.NonARCatalog || state == AppState.UnsupportedNotice || state == AppState.ARInstallFailed;
+            bool showCamDenied = state == AppState.CameraDenied;
             if (introPanel != null)
             {
                 bool isIntroFlow = !showOnboarding &&
@@ -175,7 +178,7 @@ namespace GerakAR.UI
             }
 
             if (_onboardingEdgeBackground != null)
-                _onboardingEdgeBackground.enabled = showOnboarding;
+                _onboardingEdgeBackground.enabled = showOnboarding || showNonAR || showCamDenied;
 
             if (state == AppState.UnsupportedNotice || state == AppState.ARInstallFailed)
             {
@@ -188,9 +191,6 @@ namespace GerakAR.UI
 
             if (unsupportedPanel != null)
             {
-                bool showNonAR = state == AppState.NonARCatalog || state == AppState.UnsupportedNotice || state == AppState.ARInstallFailed;
-                bool showCamDenied = state == AppState.CameraDenied;
-                
                 unsupportedPanel.SetActive(showNonAR || showCamDenied);
 
                 if (nonARModePanel != null)
@@ -515,12 +515,7 @@ namespace GerakAR.UI
             // Set preview image illustration
             if (detailPreviewImage != null)
             {
-                Sprite modelSprite = null;
-#if UNITY_EDITOR
-                if (data.movementId.Contains("squat")) modelSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Related/squat.png");
-                else if (data.movementId.Contains("stretch") || data.movementId.Contains("dynamic")) modelSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Related/dynamic_stretch.png");
-                else if (data.movementId.Contains("ladder")) modelSprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Related/ladder_drill.png");
-#endif
+                Sprite modelSprite = data.thumbnail;
                 if (modelSprite != null)
                 {
                     detailPreviewImage.sprite = modelSprite;
@@ -586,6 +581,7 @@ namespace GerakAR.UI
                 foreach (var area in data.trainedAreas)
                 {
                     var item = Instantiate(muscleItemPrefab, detailTrainedContainer);
+                    UIRuntimeStyler.NormalizeMuscleItem(item);
                     var textTrans = item.transform.Find("Text");
                     var text = textTrans != null ? textTrans.GetComponent<TextMeshProUGUI>() : null;
                     if (text != null) text.text = area;
@@ -609,6 +605,47 @@ namespace GerakAR.UI
                     _nonARSpawnedItems.Add(item);
                 }
             }
+        }
+
+        private void ConfigureCatalogThumbnails()
+        {
+            ConfigureCatalogThumbnail("CatalogCatalog/CardSquat/PreviewImage", "squat");
+            ConfigureCatalogThumbnail("CatalogCatalog/CardDynamicStretch/PreviewImage", "dynamic_stretch");
+            ConfigureCatalogThumbnail("CatalogCatalog/CardLadderDrill/PreviewImage", "ladder_drill");
+        }
+
+        public void RefreshNonARPresentation()
+        {
+            ConfigureCatalogThumbnails();
+            UIRuntimeStyler.NormalizeCloseButton(detailCloseButton);
+            UIRuntimeStyler.NormalizeMuscleContainer(detailTrainedContainer);
+        }
+
+        private void ConfigureCatalogThumbnail(string path, string movementId)
+        {
+            Transform preview = nonARModePanel?.transform.Find(path);
+            MovementData data = movementDatabase?.FindById(movementId);
+            if (preview == null || data == null || data.thumbnail == null)
+                return;
+
+            Transform visual = preview.Find("Mannequin");
+            if (visual == null)
+            {
+                var visualObject = new GameObject("Mannequin", typeof(RectTransform), typeof(Image));
+                visual = visualObject.transform;
+                visual.SetParent(preview, false);
+                visual.SetAsFirstSibling();
+            }
+
+            Image image = visual.GetComponent<Image>();
+            image.sprite = data.thumbnail;
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+            RectTransform rect = visual as RectTransform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(4f, 4f);
+            rect.offsetMax = new Vector2(-4f, -4f);
         }
     }
 }

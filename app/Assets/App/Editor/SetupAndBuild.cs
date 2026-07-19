@@ -398,8 +398,20 @@ public static class SetupAndBuild
         introCanvasGroup.blocksRaycasts = false;
         var introController = managersGo.AddComponent<IntroController>();
 
-        // Full-bleed cover image placeholder (stretch, no margins)
+        // Full-bleed cover image from components/background.png
         var coverGo = CreateUIObject("FullBleedCoverImage", introGo);
+        var coverImg = coverGo.AddComponent<Image>();
+        var bgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Branding/background.png");
+        if (bgSprite != null)
+        {
+            coverImg.sprite = bgSprite;
+            coverImg.type = Image.Type.Simple;
+            coverImg.preserveAspect = false;
+        }
+        else
+        {
+            coverImg.color = DeepForest;
+        }
         StretchRect(coverGo.GetComponent<RectTransform>());
 
         // Top identity Left
@@ -417,20 +429,20 @@ public static class SetupAndBuild
         if (fonts != null) metaText.font = fonts.Display;
         StretchRect(metaTextGo.GetComponent<RectTransform>());
 
-        // Top identity Right (UNP Branding Placeholder)
+        // Top identity Right (UNP Logo from components/unp.jpg)
         var topIdRightGo = CreateUIObject("TopIdentityRight", introGo);
-        SetAnchorTopRight(topIdRightGo.GetComponent<RectTransform>(), -20f, -20f, 150f, 40f);
+        SetAnchorTopRight(topIdRightGo.GetComponent<RectTransform>(), -20f, -20f, 120f, 48f);
 
-        var unpTextGo = CreateUIObject("UNPText", topIdRightGo);
-        var unpText = unpTextGo.AddComponent<TextMeshProUGUI>();
-        unpText.textWrappingMode = TextWrappingModes.Normal;
-        unpText.overflowMode = TextOverflowModes.Overflow;
-        unpText.text = "<align=right><b>UNP</b>\n<size=8><color=#EADDCF>Universitas Negeri Padang</color></size></align>";
-        unpText.fontSize = 11f;
-        unpText.color = WarmWhite;
-        unpText.alignment = TextAlignmentOptions.Right;
-        if (fonts != null) unpText.font = fonts.Display;
-        StretchRect(unpTextGo.GetComponent<RectTransform>());
+        var unpLogoGo = CreateUIObject("UNPLogo", topIdRightGo);
+        var unpLogoImg = unpLogoGo.AddComponent<Image>();
+        var unpLogoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Branding/unp.png");
+        if (unpLogoSprite != null)
+        {
+            unpLogoImg.sprite = unpLogoSprite;
+            unpLogoImg.preserveAspect = true;
+            unpLogoImg.raycastTarget = false;
+        }
+        StretchRect(unpLogoGo.GetComponent<RectTransform>());
 
         // Center visual placeholder
         var centerGo = CreateUIObject("CenterVisual", introGo);
@@ -809,6 +821,7 @@ public static class SetupAndBuild
         detailXIconImg.raycastTarget = false;
         detailXIconImg.color = Color.white;
         SetCenterPosition(detailXIconGo.GetComponent<RectTransform>(), 0f, 0f, 14f, 14f);
+        UIRuntimeStyler.NormalizeCloseButton(detailCloseBtn);
 
         var detailScrollViewGo = CreateUIObject("ScrollView", nonARDetailPanelGo);
         var detailScrollRect = detailScrollViewGo.AddComponent<ScrollRect>();
@@ -1284,6 +1297,7 @@ public static class SetupAndBuild
 
         var serialPool = new SerializedObject(modelPool);
         serialPool.FindProperty("modelRoot").objectReferenceValue = modelRootGo.transform;
+        serialPool.FindProperty("presentationCamera").objectReferenceValue = cam;
         serialPool.ApplyModifiedProperties();
 
         var serialTracking = new SerializedObject(trackingController);
@@ -1470,7 +1484,7 @@ public static class SetupAndBuild
         var toastOutline = toastGo.AddComponent<Outline>();
         toastOutline.effectColor = SoftSand;
         toastOutline.effectDistance = new Vector2(1f, 1f);
-        SetCenterPosition(toastGo.GetComponent<RectTransform>(), 0f, 0f, 200f, 130f);
+        SetCenterPosition(toastGo.GetComponent<RectTransform>(), 0f, -3f, 200f, 136f);
 
         var toastCircleGo = CreateUIObject("SuccessCircle", toastGo);
         var toastCircleImg = toastCircleGo.AddComponent<Image>();
@@ -1534,7 +1548,7 @@ public static class SetupAndBuild
         arHeaderTitle.text = "GerakAR";
         arHeaderTitle.fontSize = 20f;
         arHeaderTitle.fontStyle = FontStyles.Bold;
-        arHeaderTitle.color = WarmWhite;
+        arHeaderTitle.color = ForestGreen;
         arHeaderTitle.alignment = TextAlignmentOptions.Center;
         if (fonts != null) arHeaderTitle.font = fonts.Display;
         SetAnchorTop(arHeaderTitleGo.GetComponent<RectTransform>(), 0f, -48f, 200f, 28f);
@@ -1548,6 +1562,7 @@ public static class SetupAndBuild
         arHeaderSub.alignment = TextAlignmentOptions.Center;
         if (fonts != null) arHeaderSub.font = fonts.Medium;
         SetAnchorTop(arHeaderSubGo.GetComponent<RectTransform>(), 0f, -76f, 200f, 16f);
+        UIRuntimeStyler.EnsureHeaderContrast(appHeaderGo.transform);
 
         // FAB column on FloatingActions container
         var fabColumnGo = CreateUIObject("FABColumn", arControlsGo); // parented under arControlsGo!
@@ -1627,7 +1642,7 @@ public static class SetupAndBuild
         tbgRT.anchorMax = new Vector2(1f, 1f);
         tbgRT.pivot = new Vector2(0.5f, 0.5f);
         tbgRT.anchoredPosition = Vector2.zero;
-        tbgRT.sizeDelta = new Vector2(12f, 0f); // Extended by 6f on left and right to match node curvature
+        tbgRT.sizeDelta = Vector2.zero;
 
         var fillAreaGo = CreateUIObject("FillArea", trackContainerGo);
         var faRT = fillAreaGo.GetComponent<RectTransform>();
@@ -1635,7 +1650,7 @@ public static class SetupAndBuild
         faRT.anchorMax = new Vector2(1f, 1f);
         faRT.pivot = new Vector2(0.5f, 0.5f);
         faRT.anchoredPosition = Vector2.zero;
-        faRT.sizeDelta = new Vector2(12f, 0f); // Extended by 6f on left and right to allow active fill to cover capsule caps
+        faRT.sizeDelta = Vector2.zero;
 
         var activeFillGo = CreateUIObject("ActiveFill", fillAreaGo);
         var fillImg = activeFillGo.AddComponent<Image>();
@@ -1693,8 +1708,8 @@ public static class SetupAndBuild
         ncRT.anchorMin = new Vector2(0f, 0f);
         ncRT.anchorMax = new Vector2(1f, 1f);
         ncRT.pivot = new Vector2(0.5f, 0.5f);
-        ncRT.anchoredPosition = Vector2.zero;
-        ncRT.sizeDelta = Vector2.zero;
+        ncRT.offsetMin = Vector2.zero;
+        ncRT.offsetMax = Vector2.zero;
 
         var markerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
             "Assets/App/Prefabs/TimelineMarker.prefab");
@@ -1771,8 +1786,14 @@ public static class SetupAndBuild
         handleImg.sprite = uiSolidRect;
         handleImg.type = Image.Type.Simple;
         handleImg.preserveAspect = false;
-        handleImg.color = SoftSand;
-        SetCenterPosition(handleGo.GetComponent<RectTransform>(), 0f, sheetRT.sizeDelta.y - 8f, 40f, 4f); // radius atas 28, handle 40x4
+        handleImg.color = ForestGreen;
+        handleImg.raycastTarget = false;
+        var handleRT = handleGo.GetComponent<RectTransform>();
+        handleRT.anchorMin = new Vector2(0.5f, 1f);
+        handleRT.anchorMax = new Vector2(0.5f, 1f);
+        handleRT.pivot = new Vector2(0.5f, 0.5f);
+        handleRT.anchoredPosition = new Vector2(0f, -10f);
+        handleRT.sizeDelta = new Vector2(40f, 4f);
 
         // Left text group
         var leftGroupGo = CreateUIObject("LeftGroup", sheetHeaderGo);
@@ -1856,6 +1877,7 @@ public static class SetupAndBuild
         xIconImg.raycastTarget = false;
         xIconImg.color = Color.white; // White X icon
         SetCenterPosition(xIconGo.GetComponent<RectTransform>(), 0f, 0f, 14f, 14f);
+        UIRuntimeStyler.NormalizeCloseButton(sheetCloseBtn);
 
         // Back to primary button (G07 -> G06) - now at the bottom of the Bottom Sheet (hidden per user request)
         var backBtnGo = CreateUIObject("BackToPrimaryButton", sheetGo);
@@ -1909,8 +1931,8 @@ public static class SetupAndBuild
         svRT.anchorMin = new Vector2(0f, 0f);
         svRT.anchorMax = new Vector2(1f, 1f);
         svRT.pivot = new Vector2(0.5f, 0.5f);
-        svRT.offsetMin = new Vector2(20f, 20f);    // 20px bottom, left margin
-        svRT.offsetMax = new Vector2(-20f, -80f);  // 20px right margin, starts 80px below top (below header)
+        svRT.offsetMin = new Vector2(0f, 0f);    // Full width and bottom to prevent clipping on outer edges
+        svRT.offsetMax = new Vector2(0f, -80f);  // Starts 80px below top (below header)
 
         var viewportGo = CreateUIObject("Viewport", scrollViewGo);
         viewportGo.AddComponent<RectMask2D>();
@@ -1927,6 +1949,7 @@ public static class SetupAndBuild
 
         var vlg = contentGo.AddComponent<VerticalLayoutGroup>();
         vlg.spacing = 24f;
+        vlg.padding = new RectOffset(20, 20, 0, 24); // Move 20px horizontal margins inside scroll as padding
         vlg.childAlignment = TextAnchor.UpperCenter;
         vlg.childControlWidth = true;
         vlg.childControlHeight = true;
@@ -2088,12 +2111,13 @@ public static class SetupAndBuild
         if (fonts != null) trainedTitle.font = fonts.Heading;
 
         var trainedContainerGo = CreateUIObject("TrainedContainer", fullExtrasGo);
-        var trainedGrid = trainedContainerGo.AddComponent<GridLayoutGroup>();
-        trainedGrid.spacing = new Vector2(8f, 8f);
-        trainedGrid.cellSize = new Vector2(146f, 32f); // two-column grid cards of size 146x32
-        trainedGrid.childAlignment = TextAnchor.UpperLeft;
-        trainedGrid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-        trainedGrid.constraintCount = 2;
+        var trainedLayout = trainedContainerGo.AddComponent<VerticalLayoutGroup>();
+        trainedLayout.spacing = 8f;
+        trainedLayout.childAlignment = TextAnchor.UpperLeft;
+        trainedLayout.childControlWidth = true;
+        trainedLayout.childControlHeight = true;
+        trainedLayout.childForceExpandWidth = true;
+        trainedLayout.childForceExpandHeight = false;
 
         var trainedCSF = trainedContainerGo.AddComponent<ContentSizeFitter>();
         trainedCSF.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -2149,7 +2173,7 @@ public static class SetupAndBuild
         // Scrim
         var scrimGo = CreateUIObject("Scrim", canvasStruct.SafeAreaGo);
         var scrimImg = scrimGo.AddComponent<Image>();
-        scrimImg.color = new Color(0.07f, 0.216f, 0.165f, 0.32f); // camera scrim opacity
+        scrimImg.color = new Color(0.07f, 0.216f, 0.165f, 0f);
         StretchRect(scrimGo.GetComponent<RectTransform>());
         scrimGo.AddComponent<Button>();
         scrimGo.SetActive(false);
@@ -2414,9 +2438,9 @@ public static class SetupAndBuild
 
         // Try to load mannequin image if available
         Sprite modelSprite = null;
-        if (icon == "SQ") modelSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Related/squat.png");
-        else if (icon == "DS") modelSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Related/dynamic_stretch.png");
-        else if (icon == "LD") modelSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Related/ladder_drill.png");
+        if (icon == "SQ") modelSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Primary/Squat.png");
+        else if (icon == "DS") modelSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Primary/DynamicStretching.png");
+        else if (icon == "LD") modelSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Primary/LadderDrill.png");
         
         if (modelSprite != null)
         {
@@ -2499,7 +2523,11 @@ public static class SetupAndBuild
         img.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png");
         img.type = Image.Type.Sliced;
         img.color = bgColor;
-        go.AddComponent<Button>();
+        var button = go.AddComponent<Button>();
+        ColorBlock colors = button.colors;
+        colors.disabledColor = Color.white;
+        colors.colorMultiplier = 1f;
+        button.colors = colors;
 
         var goRT = go.GetComponent<RectTransform>();
         goRT.sizeDelta = new Vector2(52f, 52f);

@@ -102,6 +102,8 @@ public static class ScreenshotCapturer
         var cameraError = unsupTrans != null ? unsupTrans.Find("CameraErrorPanel")?.gameObject : null;
         var nonARMode = unsupTrans != null ? unsupTrans.Find("NonARModePanel")?.gameObject : null;
         var nonARDetail = unsupTrans != null ? unsupTrans.Find("NonARDetailPanel")?.gameObject : null;
+        var bootstrapUI = Object.FindAnyObjectByType<BootstrapUIController>();
+        bootstrapUI?.RefreshNonARPresentation();
 
         // Helper to reset states
         System.Action deactivateAll = () => {
@@ -174,7 +176,7 @@ public static class ScreenshotCapturer
         {
             deactivateAll();
             unsup.SetActive(true);
-            var bui = Object.FindAnyObjectByType<BootstrapUIController>();
+            var bui = bootstrapUI;
             if (bui != null)
             {
                 bui.ShowNonARDetail("squat");
@@ -298,6 +300,10 @@ public static class ScreenshotCapturer
                 legacyHeaderSubtitle?.SetParent(headerRect, false);
             }
         }
+        UIRuntimeStyler.EnsureHeaderContrast(appHeaderGo?.transform);
+
+        var sheetController = sheetGo != null ? sheetGo.GetComponent<BottomSheetController>() : null;
+        sheetController?.ApplyRuntimeLayout();
 
         System.Action deactivateAll = () => {
             if (scanGo != null) scanGo.SetActive(false);

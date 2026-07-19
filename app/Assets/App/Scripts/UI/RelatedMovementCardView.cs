@@ -44,6 +44,24 @@ namespace GerakAR.UI
                 scrollLayout = scrollView.gameObject.AddComponent<LayoutElement>();
             scrollLayout.minHeight = 180f;
             scrollLayout.preferredHeight = 180f;
+
+            ScrollRect horizontalScroll = scrollView.GetComponent<ScrollRect>();
+            if (horizontalScroll == null)
+                return;
+
+            var snap = scrollView.GetComponent<HorizontalCardSnapController>();
+            if (snap == null)
+                snap = scrollView.gameObject.AddComponent<HorizontalCardSnapController>();
+            snap.Configure(horizontalScroll, 154f, 12f);
+
+            ScrollRect parentScroll = FindParentScrollRect(scrollView.parent);
+            if (parentScroll != null)
+            {
+                var router = scrollView.GetComponent<NestedScrollRouter>();
+                if (router == null)
+                    router = scrollView.gameObject.AddComponent<NestedScrollRouter>();
+                router.SetParentScrollRect(parentScroll);
+            }
         }
 
         public static void Configure(GameObject card, RelatedMovementData data)
@@ -55,14 +73,14 @@ namespace GerakAR.UI
             if (cardRect != null)
             {
                 cardRect.localScale = Vector3.one;
-                cardRect.sizeDelta = new Vector2(156f, 168f);
+                cardRect.sizeDelta = new Vector2(154f, 168f);
             }
 
             LayoutElement cardLayout = card.GetComponent<LayoutElement>();
             if (cardLayout == null)
                 cardLayout = card.AddComponent<LayoutElement>();
-            cardLayout.minWidth = 156f;
-            cardLayout.preferredWidth = 156f;
+            cardLayout.minWidth = 154f;
+            cardLayout.preferredWidth = 154f;
             cardLayout.minHeight = 168f;
             cardLayout.preferredHeight = 168f;
             cardLayout.flexibleWidth = 0f;
@@ -200,6 +218,18 @@ namespace GerakAR.UI
                     return match;
             }
 
+            return null;
+        }
+
+        private static ScrollRect FindParentScrollRect(Transform current)
+        {
+            while (current != null)
+            {
+                ScrollRect scrollRect = current.GetComponent<ScrollRect>();
+                if (scrollRect != null && scrollRect.vertical)
+                    return scrollRect;
+                current = current.parent;
+            }
             return null;
         }
 

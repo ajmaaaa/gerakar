@@ -48,6 +48,7 @@ namespace GerakAR.UI
         private bool _isDragging;
         private readonly List<GameObject> _markers = new();
         private readonly List<float> _markerTimes = new();
+        private readonly List<float> _poseTimes = new();
         private Color _accentColor = Color.gray;
 
         // ── Unity lifecycle ───────────────────────────────────────────
@@ -65,27 +66,14 @@ namespace GerakAR.UI
 
             if (hintText != null)
                 hintText.gameObject.SetActive(false);
+
+            AlignMarkersWithHandleRange();
         }
 
         private void Start()
         {
             _stateMgr = AppStateManager.Instance;
             AppStateManager.OnStateChanged += OnStateChanged;
-        }
-
-        private void Update()
-        {
-            if (!_isDragging && movementController != null && movementController.CanInspect)
-            {
-                float t = movementController.CurrentNormalizedTime;
-                if (timelineSlider != null)
-                {
-                    timelineSlider.onValueChanged.RemoveListener(OnSliderValueChanged);
-                    timelineSlider.value = t;
-                    timelineSlider.onValueChanged.AddListener(OnSliderValueChanged);
-                }
-                UpdateMarkerColors(t);
-            }
         }
 
         private void OnDestroy()
@@ -106,7 +94,8 @@ namespace GerakAR.UI
 
             // Reset slider to start
             if (timelineSlider != null)
-                timelineSlider.value = 0f;
+                timelineSlider.SetValueWithoutNotify(0f);
+            UpdateMarkerColors(0f);
         }
 
         // ── State change ──────────────────────────────────────────────
@@ -124,6 +113,13 @@ namespace GerakAR.UI
                 _isDragging = false;
                 hintText?.gameObject.SetActive(false);
             }
+
+            if (prev == AppState.InspectingPose &&
+                (next == AppState.TrackingLoop || next == AppState.NonARMovementPlayer))
+            {
+                timelineSlider?.SetValueWithoutNotify(0f);
+                UpdateMarkerColors(0f);
+            }
         }
 
         // ── Pointer / drag events ─────────────────────────────────────
@@ -136,7 +132,7 @@ namespace GerakAR.UI
                 : AppState.TrackingLoop;
             _isDragging = true;
             _stateMgr?.TransitionTo(AppState.InspectingPose);
-            movementController?.BeginInspect(timelineSlider?.value ?? 0f, returnState);
+            movementController?.BeginInspect(SliderToAnimationTime(timelineSlider?.value ?? 0f), returnState);
 
             if (hintText != null)
             {
@@ -149,7 +145,7 @@ namespace GerakAR.UI
         {
             if (!_isDragging || timelineSlider == null) return;
             // Slider handles its own value update; we mirror it to the controller
-            movementController?.ScrubTo(timelineSlider.value);
+            movementController?.ScrubTo(SliderToAnimationTime(timelineSlider.value));
         }
 
         public void OnPointerUp(PointerEventData eventData)
@@ -168,7 +164,7 @@ namespace GerakAR.UI
         private void OnSliderValueChanged(float value)
         {
             if (_isDragging)
-                movementController?.ScrubTo(value);
+                movementController?.ScrubTo(SliderToAnimationTime(value));
             UpdateMarkerColors(value);
         }
 
@@ -191,23 +187,27 @@ namespace GerakAR.UI
         private void BuildMarkers(List<KeyPoseData> poses, Color accentColor)
         {
             if (markerContainer == null || markerPrefab == null || poses == null) return;
+            AlignMarkersWithHandleRange();
             _accentColor = accentColor;
 
-            foreach (var pose in poses)
+            for (int i = 0; i < poses.Count; i++)
             {
+                KeyPoseData pose = poses[i];
+                float markerTime = poses.Count > 1 ? i / (float)(poses.Count - 1) : 0f;
                 GameObject dot = Instantiate(markerPrefab, markerContainer);
                 var rt = dot.GetComponent<RectTransform>();
                 if (rt != null)
                 {
-                    rt.anchorMin = new Vector2(pose.normalizedTime, 0.5f);
-                    rt.anchorMax = new Vector2(pose.normalizedTime, 0.5f);
+                    rt.anchorMin = new Vector2(markerTime, 0.5f);
+                    rt.anchorMax = new Vector2(markerTime, 0.5f);
                     rt.pivot = new Vector2(0.5f, 0.5f);
                     rt.anchoredPosition = Vector2.zero;
                     rt.sizeDelta = new Vector2(12f, 12f);
                 }
 
                 _markers.Add(dot);
-                _markerTimes.Add(pose.normalizedTime);
+                _markerTimes.Add(markerTime);
+                _poseTimes.Add(Mathf.Clamp01(pose.normalizedTime));
             }
             UpdateMarkerColors(timelineSlider != null ? timelineSlider.value : 0f);
         }
@@ -218,6 +218,26 @@ namespace GerakAR.UI
                 if (m != null) Destroy(m);
             _markers.Clear();
             _markerTimes.Clear();
+            _poseTimes.Clear();
+        }
+
+        private void AlignMarkersWithHandleRange()
+        {
+            if (markerContainer == null)
+                return;
+
+            markerContainer.offsetMin = new Vector2(0f, markerContainer.offsetMin.y);
+            markerContainer.offsetMax = new Vector2(0f, markerContainer.offsetMax.y);
+        }
+
+        private float SliderToAnimationTime(float sliderValue)
+        {
+            if (_poseTimes.Count < 2)
+                return Mathf.Clamp01(sliderValue);
+
+            float scaled = Mathf.Clamp01(sliderValue) * (_poseTimes.Count - 1);
+            int startIndex = Mathf.Min(Mathf.FloorToInt(scaled), _poseTimes.Count - 2);
+            return Mathf.Lerp(_poseTimes[startIndex], _poseTimes[startIndex + 1], scaled - startIndex);
         }
 
         // ── Helper ────────────────────────────────────────────────────

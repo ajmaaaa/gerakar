@@ -15,9 +15,10 @@ MonoBehaviour:
   movementId: squat
   referenceImageName: squat_target
   displayName: Squat
+  thumbnail: {fileID: 21300000, guid: 925b091b83228ca75a6aa0f4fca6dcf5, type: 3}
   categoryColor: {r: 0.72156864, g: 0.40784314, b: 0.2901961, a: 1}
-  modelPrefab: {fileID: 0}
-  animationClip: {fileID: 0}
+  modelPrefab: {fileID: 3620679701320789087, guid: 19c49d641fcccc0f28300ae485c5ce10, type: 3}
+  animationClip: {fileID: -203655887218126122, guid: e7ec92272d89725d18f5f7b259958913, type: 3}
   keyPoses:
   - normalizedTime: 0
     label: Berdiri siap

@@ -67,6 +67,7 @@ namespace GerakAR.UI
         {
             _stateMgr = AppStateManager.Instance;
             EnsureSharedHeader();
+            UIRuntimeStyler.EnsureHeaderContrast(appHeader?.transform);
             EnsureDetectionSuccessIcon();
             ApplyDetectionChipStyle(detectionToast);
 
@@ -207,6 +208,13 @@ namespace GerakAR.UI
 
         public static void ApplyDetectionChipStyle(GameObject toast)
         {
+            RectTransform toastRect = toast?.GetComponent<RectTransform>();
+            if (toastRect != null)
+            {
+                toastRect.anchoredPosition = new Vector2(toastRect.anchoredPosition.x, -3f);
+                toastRect.sizeDelta = new Vector2(toastRect.sizeDelta.x, 136f);
+            }
+
             Transform pill = toast?.transform.Find("MovementPill");
             if (pill == null)
                 return;
@@ -315,12 +323,20 @@ namespace GerakAR.UI
         private void UpdatePlayPauseUI()
         {
             var audioController = Audio.AudioGuideController.Instance;
+            bool available = audioController != null && audioController.HasAudio;
             if (playPauseButton != null)
-                playPauseButton.interactable = audioController != null && audioController.HasAudio;
+            {
+                ColorBlock colors = playPauseButton.colors;
+                colors.disabledColor = Color.white;
+                colors.colorMultiplier = 1f;
+                playPauseButton.colors = colors;
+                playPauseButton.interactable = available;
+            }
             if (playPauseIcon == null) return;
 
             bool isPlaying = audioController != null && audioController.IsPlaying;
             playPauseIcon.sprite = isPlaying ? pauseSprite : playSprite;
+            playPauseIcon.color = available ? Color.white : new Color(1f, 1f, 1f, 0.55f);
         }
 
 
