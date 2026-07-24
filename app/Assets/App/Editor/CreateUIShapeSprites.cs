@@ -13,9 +13,10 @@ public static class CreateUIShapeSprites
         // 1. UISolidRectangle (8x8 solid white)
         GenerateSolidRectangle(Path.Combine(dir, "UISolidRectangle.png"));
 
-        // 2. Rounded Rects
+        // 2. Rounded Rects & Pills
         GenerateRoundedRect(Path.Combine(dir, "RoundedRect-08.png"), 32, 8);
         GenerateRoundedRect(Path.Combine(dir, "RoundedRect-12.png"), 48, 12);
+        GenerateRoundedRect(Path.Combine(dir, "Pill-14.png"), 56, 14);
         GenerateRoundedRect(Path.Combine(dir, "RoundedRect-16.png"), 64, 16);
         GenerateRoundedRect(Path.Combine(dir, "RoundedRect-24.png"), 96, 24);
 

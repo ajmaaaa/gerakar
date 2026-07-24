@@ -658,12 +658,12 @@ public static class SetupAndBuild
         if (fonts != null) g08BrandText.font = fonts.Heading;
         SetCenterPosition(g08BrandGo.GetComponent<RectTransform>(), -85f, 0f, 150f, 24f);
 
-        // Top right mode & info button (no full background bar, displays description when pressed)
+        // Top right mode & info button (smooth 14px radius pill shape)
         var g08BadgeGo = CreateUIObject("ModeBadge", g08HeaderBarGo);
         var g08BadgeImg = g08BadgeGo.AddComponent<Image>();
-        g08BadgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png"); // pill shape
+        g08BadgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Pill-14.png"); // smooth 14px radius pill
         g08BadgeImg.type = Image.Type.Sliced;
-        g08BadgeImg.color = new Color(0.918f, 0.867f, 0.812f, 0.7f); // SoftSand tint
+        g08BadgeImg.color = new Color(0.918f, 0.867f, 0.812f, 0.75f); // SoftSand tint
         var g08BadgeBtn = g08BadgeGo.AddComponent<Button>();
         SetCenterPosition(g08BadgeGo.GetComponent<RectTransform>(), 105f, 0f, 115f, 28f);
 
@@ -698,9 +698,9 @@ public static class SetupAndBuild
         var collapsibleWarnRT = collapsibleWarnGo.GetComponent<RectTransform>();
         SetCenterPosition(collapsibleWarnRT, 0f, 0f, 300f, 140f); // Centered modal dialog popup
 
-        // G08 Catalog Content (shifted up to eliminate top empty space)
+        // G08 Catalog Content (shifted up directly below header bar to eliminate top space)
         var catalogCatalogGo = CreateUIObject("CatalogCatalog", nonARModePanelGo);
-        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, 25f, 320f, 340f);
+        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, 135f, 320f, 340f);
 
         var catTitleGo = CreateUIObject("CatTitleText", catalogCatalogGo);
         var catTitle = catTitleGo.AddComponent<TextMeshProUGUI>();
@@ -711,25 +711,25 @@ public static class SetupAndBuild
         catTitle.color = DeepForest;
         catTitle.alignment = TextAlignmentOptions.Left;
         if (fonts != null) catTitle.font = fonts.Heading;
-        SetCenterPosition(catTitleGo.GetComponent<RectTransform>(), 0f, 135f, 300f, 16f);
+        SetCenterPosition(catTitleGo.GetComponent<RectTransform>(), 0f, 145f, 300f, 16f);
 
-        // Squat card (Y = 80f)
+        // Squat card (Y = 90f)
         var (squatBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardSquat", "SQ", "Squat",
             "Kekuatan kaki dan postur tubuh.",
-            0f, 80f, btnSprite, fonts);
+            0f, 90f, btnSprite, fonts);
 
-        // Dynamic Stretching card (Y = -4f, 12px gap!)
+        // Dynamic Stretching card (Y = 6f, 12px gap!)
         var (dynamicStretchBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardDynamicStretch", "DS", "Dynamic Stretching",
             "Pemanasan aktif dan kelenturan tubuh.",
-            0f, -4f, btnSprite, fonts);
+            0f, 6f, btnSprite, fonts);
 
-        // Ladder Drill card (Y = -88f, 12px gap!)
+        // Ladder Drill card (Y = -78f, 12px gap!)
         var (ladderDrillBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardLadderDrill", "LD", "Ladder Drill",
             "Kelincahan dan koordinasi gerakan.",
-            0f, -88f, btnSprite, fonts);
+            0f, -78f, btnSprite, fonts);
 
         // Back button (hidden per user request)
         var catalogBackGo = CreateUIObject("CatalogBackButton", nonARModePanelGo);
