@@ -242,7 +242,7 @@ namespace MotionLearn.UI
                 duplicateHeader.gameObject.SetActive(false);
             }
 
-            // 2. Centered Checkmark Badge (64px x 64px at center y: 40f)
+            // 2. Triple Concentric Green Circle Checkmark Badge Icon (Matching user reference image)
             Transform circleTrans = toast.transform.Find("SuccessCircle");
             if (circleTrans != null)
             {
@@ -250,25 +250,78 @@ namespace MotionLearn.UI
                 circleRect.anchorMin = new Vector2(0.5f, 0.5f);
                 circleRect.anchorMax = new Vector2(0.5f, 0.5f);
                 circleRect.pivot = new Vector2(0.5f, 0.5f);
-                circleRect.anchoredPosition = new Vector2(0f, 40f);
-                circleRect.sizeDelta = new Vector2(64f, 64f);
+                circleRect.anchoredPosition = new Vector2(0f, 50f);
+                circleRect.sizeDelta = new Vector2(104f, 104f);
 
-                Image circleImg = circleTrans.GetComponent<Image>();
-                if (circleImg != null)
+                // Outer Ring 1 (Light Mint Green)
+                Image outerCircleImg = circleTrans.GetComponent<Image>();
+                if (outerCircleImg != null)
                 {
 #if UNITY_EDITOR
-                    circleImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
+                    outerCircleImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
 #endif
-                    circleImg.type = Image.Type.Simple;
-                    circleImg.color = new Color(0.13f, 0.65f, 0.32f, 1.0f);
+                    outerCircleImg.type = Image.Type.Simple;
+                    outerCircleImg.color = new Color(0.65f, 0.95f, 0.80f, 0.55f);
                 }
 
+                // Middle Ring 2 (Fresh Green)
+                Transform midTrans = circleTrans.Find("MiddleCircle");
+                if (midTrans == null)
+                {
+                    var midGo = new GameObject("MiddleCircle", typeof(RectTransform), typeof(Image));
+                    midGo.layer = circleTrans.gameObject.layer;
+                    midTrans = midGo.transform;
+                    midTrans.SetParent(circleTrans, false);
+                }
+                var midRect = midTrans as RectTransform;
+                midRect.anchorMin = new Vector2(0.5f, 0.5f);
+                midRect.anchorMax = new Vector2(0.5f, 0.5f);
+                midRect.pivot = new Vector2(0.5f, 0.5f);
+                midRect.anchoredPosition = Vector2.zero;
+                midRect.sizeDelta = new Vector2(78f, 78f);
+                Image midImg = midTrans.GetComponent<Image>();
+                if (midImg != null)
+                {
+#if UNITY_EDITOR
+                    midImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
+#endif
+                    midImg.type = Image.Type.Simple;
+                    midImg.color = new Color(0.29f, 0.85f, 0.48f, 0.85f);
+                }
+
+                // Center Circle 3 (Vibrant Deep Green)
+                Transform innerTrans = circleTrans.Find("InnerCircle");
+                if (innerTrans == null)
+                {
+                    var innerGo = new GameObject("InnerCircle", typeof(RectTransform), typeof(Image));
+                    innerGo.layer = circleTrans.gameObject.layer;
+                    innerTrans = innerGo.transform;
+                    innerTrans.SetParent(circleTrans, false);
+                }
+                var innerRect = innerTrans as RectTransform;
+                innerRect.anchorMin = new Vector2(0.5f, 0.5f);
+                innerRect.anchorMax = new Vector2(0.5f, 0.5f);
+                innerRect.pivot = new Vector2(0.5f, 0.5f);
+                innerRect.anchoredPosition = Vector2.zero;
+                innerRect.sizeDelta = new Vector2(54f, 54f);
+                Image innerImg = innerTrans.GetComponent<Image>();
+                if (innerImg != null)
+                {
+#if UNITY_EDITOR
+                    innerImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
+#endif
+                    innerImg.type = Image.Type.Simple;
+                    innerImg.color = new Color(0.09f, 0.65f, 0.28f, 1.0f);
+                }
+
+                // Checkmark Icon
                 Transform checkIcon = circleTrans.Find("CheckIcon");
                 if (checkIcon != null)
                 {
+                    checkIcon.SetParent(innerTrans, false);
                     var checkRect = checkIcon as RectTransform;
                     checkRect.anchoredPosition = Vector2.zero;
-                    checkRect.sizeDelta = new Vector2(32f, 32f);
+                    checkRect.sizeDelta = new Vector2(28f, 28f);
                 }
             }
 

@@ -16,15 +16,24 @@ namespace MotionLearn.UI
 
             foreach (TextMeshProUGUI text in header.GetComponentsInChildren<TextMeshProUGUI>(true))
             {
-                if (text.name == "HeaderTitle")
-                    text.color = ForestGreen;
+                if (text.name == "HeaderTitle" || text.name == "Title" || text.name == "BrandTitle")
+                {
+                    text.color = new Color(0.06f, 0.15f, 0.09f, 1.0f); // Deep Forest Green (#0C2314)
+                }
+                else if (text.name == "HeaderSubtitle" || text.name == "Subtitle" || text.name == "BrandSubtitle")
+                {
+                    text.color = new Color(0.09f, 0.40f, 0.20f, 1.0f); // Forest Green (#166534)
+                }
+                else
+                {
+                    text.color = new Color(0.06f, 0.15f, 0.09f, 1.0f);
+                }
 
                 Outline outline = text.GetComponent<Outline>();
-                if (outline == null)
-                    outline = text.gameObject.AddComponent<Outline>();
-                outline.effectColor = HeaderOutline;
-                outline.effectDistance = new Vector2(1.5f, -1.5f);
-                outline.useGraphicAlpha = true;
+                if (outline != null)
+                {
+                    outline.enabled = false;
+                }
             }
         }
 

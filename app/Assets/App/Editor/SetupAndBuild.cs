@@ -1489,20 +1489,39 @@ public static class SetupAndBuild
         toastRT.offsetMin = Vector2.zero;
         toastRT.offsetMax = Vector2.zero;
 
+        var circleSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
+
+        // Outer Ring 1 (Light Mint Green)
         var toastCircleGo = CreateUIObject("SuccessCircle", toastGo);
         var toastCircleImg = toastCircleGo.AddComponent<Image>();
-        toastCircleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
+        toastCircleImg.sprite = circleSprite;
         toastCircleImg.type = Image.Type.Simple;
-        toastCircleImg.color = new Color(0.13f, 0.65f, 0.32f, 1.0f);
-        SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 40f, 64f, 64f);
+        toastCircleImg.color = new Color(0.65f, 0.95f, 0.80f, 0.55f);
+        SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 50f, 104f, 104f);
 
-        var toastCheckGo = CreateUIObject("CheckIcon", toastCircleGo);
+        // Middle Ring 2 (Fresh Green)
+        var midCircleGo = CreateUIObject("MiddleCircle", toastCircleGo);
+        var midCircleImg = midCircleGo.AddComponent<Image>();
+        midCircleImg.sprite = circleSprite;
+        midCircleImg.type = Image.Type.Simple;
+        midCircleImg.color = new Color(0.29f, 0.85f, 0.48f, 0.85f);
+        SetCenterPosition(midCircleGo.GetComponent<RectTransform>(), 0f, 0f, 78f, 78f);
+
+        // Center Circle 3 (Vibrant Deep Green)
+        var innerCircleGo = CreateUIObject("InnerCircle", midCircleGo);
+        var innerCircleImg = innerCircleGo.AddComponent<Image>();
+        innerCircleImg.sprite = circleSprite;
+        innerCircleImg.type = Image.Type.Simple;
+        innerCircleImg.color = new Color(0.09f, 0.65f, 0.28f, 1.0f);
+        SetCenterPosition(innerCircleGo.GetComponent<RectTransform>(), 0f, 0f, 54f, 54f);
+
+        var toastCheckGo = CreateUIObject("CheckIcon", innerCircleGo);
         var toastCheck = toastCheckGo.AddComponent<Image>();
         toastCheck.sprite = checkIcon;
         toastCheck.preserveAspect = true;
         toastCheck.raycastTarget = false;
         toastCheck.color = WarmWhite;
-        SetCenterPosition(toastCheckGo.GetComponent<RectTransform>(), 0f, 0f, 32f, 32f);
+        SetCenterPosition(toastCheckGo.GetComponent<RectTransform>(), 0f, 0f, 28f, 28f);
 
         var toastKickerGo = CreateUIObject("KickerText", toastGo);
         var toastKicker = toastKickerGo.AddComponent<TextMeshProUGUI>();
