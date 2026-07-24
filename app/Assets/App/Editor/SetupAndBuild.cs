@@ -286,9 +286,9 @@ public static class SetupAndBuild
         markerImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
         markerImg.type = Image.Type.Simple;
         markerImg.preserveAspect = true;
-        markerImg.color = new Color(0.29f, 0.85f, 0.48f, 0.90f);
+        markerImg.color = ForestGreen;
         var markerRT = markerGo.GetComponent<RectTransform>();
-        markerRT.sizeDelta = new Vector2(14f, 14f);
+        markerRT.sizeDelta = new Vector2(16f, 16f);
         PrefabUtility.SaveAsPrefabAsset(markerGo, "Assets/App/Prefabs/TimelineMarker.prefab");
         Object.DestroyImmediate(markerGo);
 

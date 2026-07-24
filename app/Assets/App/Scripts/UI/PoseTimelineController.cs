@@ -172,17 +172,14 @@ namespace MotionLearn.UI
 
         private void UpdateMarkerColors(float sliderValue)
         {
+            Color lineGreen = new Color(0.09f, 0.40f, 0.20f, 1.0f); // Exact same Forest Green as the line when passed
             for (int i = 0; i < _markers.Count; i++)
             {
                 if (_markers[i] == null) continue;
                 var img = _markers[i].GetComponent<Image>();
                 if (img != null)
                 {
-                    float t = _markerTimes[i];
-                    // Active markers: Vibrant Forest Green (#15803D). Upcoming markers: Soft Fresh Green (#4ADE80). NO ORANGE!
-                    img.color = (t <= sliderValue)
-                        ? MotionLearnTheme.Primary
-                        : new Color(0.29f, 0.85f, 0.48f, 0.90f);
+                    img.color = lineGreen; // All marker nodes use the exact same green color as the line
                 }
             }
         }
@@ -192,12 +189,14 @@ namespace MotionLearn.UI
             if (markerContainer == null || markerPrefab == null || poses == null) return;
             AlignMarkersWithHandleRange();
             _accentColor = accentColor;
+            Color lineGreen = new Color(0.09f, 0.40f, 0.20f, 1.0f);
 
             for (int i = 0; i < poses.Count; i++)
             {
                 KeyPoseData pose = poses[i];
                 float markerTime = poses.Count > 1 ? i / (float)(poses.Count - 1) : 0f;
                 GameObject dot = Instantiate(markerPrefab, markerContainer);
+                dot.transform.localScale = Vector3.one;
                 var img = dot.GetComponent<Image>();
                 if (img != null)
                 {
@@ -206,6 +205,7 @@ namespace MotionLearn.UI
 #endif
                     img.type = Image.Type.Simple;
                     img.preserveAspect = true;
+                    img.color = lineGreen;
                 }
                 var rt = dot.GetComponent<RectTransform>();
                 if (rt != null)
@@ -214,7 +214,7 @@ namespace MotionLearn.UI
                     rt.anchorMax = new Vector2(markerTime, 0.5f);
                     rt.pivot = new Vector2(0.5f, 0.5f);
                     rt.anchoredPosition = Vector2.zero;
-                    rt.sizeDelta = new Vector2(14f, 14f);
+                    rt.sizeDelta = new Vector2(16f, 16f); // 16x16 perfect circle node
                 }
 
                 _markers.Add(dot);
