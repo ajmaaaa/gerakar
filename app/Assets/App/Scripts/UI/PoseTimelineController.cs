@@ -179,7 +179,10 @@ namespace MotionLearn.UI
                 if (img != null)
                 {
                     float t = _markerTimes[i];
-                    img.color = (t <= sliderValue) ? MotionLearnTheme.Primary : _accentColor;
+                    // Active markers: Vibrant Forest Green (#15803D). Upcoming markers: Soft Fresh Green (#4ADE80). NO ORANGE!
+                    img.color = (t <= sliderValue)
+                        ? MotionLearnTheme.Primary
+                        : new Color(0.29f, 0.85f, 0.48f, 0.90f);
                 }
             }
         }
@@ -195,6 +198,15 @@ namespace MotionLearn.UI
                 KeyPoseData pose = poses[i];
                 float markerTime = poses.Count > 1 ? i / (float)(poses.Count - 1) : 0f;
                 GameObject dot = Instantiate(markerPrefab, markerContainer);
+                var img = dot.GetComponent<Image>();
+                if (img != null)
+                {
+#if UNITY_EDITOR
+                    img.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
+#endif
+                    img.type = Image.Type.Simple;
+                    img.preserveAspect = true;
+                }
                 var rt = dot.GetComponent<RectTransform>();
                 if (rt != null)
                 {
@@ -202,7 +214,7 @@ namespace MotionLearn.UI
                     rt.anchorMax = new Vector2(markerTime, 0.5f);
                     rt.pivot = new Vector2(0.5f, 0.5f);
                     rt.anchoredPosition = Vector2.zero;
-                    rt.sizeDelta = new Vector2(12f, 12f);
+                    rt.sizeDelta = new Vector2(14f, 14f);
                 }
 
                 _markers.Add(dot);
