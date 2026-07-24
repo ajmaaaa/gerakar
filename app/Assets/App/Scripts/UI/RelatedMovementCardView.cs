@@ -37,6 +37,14 @@ namespace MotionLearn.UI
                 contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, 180f);
             }
 
+            Transform viewport = container.parent;
+            if (viewport != null)
+            {
+                RectMask2D mask = viewport.GetComponent<RectMask2D>();
+                if (mask != null)
+                    mask.padding = new Vector4(-20f, 0f, -20f, 0f);
+            }
+
             Transform scrollView = container.parent != null ? container.parent.parent : null;
             if (scrollView == null)
                 return;

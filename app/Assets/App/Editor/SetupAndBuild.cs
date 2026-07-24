@@ -1053,7 +1053,8 @@ public static class SetupAndBuild
         drelLE.preferredHeight = 180f;
 
         var drelViewportGo = CreateUIObject("Viewport", dRelatedScrollViewGo);
-        drelViewportGo.AddComponent<RectMask2D>();
+        var drelMask = drelViewportGo.AddComponent<RectMask2D>();
+        drelMask.padding = new Vector4(-20f, 0f, -20f, 0f); // Allow cards to scroll 100% unclipped edge-to-edge!
         StretchRect(drelViewportGo.GetComponent<RectTransform>());
         drelScroll.viewport = drelViewportGo.GetComponent<RectTransform>();
 
@@ -1940,19 +1941,19 @@ public static class SetupAndBuild
         shRT.anchoredPosition = Vector2.zero;
         shRT.sizeDelta = new Vector2(0f, 76f);
 
-        // Grab handle pill (top-center drag indicator showing sheet can be pulled up)
+        // Grab handle line (top-center drag indicator showing sheet can be pulled up - flat rectangle without corner radius)
         var handleGo = CreateUIObject("GrabHandle", sheetHeaderGo);
         var handleImg = handleGo.AddComponent<Image>();
-        handleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Pill-14.png");
-        handleImg.type = Image.Type.Sliced;
-        handleImg.color = ForestGreen; // Forest Green drag indicator pill (#1F5D42)
+        handleImg.sprite = uiSolidRect; // Flat rectangle line without corner radius!
+        handleImg.type = Image.Type.Simple;
+        handleImg.color = ForestGreen; // Forest Green drag indicator line (#1F5D42)
         handleImg.raycastTarget = false;
         var handleRT = handleGo.GetComponent<RectTransform>();
         handleRT.anchorMin = new Vector2(0.5f, 1f);
         handleRT.anchorMax = new Vector2(0.5f, 1f);
         handleRT.pivot = new Vector2(0.5f, 1f);
         handleRT.anchoredPosition = new Vector2(0f, -8f);
-        handleRT.sizeDelta = new Vector2(38f, 4f);
+        handleRT.sizeDelta = new Vector2(36f, 4f);
         handleGo.transform.SetAsLastSibling();
 
         // Left text group
