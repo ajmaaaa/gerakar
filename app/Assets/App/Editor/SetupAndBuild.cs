@@ -905,7 +905,7 @@ public static class SetupAndBuild
         // Steps Container
         var detailStepsGo = CreateUIObject("StepsContainer", dsvContentGo);
         var dstepsVlg = detailStepsGo.AddComponent<VerticalLayoutGroup>();
-        dstepsVlg.spacing = 8f;
+        dstepsVlg.spacing = 10f;
         dstepsVlg.childControlWidth = true;
         dstepsVlg.childControlHeight = true;
         dstepsVlg.childForceExpandWidth = true;
@@ -961,7 +961,7 @@ public static class SetupAndBuild
 
         var detailMistakesGo = CreateUIObject("MistakesContainer", dsvContentGo);
         var dmistakesVlg = detailMistakesGo.AddComponent<VerticalLayoutGroup>();
-        dmistakesVlg.spacing = 8f;
+        dmistakesVlg.spacing = 10f;
         dmistakesVlg.childControlWidth = true;
         dmistakesVlg.childControlHeight = true;
         dmistakesVlg.childForceExpandWidth = true;
@@ -981,7 +981,7 @@ public static class SetupAndBuild
 
         var detailTrainedGo = CreateUIObject("TrainedContainer", dsvContentGo);
         var dtrainedVlg = detailTrainedGo.AddComponent<VerticalLayoutGroup>();
-        dtrainedVlg.spacing = 8f;
+        dtrainedVlg.spacing = 10f;
         dtrainedVlg.childControlWidth = true;
         dtrainedVlg.childControlHeight = true;
         dtrainedVlg.childForceExpandWidth = true;
@@ -2221,7 +2221,14 @@ public static class SetupAndBuild
         extrasVlg.childControlWidth = true;
         extrasVlg.childControlHeight = true;
 
-        var mistakesTitleGo = CreateUIObject("MistakesTitle", fullExtrasGo);
+        // Mistakes list section
+        var mistakesGroupGo = CreateUIObject("MistakesSection", fullExtrasGo);
+        var mistakesGroupVlg = mistakesGroupGo.AddComponent<VerticalLayoutGroup>();
+        mistakesGroupVlg.spacing = 8f;
+        mistakesGroupVlg.childControlWidth = true;
+        mistakesGroupVlg.childControlHeight = true;
+
+        var mistakesTitleGo = CreateUIObject("MistakesTitle", mistakesGroupGo);
         var mistakesTitle = mistakesTitleGo.AddComponent<TextMeshProUGUI>();
         mistakesTitle.textWrappingMode = TextWrappingModes.Normal;
         mistakesTitle.text = "HINDARI INI";
@@ -2230,13 +2237,20 @@ public static class SetupAndBuild
         mistakesTitle.color = DeepForest;
         if (fonts != null) mistakesTitle.font = fonts.Heading;
 
-        var mistakesContainerGo = CreateUIObject("MistakesContainer", fullExtrasGo);
+        var mistakesContainerGo = CreateUIObject("MistakesContainer", mistakesGroupGo);
         var mistakesContVlg = mistakesContainerGo.AddComponent<VerticalLayoutGroup>();
-        mistakesContVlg.spacing = 8f;
+        mistakesContVlg.spacing = 10f;
         mistakesContVlg.childControlWidth = true;
         mistakesContVlg.childControlHeight = true;
 
-        var trainedTitleGo = CreateUIObject("TrainedTitle", fullExtrasGo);
+        // Trained muscles section
+        var trainedGroupGo = CreateUIObject("TrainedSection", fullExtrasGo);
+        var trainedGroupVlg = trainedGroupGo.AddComponent<VerticalLayoutGroup>();
+        trainedGroupVlg.spacing = 8f;
+        trainedGroupVlg.childControlWidth = true;
+        trainedGroupVlg.childControlHeight = true;
+
+        var trainedTitleGo = CreateUIObject("TrainedTitle", trainedGroupGo);
         var trainedTitle = trainedTitleGo.AddComponent<TextMeshProUGUI>();
         trainedTitle.textWrappingMode = TextWrappingModes.Normal;
         trainedTitle.text = "OTOT YANG TERLATIH";
@@ -2245,9 +2259,9 @@ public static class SetupAndBuild
         trainedTitle.color = DeepForest;
         if (fonts != null) trainedTitle.font = fonts.Heading;
 
-        var trainedContainerGo = CreateUIObject("TrainedContainer", fullExtrasGo);
+        var trainedContainerGo = CreateUIObject("TrainedContainer", trainedGroupGo);
         var trainedLayout = trainedContainerGo.AddComponent<VerticalLayoutGroup>();
-        trainedLayout.spacing = 8f;
+        trainedLayout.spacing = 10f;
         trainedLayout.childAlignment = TextAnchor.UpperLeft;
         trainedLayout.childControlWidth = true;
         trainedLayout.childControlHeight = true;
