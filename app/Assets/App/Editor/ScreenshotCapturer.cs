@@ -272,15 +272,10 @@ public static class ScreenshotCapturer
 
         Transform legacyHeaderTitle = null;
         Transform legacyHeaderSubtitle = null;
-        GameObject temporaryCheckIcon = null;
-        GameObject legacyCheckText = null;
         Transform successCircle = detectionToastGo?.transform.Find("SuccessCircle");
-        if (successCircle != null && successCircle.Find("CheckIcon") == null)
+        if (detectionToastGo != null)
         {
-            legacyCheckText = successCircle.Find("Text")?.gameObject;
-            if (legacyCheckText != null)
-                legacyCheckText.SetActive(false);
-            temporaryCheckIcon = ARUIController.CreateProceduralCheckIcon(successCircle);
+            ARUIController.ApplyDetectionChipStyle(detectionToastGo);
         }
 
         if (appHeaderGo == null && arControlsGo != null)
@@ -454,10 +449,6 @@ public static class ScreenshotCapturer
             legacyHeaderSubtitle.SetParent(arControlsGo.transform, false);
         if (legacyHeaderTitle != null || legacyHeaderSubtitle != null)
             Object.DestroyImmediate(appHeaderGo);
-        if (temporaryCheckIcon != null)
-            Object.DestroyImmediate(temporaryCheckIcon);
-        if (legacyCheckText != null)
-            legacyCheckText.SetActive(true);
 
         // Cleanup
         cam.targetTexture = null;
