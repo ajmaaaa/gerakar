@@ -172,18 +172,14 @@ namespace MotionLearn.UI
 
         private void UpdateMarkerColors(float sliderValue)
         {
+            Color lineGreen = new Color(0.09f, 0.40f, 0.20f, 1.0f); // Forest Green (#166534)
             for (int i = 0; i < _markers.Count; i++)
             {
                 if (_markers[i] == null) continue;
                 var img = _markers[i].GetComponent<Image>();
                 if (img != null)
                 {
-                    float t = _markerTimes[i];
-                    // Active/Passed nodes: Pure White for crisp high-contrast visibility on dark green fill line!
-                    // Upcoming nodes: Forest Green on light sage track background!
-                    img.color = (t <= sliderValue)
-                        ? Color.white
-                        : new Color(0.09f, 0.40f, 0.20f, 1.0f);
+                    img.color = lineGreen; // Crisp Forest Green nodes
                 }
             }
         }
@@ -193,6 +189,7 @@ namespace MotionLearn.UI
             if (markerContainer == null || markerPrefab == null || poses == null) return;
             AlignMarkersWithHandleRange();
             _accentColor = accentColor;
+            Color lineGreen = new Color(0.09f, 0.40f, 0.20f, 1.0f);
 
             for (int i = 0; i < poses.Count; i++)
             {
@@ -208,7 +205,15 @@ namespace MotionLearn.UI
 #endif
                     img.type = Image.Type.Simple;
                     img.preserveAspect = true;
+                    img.color = lineGreen;
                 }
+                
+                // Add crisp white outline ring around 12px circle nodes
+                var outline = dot.GetComponent<Outline>();
+                if (outline == null) outline = dot.AddComponent<Outline>();
+                outline.effectColor = Color.white;
+                outline.effectDistance = new Vector2(1.5f, 1.5f);
+
                 var rt = dot.GetComponent<RectTransform>();
                 if (rt != null)
                 {
@@ -216,7 +221,7 @@ namespace MotionLearn.UI
                     rt.anchorMax = new Vector2(markerTime, 0.5f);
                     rt.pivot = new Vector2(0.5f, 0.5f);
                     rt.anchoredPosition = Vector2.zero;
-                    rt.sizeDelta = new Vector2(10f, 10f); // 10px crisp circle node
+                    rt.sizeDelta = new Vector2(12f, 12f); // 12px circle node
                 }
 
                 _markers.Add(dot);

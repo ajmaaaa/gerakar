@@ -1649,15 +1649,15 @@ public static class SetupAndBuild
         tcRT.anchorMax = new Vector2(1f, 0.5f);
         tcRT.pivot = new Vector2(0.5f, 0.5f);
         tcRT.anchoredPosition = Vector2.zero;
-        tcRT.sizeDelta = new Vector2(-24f, 12f); // Exact bounds matching Node 0 center to Node N-1 center (276px wide x 12px high)
+        tcRT.sizeDelta = new Vector2(-12f, 4f); // Sleek 4px line track spanning 288px (from x=6 to x=294)
 
-        var capsuleHD = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/CapsuleHD.png");
+        var circlePill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/CirclePill-24.png");
         var trackBgGo = CreateUIObject("TrackBackground", trackContainerGo);
         var trackBgImg = trackBgGo.AddComponent<Image>();
-        trackBgImg.sprite = capsuleHD;
-        trackBgImg.type = Image.Type.Simple; // Un-sliced HD vector quad for 100% pure semi-circle radius
+        trackBgImg.sprite = circlePill;
+        trackBgImg.type = Image.Type.Sliced;
         trackBgImg.preserveAspect = false;
-        trackBgImg.color = new Color(0.09f, 0.40f, 0.20f, 0.15f); // Soft transparent forest green track background
+        trackBgImg.color = new Color(0.88f, 0.91f, 0.94f, 1.0f); // Clean light slate line track (#E2E8F0)
         var tbgRT = trackBgGo.GetComponent<RectTransform>();
         tbgRT.anchorMin = new Vector2(0f, 0f);
         tbgRT.anchorMax = new Vector2(1f, 1f);
@@ -1666,27 +1666,26 @@ public static class SetupAndBuild
         tbgRT.sizeDelta = Vector2.zero;
 
         var fillAreaGo = CreateUIObject("FillArea", trackContainerGo);
-        fillAreaGo.AddComponent<RectMask2D>(); // RectMask2D clips ActiveFill cleanly without any squashing!
         var faRT = fillAreaGo.GetComponent<RectTransform>();
         faRT.anchorMin = new Vector2(0f, 0f);
-        faRT.anchorMax = new Vector2(0f, 1f);
-        faRT.pivot = new Vector2(0f, 0.5f);
+        faRT.anchorMax = new Vector2(1f, 1f);
+        faRT.pivot = new Vector2(0.5f, 0.5f);
         faRT.anchoredPosition = Vector2.zero;
-        faRT.sizeDelta = Vector2.zero; // Slider drives FillArea width!
-        slider.fillRect = faRT; // Slider drives FillArea mask!
+        faRT.sizeDelta = Vector2.zero;
 
         var activeFillGo = CreateUIObject("ActiveFill", fillAreaGo);
         var fillImg = activeFillGo.AddComponent<Image>();
-        fillImg.sprite = capsuleHD;
-        fillImg.type = Image.Type.Simple; // Un-sliced HD vector quad
+        fillImg.sprite = circlePill;
+        fillImg.type = Image.Type.Sliced;
         fillImg.preserveAspect = false;
-        fillImg.color = ForestGreen; // Forest Green active fill
+        fillImg.color = ForestGreen; // Forest Green active fill (#166534)
         var afRT = activeFillGo.GetComponent<RectTransform>();
         afRT.anchorMin = new Vector2(0f, 0f);
         afRT.anchorMax = new Vector2(0f, 1f);
         afRT.pivot = new Vector2(0f, 0.5f);
         afRT.anchoredPosition = Vector2.zero;
-        afRT.sizeDelta = new Vector2(276f, 0f); // Fixed at full 276px width so texture NEVER squashes!
+        afRT.sizeDelta = Vector2.zero; // Driven by slider!
+        slider.fillRect = afRT;
 
         var handleAreaGo = CreateUIObject("HandleTouchArea", sliderGo);
         handleAreaGo.AddComponent<Image>().color = Color.clear;
