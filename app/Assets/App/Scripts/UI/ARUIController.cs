@@ -314,12 +314,41 @@ namespace MotionLearn.UI
                     innerImg.color = new Color(0.09f, 0.65f, 0.28f, 1.0f);
                 }
 
-                // Ensure solid white checkmark icon inside innerTrans (pixel-perfect vertex join)
-                if (innerTrans.Find("CheckStroke1") == null)
+                // Ensure crisp white checkmark icon inside innerTrans
+                Transform checkIconTrans = innerTrans.Find("CheckIcon");
+                if (checkIconTrans == null)
                 {
-                    CreateCheckStroke(innerTrans, "CheckStroke1", new Vector2(-5.0f, -2.5f), new Vector2(10f, 4.5f), 45f);
-                    CreateCheckStroke(innerTrans, "CheckStroke2", new Vector2(3.2f, 2.8f), new Vector2(18f, 4.5f), -45f);
+                    var checkGo = new GameObject("CheckIcon", typeof(RectTransform), typeof(Image));
+                    checkGo.layer = innerTrans.gameObject.layer;
+                    checkIconTrans = checkGo.transform;
+                    checkIconTrans.SetParent(innerTrans, false);
                 }
+
+                var checkRect = (RectTransform)checkIconTrans;
+                checkRect.anchorMin = new Vector2(0.5f, 0.5f);
+                checkRect.anchorMax = new Vector2(0.5f, 0.5f);
+                checkRect.pivot = new Vector2(0.5f, 0.5f);
+                checkRect.anchoredPosition = Vector2.zero;
+                checkRect.sizeDelta = new Vector2(28f, 28f);
+
+                Image checkImg = checkIconTrans.GetComponent<Image>();
+                if (checkImg != null)
+                {
+#if UNITY_EDITOR
+                    checkImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/check.svg");
+#endif
+                    checkImg.type = Image.Type.Simple;
+                    checkImg.preserveAspect = true;
+                    checkImg.color = Color.white;
+                    checkImg.raycastTarget = false;
+                }
+                checkIconTrans.gameObject.SetActive(true);
+
+                // Clean up any old stroke objects if present
+                Transform oldS1 = innerTrans.Find("CheckStroke1");
+                if (oldS1 != null) Object.DestroyImmediate(oldS1.gameObject);
+                Transform oldS2 = innerTrans.Find("CheckStroke2");
+                if (oldS2 != null) Object.DestroyImmediate(oldS2.gameObject);
             }
 
             // 3. Centered Kicker Text ("GERAKAN TERDETEKSI") at y: -20f

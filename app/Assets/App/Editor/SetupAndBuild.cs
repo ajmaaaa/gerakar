@@ -1584,19 +1584,16 @@ public static class SetupAndBuild
         innerCircleImg.color = new Color(0.09f, 0.65f, 0.28f, 1.0f);
         SetCenterPosition(innerCircleGo.GetComponent<RectTransform>(), 0f, 0f, 54f, 54f);
 
-        var stroke1 = CreateUIObject("CheckStroke1", innerCircleGo);
-        var s1Img = stroke1.AddComponent<Image>();
-        s1Img.sprite = uiSolidRect;
-        s1Img.color = Color.white;
-        SetCenterPosition(stroke1.GetComponent<RectTransform>(), -5.0f, -2.5f, 10f, 4.5f);
-        stroke1.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0f, 0f, 45f);
+        var checkSvgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/check.svg");
 
-        var stroke2 = CreateUIObject("CheckStroke2", innerCircleGo);
-        var s2Img = stroke2.AddComponent<Image>();
-        s2Img.sprite = uiSolidRect;
-        s2Img.color = Color.white;
-        SetCenterPosition(stroke2.GetComponent<RectTransform>(), 3.2f, 2.8f, 18f, 4.5f);
-        stroke2.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0f, 0f, -45f);
+        var toastCheckGo = CreateUIObject("CheckIcon", innerCircleGo);
+        var toastCheck = toastCheckGo.AddComponent<Image>();
+        toastCheck.sprite = checkSvgSprite;
+        toastCheck.type = Image.Type.Simple;
+        toastCheck.preserveAspect = true;
+        toastCheck.raycastTarget = false;
+        toastCheck.color = Color.white;
+        SetCenterPosition(toastCheckGo.GetComponent<RectTransform>(), 0f, 0f, 28f, 28f);
 
         var toastKickerGo = CreateUIObject("KickerText", toastGo);
         var toastKicker = toastKickerGo.AddComponent<TextMeshProUGUI>();
