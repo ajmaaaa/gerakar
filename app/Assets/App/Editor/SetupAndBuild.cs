@@ -1666,13 +1666,14 @@ public static class SetupAndBuild
         tbgRT.sizeDelta = Vector2.zero;
 
         var fillAreaGo = CreateUIObject("FillArea", trackContainerGo);
-        fillAreaGo.AddComponent<RectMask2D>(); // RectMask2D clips ActiveFill cleanly with zero 9-slice distortion!
+        fillAreaGo.AddComponent<RectMask2D>(); // RectMask2D clips ActiveFill cleanly without any squashing!
         var faRT = fillAreaGo.GetComponent<RectTransform>();
         faRT.anchorMin = new Vector2(0f, 0f);
-        faRT.anchorMax = new Vector2(1f, 1f);
-        faRT.pivot = new Vector2(0.5f, 0.5f);
+        faRT.anchorMax = new Vector2(0f, 1f);
+        faRT.pivot = new Vector2(0f, 0.5f);
         faRT.anchoredPosition = Vector2.zero;
-        faRT.sizeDelta = Vector2.zero;
+        faRT.sizeDelta = Vector2.zero; // Slider drives FillArea width!
+        slider.fillRect = faRT; // Slider drives FillArea mask!
 
         var activeFillGo = CreateUIObject("ActiveFill", fillAreaGo);
         var fillImg = activeFillGo.AddComponent<Image>();
@@ -1685,8 +1686,7 @@ public static class SetupAndBuild
         afRT.anchorMax = new Vector2(0f, 1f);
         afRT.pivot = new Vector2(0f, 0.5f);
         afRT.anchoredPosition = Vector2.zero;
-        afRT.sizeDelta = Vector2.zero; // driven by slider
-        slider.fillRect = afRT;
+        afRT.sizeDelta = new Vector2(276f, 0f); // Fixed at full 276px width so texture NEVER squashes!
 
         var handleAreaGo = CreateUIObject("HandleTouchArea", sliderGo);
         handleAreaGo.AddComponent<Image>().color = Color.clear;
