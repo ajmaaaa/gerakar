@@ -756,8 +756,8 @@ public static class SetupAndBuild
         // Header for Non-AR Detail (consistent with G08 Catalog)
         var detailHeaderGo = CreateUIObject("HeaderBar", nonARDetailPanelGo);
         var detailHeaderImg = detailHeaderGo.AddComponent<Image>();
-        detailHeaderImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-16.png");
-        detailHeaderImg.type = Image.Type.Sliced;
+        detailHeaderImg.sprite = uiSolidRect;
+        detailHeaderImg.type = Image.Type.Simple;
         detailHeaderImg.color = WarmCream; // Solid background hides content scrolling underneath
         AddSoftShadow(detailHeaderGo, 0f, -4f, 0.15f); // Downward drop shadow on sticky header
         var dhRT = detailHeaderGo.GetComponent<RectTransform>();
@@ -1899,8 +1899,8 @@ public static class SetupAndBuild
         // Header area — Solid WarmCream background with downward drop shadow separator
         var sheetHeaderGo = CreateUIObject("SheetHeader", sheetGo);
         var sheetHeaderImg = sheetHeaderGo.AddComponent<Image>();
-        sheetHeaderImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-16.png");
-        sheetHeaderImg.type = Image.Type.Sliced;
+        sheetHeaderImg.sprite = uiSolidRect;
+        sheetHeaderImg.type = Image.Type.Simple;
         sheetHeaderImg.color = WarmCream; // Hides content scrolling underneath
         AddSoftShadow(sheetHeaderGo, 0f, -4f, 0.15f); // Downward drop shadow on sticky header
         var shRT = sheetHeaderGo.GetComponent<RectTransform>();
