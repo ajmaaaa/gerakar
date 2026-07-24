@@ -135,7 +135,7 @@ public static class CreateUIShapeSprites
             importer.SetTextureSettings(settings);
             importer.alphaIsTransparency = true;
             importer.spritePixelsPerUnit = 400;
-            importer.spriteBorder = new Vector4(radius, radius, radius, radius);
+            importer.spriteBorder = path.Contains("Circle") ? Vector4.zero : new Vector4(radius, radius, radius, radius);
             importer.SaveAndReimport();
         }
     }

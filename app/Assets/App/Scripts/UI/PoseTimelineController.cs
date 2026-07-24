@@ -214,7 +214,7 @@ namespace MotionLearn.UI
                     rt.anchorMax = new Vector2(markerTime, 0.5f);
                     rt.pivot = new Vector2(0.5f, 0.5f);
                     rt.anchoredPosition = Vector2.zero;
-                    rt.sizeDelta = new Vector2(16f, 16f); // 16x16 perfect circle node
+                    rt.sizeDelta = new Vector2(10f, 10f); // 10x10 compact round circle dot
                 }
 
                 _markers.Add(dot);

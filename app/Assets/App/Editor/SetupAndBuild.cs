@@ -280,7 +280,7 @@ public static class SetupAndBuild
         PrefabUtility.SaveAsPrefabAsset(cardGo, "Assets/App/Prefabs/RelatedCard.prefab");
         Object.DestroyImmediate(cardGo);
 
-        // 4. TimelineMarker prefab (small circle node)
+        // 4. TimelineMarker prefab (small 10px circle node)
         var markerGo = new GameObject("TimelineMarker", typeof(RectTransform));
         var markerImg = markerGo.AddComponent<Image>();
         markerImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
@@ -288,7 +288,7 @@ public static class SetupAndBuild
         markerImg.preserveAspect = true;
         markerImg.color = ForestGreen;
         var markerRT = markerGo.GetComponent<RectTransform>();
-        markerRT.sizeDelta = new Vector2(16f, 16f);
+        markerRT.sizeDelta = new Vector2(10f, 10f);
         PrefabUtility.SaveAsPrefabAsset(markerGo, "Assets/App/Prefabs/TimelineMarker.prefab");
         Object.DestroyImmediate(markerGo);
 
