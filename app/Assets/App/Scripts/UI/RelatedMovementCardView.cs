@@ -31,9 +31,9 @@ namespace MotionLearn.UI
             RectTransform contentRect = container as RectTransform;
             if (contentRect != null)
             {
-                contentRect.anchorMin = new Vector2(0f, 0.5f);
-                contentRect.anchorMax = new Vector2(0f, 0.5f);
-                contentRect.pivot = new Vector2(0f, 0.5f);
+                contentRect.anchorMin = new Vector2(0.5f, 0.5f);
+                contentRect.anchorMax = new Vector2(0.5f, 0.5f);
+                contentRect.pivot = new Vector2(0.5f, 0.5f);
                 contentRect.anchoredPosition = Vector2.zero;
                 contentRect.sizeDelta = new Vector2(0f, 180f);
             }

@@ -1060,9 +1060,9 @@ public static class SetupAndBuild
 
         var drelContentGo = CreateUIObject("Content", drelViewportGo);
         var drelContentRT = drelContentGo.GetComponent<RectTransform>();
-        drelContentRT.anchorMin = new Vector2(0f, 0.5f);
-        drelContentRT.anchorMax = new Vector2(0f, 0.5f);
-        drelContentRT.pivot = new Vector2(0f, 0.5f);
+        drelContentRT.anchorMin = new Vector2(0.5f, 0.5f);
+        drelContentRT.anchorMax = new Vector2(0.5f, 0.5f);
+        drelContentRT.pivot = new Vector2(0.5f, 0.5f);
         drelContentRT.anchoredPosition = Vector2.zero;
         drelContentRT.sizeDelta = new Vector2(0f, 180f); // Auto-fit width via ContentSizeFitter
         drelScroll.content = drelContentRT;
@@ -2344,9 +2344,9 @@ public static class SetupAndBuild
 
         var relContentGo = CreateUIObject("Content", relViewportGo);
         var relContentRT = relContentGo.GetComponent<RectTransform>();
-        relContentRT.anchorMin = new Vector2(0f, 0.5f);
-        relContentRT.anchorMax = new Vector2(0f, 0.5f);
-        relContentRT.pivot = new Vector2(0f, 0.5f);
+        relContentRT.anchorMin = new Vector2(0.5f, 0.5f);
+        relContentRT.anchorMax = new Vector2(0.5f, 0.5f);
+        relContentRT.pivot = new Vector2(0.5f, 0.5f);
         relContentRT.anchoredPosition = Vector2.zero;
         relContentRT.sizeDelta = new Vector2(0f, 180f); // Auto-fit width via ContentSizeFitter
         relScroll.content = relContentRT;
