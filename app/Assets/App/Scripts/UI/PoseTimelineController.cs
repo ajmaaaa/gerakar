@@ -214,7 +214,7 @@ namespace MotionLearn.UI
                     rt.anchorMax = new Vector2(markerTime, 0.5f);
                     rt.pivot = new Vector2(0.5f, 0.5f);
                     rt.anchoredPosition = Vector2.zero;
-                    rt.sizeDelta = new Vector2(10f, 10f); // 10x10 compact round circle dot
+                    rt.sizeDelta = new Vector2(12f, 12f); // 12x12 node dot on 6px line
                 }
 
                 _markers.Add(dot);
@@ -238,8 +238,15 @@ namespace MotionLearn.UI
             if (markerContainer == null)
                 return;
 
-            markerContainer.offsetMin = new Vector2(0f, markerContainer.offsetMin.y);
-            markerContainer.offsetMax = new Vector2(0f, markerContainer.offsetMax.y);
+            RectTransform mcRT = markerContainer as RectTransform;
+            if (mcRT != null)
+            {
+                mcRT.anchorMin = new Vector2(0f, 0f);
+                mcRT.anchorMax = new Vector2(1f, 1f);
+                mcRT.pivot = new Vector2(0.5f, 0.5f);
+                mcRT.offsetMin = new Vector2(12f, 0f); // Inset 12px from left to match handle knob center
+                mcRT.offsetMax = new Vector2(-12f, 0f); // Inset 12px from right to match handle knob center
+            }
         }
 
         private float SliderToAnimationTime(float sliderValue)

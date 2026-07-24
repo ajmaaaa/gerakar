@@ -1649,7 +1649,7 @@ public static class SetupAndBuild
         tcRT.anchorMax = new Vector2(1f, 0.5f);
         tcRT.pivot = new Vector2(0.5f, 0.5f);
         tcRT.anchoredPosition = Vector2.zero;
-        tcRT.sizeDelta = new Vector2(-24f, 10f); // 10px capsule height matching 10px circle node dots
+        tcRT.sizeDelta = new Vector2(-24f, 6f); // Sleek 6px capsule line height
 
         var circlePill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/CirclePill-24.png");
         var trackBgGo = CreateUIObject("TrackBackground", trackContainerGo);
@@ -1657,7 +1657,7 @@ public static class SetupAndBuild
         trackBgImg.sprite = circlePill;
         trackBgImg.type = Image.Type.Sliced;
         trackBgImg.preserveAspect = false;
-        trackBgImg.color = new Color(0.663f, 0.745f, 0.635f, 0.4f); // Light sage green transparent capsule background
+        trackBgImg.color = new Color(0.65f, 0.95f, 0.80f, 0.50f); // Light sage green transparent capsule track background
         var tbgRT = trackBgGo.GetComponent<RectTransform>();
         tbgRT.anchorMin = new Vector2(0f, 0f);
         tbgRT.anchorMax = new Vector2(1f, 1f);
@@ -1703,7 +1703,7 @@ public static class SetupAndBuild
         hRT.anchorMax = new Vector2(0f, 1f);
         hRT.pivot = new Vector2(0.5f, 0.5f);
         hRT.anchoredPosition = Vector2.zero;
-        hRT.sizeDelta = new Vector2(28f, 0f);
+        hRT.sizeDelta = new Vector2(24f, 0f);
         slider.handleRect = hRT;
 
         // Circular knob visual as a child of the handle
@@ -1717,7 +1717,7 @@ public static class SetupAndBuild
         hvRT.anchorMax = new Vector2(0.5f, 0.5f);
         hvRT.pivot = new Vector2(0.5f, 0.5f);
         hvRT.anchoredPosition = Vector2.zero;
-        hvRT.sizeDelta = new Vector2(28f, 28f); // 28x28 white circle knob
+        hvRT.sizeDelta = new Vector2(24f, 24f); // 24x24 white circle knob
 
         // Soft drop shadow to the white circle knob
         var shadow = handleVisGo.AddComponent<Shadow>();
@@ -1729,8 +1729,8 @@ public static class SetupAndBuild
         ncRT.anchorMin = new Vector2(0f, 0f);
         ncRT.anchorMax = new Vector2(1f, 1f);
         ncRT.pivot = new Vector2(0.5f, 0.5f);
-        ncRT.offsetMin = Vector2.zero;
-        ncRT.offsetMax = Vector2.zero;
+        ncRT.offsetMin = new Vector2(12f, 0f); // Inset 12px from left matching handle center
+        ncRT.offsetMax = new Vector2(-12f, 0f); // Inset 12px from right matching handle center
 
         var markerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
             "Assets/App/Prefabs/TimelineMarker.prefab");
