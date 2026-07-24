@@ -658,67 +658,35 @@ public static class SetupAndBuild
         if (fonts != null) g08BrandText.font = fonts.Heading;
         SetCenterPosition(g08BrandGo.GetComponent<RectTransform>(), -85f, 0f, 150f, 24f);
 
+        // Top right mode & info button (no full background bar, displays description when pressed)
         var g08BadgeGo = CreateUIObject("ModeBadge", g08HeaderBarGo);
         var g08BadgeImg = g08BadgeGo.AddComponent<Image>();
         g08BadgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png"); // pill shape
         g08BadgeImg.type = Image.Type.Sliced;
-        g08BadgeImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // 60% SoftSand tint background
-        var g08BadgeBtn = g08BadgeGo.AddComponent<Button>(); // For toggling warning card
-        SetCenterPosition(g08BadgeGo.GetComponent<RectTransform>(), 110f, 0f, 100f, 28f);
+        g08BadgeImg.color = new Color(0.918f, 0.867f, 0.812f, 0.7f); // SoftSand tint
+        var g08BadgeBtn = g08BadgeGo.AddComponent<Button>();
+        SetCenterPosition(g08BadgeGo.GetComponent<RectTransform>(), 105f, 0f, 115f, 28f);
+
+        var g08BadgeIconGo = CreateUIObject("Icon", g08BadgeGo);
+        var g08BadgeIconImg = g08BadgeIconGo.AddComponent<Image>();
+        g08BadgeIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/info.svg");
+        g08BadgeIconImg.preserveAspect = true;
+        g08BadgeIconImg.raycastTarget = false;
+        g08BadgeIconImg.color = SecondaryText;
+        SetCenterPosition(g08BadgeIconGo.GetComponent<RectTransform>(), -44f, 0f, 14f, 14f);
 
         var g08BadgeTextGo = CreateUIObject("Text", g08BadgeGo);
         var g08BadgeText = g08BadgeTextGo.AddComponent<TextMeshProUGUI>();
         g08BadgeText.textWrappingMode = TextWrappingModes.Normal;
         g08BadgeText.text = "NON-AR MODE";
-        g08BadgeText.fontSize = 9f;
+        g08BadgeText.fontSize = 8.5f;
         g08BadgeText.fontStyle = FontStyles.Bold;
         g08BadgeText.color = SecondaryText; // #716040
-        g08BadgeText.alignment = TextAlignmentOptions.Center;
+        g08BadgeText.alignment = TextAlignmentOptions.Left;
         if (fonts != null) g08BadgeText.font = fonts.Heading;
-        StretchRect(g08BadgeTextGo.GetComponent<RectTransform>());
+        SetCenterPosition(g08BadgeTextGo.GetComponent<RectTransform>(), 8f, 0f, 75f, 16f);
 
-        // Notice Pill Bar ("HP Tanpa AR — Mode 3D") replacing blank empty space
-        var g08NoticePillGo = CreateUIObject("NoticePillBar", nonARModePanelGo);
-        var g08NoticePillImg = g08NoticePillGo.AddComponent<Image>();
-        g08NoticePillImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png");
-        g08NoticePillImg.type = Image.Type.Sliced;
-        g08NoticePillImg.color = new Color(0.98f, 0.95f, 0.88f, 1f); // Soft Amber (#FFFBEB)
-        var pillOutline = g08NoticePillGo.AddComponent<Outline>();
-        pillOutline.effectColor = new Color(0.95f, 0.85f, 0.65f, 1f);
-        pillOutline.effectDistance = new Vector2(1f, 1f);
-        var noticeBtn = g08NoticePillGo.AddComponent<Button>();
-        SetCenterPosition(g08NoticePillGo.GetComponent<RectTransform>(), 0f, 128f, 320f, 36f);
-
-        var pillIconGo = CreateUIObject("Icon", g08NoticePillGo);
-        var pillIconImg = pillIconGo.AddComponent<Image>();
-        pillIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/info.svg");
-        pillIconImg.preserveAspect = true;
-        pillIconImg.raycastTarget = false;
-        pillIconImg.color = new Color(0.72f, 0.42f, 0.1f, 1f);
-        SetCenterPosition(pillIconGo.GetComponent<RectTransform>(), -136f, 0f, 16f, 16f);
-
-        var pillTextGo = CreateUIObject("Text", g08NoticePillGo);
-        var pillText = pillTextGo.AddComponent<TextMeshProUGUI>();
-        pillText.textWrappingMode = TextWrappingModes.Normal;
-        pillText.text = "Perangkat Tanpa AR — Mode 3D Aktif";
-        pillText.fontSize = 10f;
-        pillText.fontStyle = FontStyles.Bold;
-        pillText.color = new Color(0.57f, 0.25f, 0.05f, 1f);
-        pillText.alignment = TextAlignmentOptions.Left;
-        if (fonts != null) pillText.font = fonts.Heading;
-        SetCenterPosition(pillTextGo.GetComponent<RectTransform>(), -10f, 0f, 215f, 20f);
-
-        var pillRightGo = CreateUIObject("RightInfo", g08NoticePillGo);
-        var pillRightTxt = pillRightGo.AddComponent<TextMeshProUGUI>();
-        pillRightTxt.text = "Info ›";
-        pillRightTxt.fontSize = 9.5f;
-        pillRightTxt.fontStyle = FontStyles.Bold;
-        pillRightTxt.color = new Color(0.72f, 0.42f, 0.1f, 1f);
-        pillRightTxt.alignment = TextAlignmentOptions.Right;
-        if (fonts != null) pillRightTxt.font = fonts.Heading;
-        SetCenterPosition(pillRightGo.GetComponent<RectTransform>(), 130f, 0f, 35f, 18f);
-
-        // G08 Collapsible Warning (Popup Dialog Modal style)
+        // G08 Collapsible Warning Popup Dialog Modal (shown when info button is pressed)
         var warnOverlayGo = CreateUIObject("WarningPopupOverlay", nonARModePanelGo);
         var warnOverlayImg = warnOverlayGo.AddComponent<Image>();
         warnOverlayImg.color = new Color(0.07f, 0.216f, 0.165f, 0.32f); // #12372A with 32% opacity dim
@@ -730,14 +698,9 @@ public static class SetupAndBuild
         var collapsibleWarnRT = collapsibleWarnGo.GetComponent<RectTransform>();
         SetCenterPosition(collapsibleWarnRT, 0f, 0f, 300f, 140f); // Centered modal dialog popup
 
-        // Connect noticeBtn listener to toggle warnOverlayGo
-        noticeBtn.onClick.AddListener(() => {
-            warnOverlayGo.SetActive(!warnOverlayGo.activeSelf);
-        });
-
-        // G08 Catalog Content
+        // G08 Catalog Content (shifted up to eliminate top empty space)
         var catalogCatalogGo = CreateUIObject("CatalogCatalog", nonARModePanelGo);
-        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, 0f, 320f, 320f);
+        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, 25f, 320f, 340f);
 
         var catTitleGo = CreateUIObject("CatTitleText", catalogCatalogGo);
         var catTitle = catTitleGo.AddComponent<TextMeshProUGUI>();
@@ -748,25 +711,25 @@ public static class SetupAndBuild
         catTitle.color = DeepForest;
         catTitle.alignment = TextAlignmentOptions.Left;
         if (fonts != null) catTitle.font = fonts.Heading;
-        SetCenterPosition(catTitleGo.GetComponent<RectTransform>(), 0f, 96f, 300f, 16f);
+        SetCenterPosition(catTitleGo.GetComponent<RectTransform>(), 0f, 135f, 300f, 16f);
 
-        // Squat card (Y = 44f)
+        // Squat card (Y = 80f)
         var (squatBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardSquat", "SQ", "Squat",
             "Kekuatan kaki dan postur tubuh.",
-            0f, 44f, btnSprite, fonts);
+            0f, 80f, btnSprite, fonts);
 
-        // Dynamic Stretching card (Y = -40f, gap = 12px!)
+        // Dynamic Stretching card (Y = -4f, 12px gap!)
         var (dynamicStretchBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardDynamicStretch", "DS", "Dynamic Stretching",
             "Pemanasan aktif dan kelenturan tubuh.",
-            0f, -40f, btnSprite, fonts);
+            0f, -4f, btnSprite, fonts);
 
-        // Ladder Drill card (Y = -124f, gap = 12px!)
+        // Ladder Drill card (Y = -88f, 12px gap!)
         var (ladderDrillBukaBtn, _, _) = CreateMovementCard(
             catalogCatalogGo, "CardLadderDrill", "LD", "Ladder Drill",
             "Kelincahan dan koordinasi gerakan.",
-            0f, -124f, btnSprite, fonts);
+            0f, -88f, btnSprite, fonts);
 
         // Back button (hidden per user request)
         var catalogBackGo = CreateUIObject("CatalogBackButton", nonARModePanelGo);
