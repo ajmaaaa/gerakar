@@ -210,42 +210,75 @@ namespace MotionLearn.UI
         {
             if (toast == null) return;
 
-            // 1. Clean Compact Card Container (240px x 136px)
+            // 1. Full Screen Warm Beige Background View (100% x 100%)
             RectTransform toastRect = toast.GetComponent<RectTransform>();
             if (toastRect != null)
             {
-                toastRect.anchorMin = new Vector2(0.5f, 0.5f);
-                toastRect.anchorMax = new Vector2(0.5f, 0.5f);
-                toastRect.anchoredPosition = new Vector2(0f, 0f);
-                toastRect.sizeDelta = new Vector2(240f, 136f);
+                toastRect.anchorMin = new Vector2(0f, 0f);
+                toastRect.anchorMax = new Vector2(1f, 1f);
+                toastRect.pivot = new Vector2(0.5f, 0.5f);
+                toastRect.offsetMin = Vector2.zero;
+                toastRect.offsetMax = Vector2.zero;
             }
 
             Image toastBg = toast.GetComponent<Image>();
             if (toastBg != null)
             {
-                toastBg.color = new Color(0.98f, 0.97f, 0.95f, 0.98f); // Warm White glass card (#FAF8F5)
-                toastBg.type = Image.Type.Sliced;
+                toastBg.color = new Color(0.98f, 0.97f, 0.95f, 1.0f); // Solid Warm White / Beige (#FAF8F5)
+                toastBg.type = Image.Type.Simple;
             }
 
             Outline toastOutline = toast.GetComponent<Outline>();
             if (toastOutline != null)
             {
-                toastOutline.enabled = false; // Clean pop-up card without green border outline
+                toastOutline.enabled = false;
             }
 
-            // 2. Centered Checkmark Badge (Top Center 44px x 44px at y: 26f)
+            // 2. MotionLearn Header Title Text ("MOTIONLEARN") at top
+            Transform headerTrans = toast.transform.Find("HeaderTitleText");
+            if (headerTrans == null)
+            {
+                var headerGo = new GameObject("HeaderTitleText", typeof(RectTransform), typeof(TextMeshProUGUI));
+                headerGo.layer = toast.layer;
+                headerTrans = headerGo.transform;
+                headerTrans.SetParent(toast.transform, false);
+            }
+            TextMeshProUGUI headerTxt = headerTrans.GetComponent<TextMeshProUGUI>();
+            if (headerTxt != null)
+            {
+                var headerRect = headerTrans as RectTransform;
+                headerRect.anchorMin = new Vector2(0.5f, 1f);
+                headerRect.anchorMax = new Vector2(0.5f, 1f);
+                headerRect.pivot = new Vector2(0.5f, 1f);
+                headerRect.anchoredPosition = new Vector2(0f, -54f);
+                headerRect.sizeDelta = new Vector2(300f, 32f);
+
+                headerTxt.text = "MOTIONLEARN";
+                headerTxt.fontSize = 16f;
+                headerTxt.fontStyle = FontStyles.Bold;
+                headerTxt.characterSpacing = 2f;
+                headerTxt.color = new Color(0.06f, 0.15f, 0.09f, 1.0f);
+                headerTxt.alignment = TextAlignmentOptions.Center;
+            }
+
+            // 3. Centered Checkmark Badge (64px x 64px at center y: 50f)
             Transform circleTrans = toast.transform.Find("SuccessCircle");
             if (circleTrans != null)
             {
                 var circleRect = circleTrans as RectTransform;
                 circleRect.anchorMin = new Vector2(0.5f, 0.5f);
                 circleRect.anchorMax = new Vector2(0.5f, 0.5f);
-                circleRect.anchoredPosition = new Vector2(0f, 26f);
-                circleRect.sizeDelta = new Vector2(44f, 44f);
+                circleRect.pivot = new Vector2(0.5f, 0.5f);
+                circleRect.anchoredPosition = new Vector2(0f, 50f);
+                circleRect.sizeDelta = new Vector2(64f, 64f);
 
                 Image circleImg = circleTrans.GetComponent<Image>();
                 if (circleImg != null)
                 {
+#if UNITY_EDITOR
+                    circleImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
+#endif
+                    circleImg.type = Image.Type.Simple;
                     circleImg.color = new Color(0.13f, 0.65f, 0.32f, 1.0f);
                 }
 
@@ -254,11 +287,11 @@ namespace MotionLearn.UI
                 {
                     var checkRect = checkIcon as RectTransform;
                     checkRect.anchoredPosition = Vector2.zero;
-                    checkRect.sizeDelta = new Vector2(22f, 22f);
+                    checkRect.sizeDelta = new Vector2(32f, 32f);
                 }
             }
 
-            // 3. Centered Kicker Text ("GERAKAN TERDETEKSI") at y: -12f
+            // 4. Centered Kicker Text ("GERAKAN TERDETEKSI") at y: -10f
             Transform kickerTrans = toast.transform.Find("KickerText");
             if (kickerTrans == null)
             {
@@ -273,33 +306,36 @@ namespace MotionLearn.UI
                 var kickerRect = kickerTrans as RectTransform;
                 kickerRect.anchorMin = new Vector2(0.5f, 0.5f);
                 kickerRect.anchorMax = new Vector2(0.5f, 0.5f);
-                kickerRect.anchoredPosition = new Vector2(0f, -12f);
-                kickerRect.sizeDelta = new Vector2(220f, 16f);
+                kickerRect.pivot = new Vector2(0.5f, 0.5f);
+                kickerRect.anchoredPosition = new Vector2(0f, -10f);
+                kickerRect.sizeDelta = new Vector2(300f, 20f);
 
                 kickerTxt.text = "GERAKAN TERDETEKSI";
-                kickerTxt.fontSize = 10.5f;
+                kickerTxt.fontSize = 12f;
                 kickerTxt.fontStyle = FontStyles.Bold;
+                kickerTxt.characterSpacing = 1.5f;
                 kickerTxt.color = new Color(0.09f, 0.40f, 0.20f, 1.0f);
                 kickerTxt.alignment = TextAlignmentOptions.Center;
                 kickerTxt.textWrappingMode = TextWrappingModes.NoWrap;
             }
 
-            // 4. Centered Title Text ("Air Squat") at y: -38f
+            // 5. Centered Movement Name Title Text ("Air Squat") at y: -50f
             Transform titleTrans = toast.transform.Find("TitleText");
             if (titleTrans != null)
             {
                 var titleRect = titleTrans as RectTransform;
                 titleRect.anchorMin = new Vector2(0.5f, 0.5f);
                 titleRect.anchorMax = new Vector2(0.5f, 0.5f);
-                titleRect.anchoredPosition = new Vector2(0f, -38f);
-                titleRect.sizeDelta = new Vector2(220f, 28f);
+                titleRect.pivot = new Vector2(0.5f, 0.5f);
+                titleRect.anchoredPosition = new Vector2(0f, -50f);
+                titleRect.sizeDelta = new Vector2(320f, 36f);
 
                 TextMeshProUGUI titleTxt = titleTrans.GetComponent<TextMeshProUGUI>();
                 if (titleTxt != null)
                 {
                     if (string.IsNullOrEmpty(titleTxt.text) || titleTxt.text == "Gerakan Ditemukan!")
                         titleTxt.text = "Air Squat";
-                    titleTxt.fontSize = 22f;
+                    titleTxt.fontSize = 28f;
                     titleTxt.fontStyle = FontStyles.Bold;
                     titleTxt.color = new Color(0.06f, 0.15f, 0.09f, 1.0f);
                     titleTxt.alignment = TextAlignmentOptions.Center;
@@ -307,7 +343,7 @@ namespace MotionLearn.UI
                 }
             }
 
-            // 5. Hide MovementPill / image container
+            // 6. Hide MovementPill / image container
             Transform pillTrans = toast.transform.Find("MovementPill");
             if (pillTrans != null)
             {

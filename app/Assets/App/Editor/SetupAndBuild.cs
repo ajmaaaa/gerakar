@@ -1481,14 +1481,36 @@ public static class SetupAndBuild
         toastImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png");
         toastImg.type = Image.Type.Sliced;
         toastImg.color = WarmWhite;
-        SetCenterPosition(toastGo.GetComponent<RectTransform>(), 0f, 0f, 240f, 136f);
+        // 1. Full Screen Warm Beige Background View (100% x 100%)
+        var toastRT = toastGo.GetComponent<RectTransform>();
+        toastRT.anchorMin = new Vector2(0f, 0f);
+        toastRT.anchorMax = new Vector2(1f, 1f);
+        toastRT.pivot = new Vector2(0.5f, 0.5f);
+        toastRT.offsetMin = Vector2.zero;
+        toastRT.offsetMax = Vector2.zero;
+
+        var toastHeaderGo = CreateUIObject("HeaderTitleText", toastGo);
+        var toastHeader = toastHeaderGo.AddComponent<TextMeshProUGUI>();
+        toastHeader.text = "MOTIONLEARN";
+        toastHeader.fontSize = 16f;
+        toastHeader.fontStyle = FontStyles.Bold;
+        toastHeader.characterSpacing = 2f;
+        toastHeader.color = DeepForest;
+        toastHeader.alignment = TextAlignmentOptions.Center;
+        if (fonts != null) toastHeader.font = fonts.Heading;
+        var thRT = toastHeaderGo.GetComponent<RectTransform>();
+        thRT.anchorMin = new Vector2(0.5f, 1f);
+        thRT.anchorMax = new Vector2(0.5f, 1f);
+        thRT.pivot = new Vector2(0.5f, 1f);
+        thRT.anchoredPosition = new Vector2(0f, -54f);
+        thRT.sizeDelta = new Vector2(300f, 32f);
 
         var toastCircleGo = CreateUIObject("SuccessCircle", toastGo);
         var toastCircleImg = toastCircleGo.AddComponent<Image>();
         toastCircleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
         toastCircleImg.type = Image.Type.Simple;
         toastCircleImg.color = new Color(0.13f, 0.65f, 0.32f, 1.0f);
-        SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 26f, 44f, 44f);
+        SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 50f, 64f, 64f);
 
         var toastCheckGo = CreateUIObject("CheckIcon", toastCircleGo);
         var toastCheck = toastCheckGo.AddComponent<Image>();
@@ -1496,29 +1518,30 @@ public static class SetupAndBuild
         toastCheck.preserveAspect = true;
         toastCheck.raycastTarget = false;
         toastCheck.color = WarmWhite;
-        SetCenterPosition(toastCheckGo.GetComponent<RectTransform>(), 0f, 0f, 22f, 22f);
+        SetCenterPosition(toastCheckGo.GetComponent<RectTransform>(), 0f, 0f, 32f, 32f);
 
         var toastKickerGo = CreateUIObject("KickerText", toastGo);
         var toastKicker = toastKickerGo.AddComponent<TextMeshProUGUI>();
         toastKicker.textWrappingMode = TextWrappingModes.NoWrap;
         toastKicker.text = "GERAKAN TERDETEKSI";
-        toastKicker.fontSize = 10.5f;
+        toastKicker.fontSize = 12f;
         toastKicker.fontStyle = FontStyles.Bold;
+        toastKicker.characterSpacing = 1.5f;
         toastKicker.color = ForestGreen;
         toastKicker.alignment = TextAlignmentOptions.Center;
         if (fonts != null) toastKicker.font = fonts.Heading;
-        SetCenterPosition(toastKickerGo.GetComponent<RectTransform>(), 0f, -12f, 220f, 16f);
+        SetCenterPosition(toastKickerGo.GetComponent<RectTransform>(), 0f, -10f, 300f, 20f);
 
         var toastTextGo = CreateUIObject("TitleText", toastGo);
         var toastText = toastTextGo.AddComponent<TextMeshProUGUI>();
         toastText.textWrappingMode = TextWrappingModes.Normal;
         toastText.text = "Air Squat";
-        toastText.fontSize = 22f;
+        toastText.fontSize = 28f;
         toastText.fontStyle = FontStyles.Bold;
         toastText.color = DeepForest;
         toastText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) toastText.font = fonts.Heading;
-        SetCenterPosition(toastTextGo.GetComponent<RectTransform>(), 0f, -38f, 220f, 28f);
+        SetCenterPosition(toastTextGo.GetComponent<RectTransform>(), 0f, -50f, 320f, 36f);
 
         var toastPillGo = CreateUIObject("MovementPill", toastGo);
         toastPillGo.SetActive(false);
