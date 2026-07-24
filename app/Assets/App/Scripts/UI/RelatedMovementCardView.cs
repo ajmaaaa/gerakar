@@ -20,7 +20,7 @@ namespace MotionLearn.UI
             {
                 layout.padding = new RectOffset(20, 20, 4, 12);
                 layout.spacing = 12f;
-                layout.childAlignment = TextAnchor.UpperLeft;
+                layout.childAlignment = TextAnchor.UpperCenter; // Centered initial 2-card layout with equal 20px side margins!
                 layout.childControlWidth = true;
                 layout.childControlHeight = true;
                 layout.childForceExpandWidth = false;

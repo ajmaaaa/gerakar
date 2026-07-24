@@ -1070,7 +1070,7 @@ public static class SetupAndBuild
         var dhlg = drelContentGo.AddComponent<HorizontalLayoutGroup>();
         dhlg.padding = new RectOffset(20, 20, 4, 12);
         dhlg.spacing = 12f;
-        dhlg.childAlignment = TextAnchor.UpperLeft; // Align cards cleanly starting from left offset 20px
+        dhlg.childAlignment = TextAnchor.UpperCenter; // Centered initial 2-card layout with equal 20px side margins!
         dhlg.childControlWidth = true;
         dhlg.childControlHeight = true;
         dhlg.childForceExpandWidth = false;
