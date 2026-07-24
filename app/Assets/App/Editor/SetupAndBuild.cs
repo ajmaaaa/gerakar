@@ -779,11 +779,11 @@ public static class SetupAndBuild
         StretchRect(nonARDetailPanelGo.GetComponent<RectTransform>());
         nonARDetailPanelGo.SetActive(false);
 
-        // Header for Non-AR Detail (consistent with G08 Catalog)
+        // Header for Non-AR Detail (flat rectangle sticky header)
         var detailHeaderGo = CreateUIObject("HeaderBar", nonARDetailPanelGo);
         var detailHeaderImg = detailHeaderGo.AddComponent<Image>();
-        detailHeaderImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundTop-24.png"); // Rounded top corners (tumpul)
-        detailHeaderImg.type = Image.Type.Sliced;
+        detailHeaderImg.sprite = uiSolidRect; // Flat rectangle (persegi panjang) without corner radius
+        detailHeaderImg.type = Image.Type.Simple;
         detailHeaderImg.color = WarmCream; // Solid background hides content scrolling underneath
         AddSoftShadow(detailHeaderGo, 0f, -4f, 0.15f); // Downward drop shadow on sticky header
         var dhRT = detailHeaderGo.GetComponent<RectTransform>();
@@ -870,7 +870,8 @@ public static class SetupAndBuild
         dsvRT.offsetMax = new Vector2(0f, -80f); // Leave space for header
 
         var dsvViewportGo = CreateUIObject("Viewport", detailScrollViewGo);
-        dsvViewportGo.AddComponent<RectMask2D>();
+        var dsvRectMask = dsvViewportGo.AddComponent<RectMask2D>();
+        dsvRectMask.padding = new Vector4(-30f, -500f, -30f, -500f); // Allow horizontal cards to scroll 100% unclipped edge-to-edge!
         var dsvViewportRT = dsvViewportGo.GetComponent<RectTransform>();
         StretchRect(dsvViewportRT);
         detailScrollRect.viewport = dsvViewportRT;
@@ -1925,11 +1926,11 @@ public static class SetupAndBuild
         sheetRT.anchoredPosition = new Vector2(0f, 0f);
         sheetRT.sizeDelta = new Vector2(0f, 752f);
 
-        // Header area — Solid WarmCream background with downward drop shadow separator
+        // Header area — Solid WarmCream background with downward drop shadow separator (flat rectangle)
         var sheetHeaderGo = CreateUIObject("SheetHeader", sheetGo);
         var sheetHeaderImg = sheetHeaderGo.AddComponent<Image>();
-        sheetHeaderImg.sprite = roundTopSprite; // Rounded top corners (tumpul)
-        sheetHeaderImg.type = Image.Type.Sliced;
+        sheetHeaderImg.sprite = uiSolidRect; // Flat rectangle (persegi panjang) without corner radius
+        sheetHeaderImg.type = Image.Type.Simple;
         sheetHeaderImg.color = WarmCream; // Hides content scrolling underneath
         AddSoftShadow(sheetHeaderGo, 0f, -4f, 0.15f); // Downward drop shadow on sticky header
         var shRT = sheetHeaderGo.GetComponent<RectTransform>();
@@ -2099,7 +2100,8 @@ public static class SetupAndBuild
         svRT.offsetMax = new Vector2(0f, -80f);  // Starts 80px below top (below header)
 
         var viewportGo = CreateUIObject("Viewport", scrollViewGo);
-        viewportGo.AddComponent<RectMask2D>();
+        var vMask = viewportGo.AddComponent<RectMask2D>();
+        vMask.padding = new Vector4(-30f, -500f, -30f, -500f); // Allow horizontal cards to scroll 100% unclipped edge-to-edge!
         StretchRect(viewportGo.GetComponent<RectTransform>());
         scrollRect.viewport = viewportGo.GetComponent<RectTransform>();
 
