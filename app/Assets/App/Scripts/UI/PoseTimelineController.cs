@@ -244,8 +244,8 @@ namespace MotionLearn.UI
                 mcRT.anchorMin = new Vector2(0f, 0f);
                 mcRT.anchorMax = new Vector2(1f, 1f);
                 mcRT.pivot = new Vector2(0.5f, 0.5f);
-                mcRT.offsetMin = new Vector2(12f, 0f); // Inset 12px from left to match handle knob center
-                mcRT.offsetMax = new Vector2(-12f, 0f); // Inset 12px from right to match handle knob center
+                mcRT.offsetMin = Vector2.zero; // Spans 100% flush across TrackContainer from Node 0 to Node N-1
+                mcRT.offsetMax = Vector2.zero;
             }
         }
 

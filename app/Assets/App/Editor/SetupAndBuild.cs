@@ -1649,7 +1649,7 @@ public static class SetupAndBuild
         tcRT.anchorMax = new Vector2(1f, 0.5f);
         tcRT.pivot = new Vector2(0.5f, 0.5f);
         tcRT.anchoredPosition = Vector2.zero;
-        tcRT.sizeDelta = new Vector2(-24f, 6f); // Sleek 6px capsule line height
+        tcRT.sizeDelta = new Vector2(-24f, 12f); // 12px capsule line height matching 12px circle node dots
 
         var circlePill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/CirclePill-24.png");
         var trackBgGo = CreateUIObject("TrackBackground", trackContainerGo);
@@ -1657,7 +1657,7 @@ public static class SetupAndBuild
         trackBgImg.sprite = circlePill;
         trackBgImg.type = Image.Type.Sliced;
         trackBgImg.preserveAspect = false;
-        trackBgImg.color = new Color(0.65f, 0.95f, 0.80f, 0.50f); // Light sage green transparent capsule track background
+        trackBgImg.color = new Color(0.65f, 0.95f, 0.80f, 0.55f); // Light sage green transparent capsule track background
         var tbgRT = trackBgGo.GetComponent<RectTransform>();
         tbgRT.anchorMin = new Vector2(0f, 0f);
         tbgRT.anchorMax = new Vector2(1f, 1f);
@@ -1729,8 +1729,8 @@ public static class SetupAndBuild
         ncRT.anchorMin = new Vector2(0f, 0f);
         ncRT.anchorMax = new Vector2(1f, 1f);
         ncRT.pivot = new Vector2(0.5f, 0.5f);
-        ncRT.offsetMin = new Vector2(12f, 0f); // Inset 12px from left matching handle center
-        ncRT.offsetMax = new Vector2(-12f, 0f); // Inset 12px from right matching handle center
+        ncRT.offsetMin = Vector2.zero; // Spans 100% flush across TrackContainer from Node 0 to Node N-1
+        ncRT.offsetMax = Vector2.zero;
 
         var markerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
             "Assets/App/Prefabs/TimelineMarker.prefab");
