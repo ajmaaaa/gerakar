@@ -6,14 +6,14 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using MoveMotion.Core;
-using MoveMotion.UI;
+using MotionLearn.Core;
+using MotionLearn.UI;
 
-namespace MoveMotion.AR
+namespace MotionLearn.AR
 {
     /// <summary>
     /// Owns the ARUnityX camera lifecycle and converts native startup failures
-    /// into MoveMotion states instead of leaving the user on a black camera view.
+    /// into MotionLearn states instead of leaving the user on a black camera view.
     /// </summary>
     [DefaultExecutionOrder(-1000)]
     public sealed class ARUnityXSessionController : MonoBehaviour
@@ -30,7 +30,7 @@ namespace MoveMotion.AR
         [Tooltip("ARUnityX image width in Unity units, where 1.0 equals 1 metre.")]
         private float physicalTargetWidthMeters = 0.12f;
 
-        [Header("MoveMotion")]
+        [Header("MotionLearn")]
         [SerializeField] private ARImageTrackingController trackingController;
         [SerializeField] private ARUnityXURPBackgroundPresenter backgroundPresenter;
         [SerializeField] [Range(4f, 15f)] private float startupTimeoutSeconds = 8f;
@@ -279,7 +279,7 @@ namespace MoveMotion.AR
             }
 
             string sourcePath = $"{Application.streamingAssetsPath.TrimEnd('/')}/{targetImageFileName}";
-            string cachedPath = Path.Combine(Application.temporaryCachePath, "gerakar-c5.png");
+            string cachedPath = Path.Combine(Application.temporaryCachePath, "motionlearn-c5.png");
 
             using (UnityWebRequest request = UnityWebRequest.Get(sourcePath))
             {

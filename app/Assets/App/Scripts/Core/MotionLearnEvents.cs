@@ -1,17 +1,17 @@
 // ============================================================
-// MoveMotion – MoveMotionEvents.cs
+// MotionLearn – MotionLearnEvents.cs
 // Central static event bus for decoupled inter-system messaging.
 // Audio and future analytics hooks listen to these events.
 // ============================================================
 using System;
 
-namespace MoveMotion.Core
+namespace MotionLearn.Core
 {
     /// <summary>
     /// Static event bus. Systems raise events here; audio, analytics,
     /// and UI systems subscribe without direct coupling.
     /// </summary>
-    public static class MoveMotionEvents
+    public static class MotionLearnEvents
     {
         // ── AR Tracking ──────────────────────────────────────────────
 

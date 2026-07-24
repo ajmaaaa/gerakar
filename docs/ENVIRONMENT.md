@@ -1,4 +1,4 @@
-# GerakAR – Environment & Setup Guide
+# MotionLearn – Environment & Setup Guide
 
 ## Unity Editor Required
 
@@ -80,7 +80,7 @@ GameObject: BootstrapManager
 
 Canvas (Screen Space - Overlay)
   - IntroPanel (Image + CanvasGroup)
-      - GerakARLogo (Image)
+      - MotionLearnLogo (Image)
       - CoverImage (Image)  ← placeholder slot for final cover
       - IntroController (on BootstrapManager or separate GO)
 
@@ -223,10 +223,10 @@ Muted Mustard   #C3A24B  – Aksen Ladder Drill
 # Using Unity batch mode (requires Unity installation)
 /path/to/Unity \
   -batchmode \
-  -projectPath /path/to/gerakar/app \
+  -projectPath /path/to/motionlearn/app \
   -buildTarget Android \
   -quit \
-  -logFile /tmp/gerakar-build.log
+  -logFile /tmp/motionlearn-build.log
 ```
 
 Or build from **File → Build Settings → Build** inside Unity Editor.

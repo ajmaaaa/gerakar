@@ -1,5 +1,5 @@
 // ============================================================
-// MoveMotion – MaterialContentController.cs
+// MotionLearn – MaterialContentController.cs
 // Populates the bottom sheet with content from MovementData.
 // Handles the half/full state display and related movement cards.
 // ============================================================
@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using MoveMotion.Content;
-using MoveMotion.Core;
+using MotionLearn.Content;
+using MotionLearn.Core;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     /// <summary>
     /// Populates the bottom sheet UI from a <see cref="MovementData"/> asset.
@@ -75,7 +75,7 @@ namespace MoveMotion.UI
         {
             UIRuntimeStyler.NormalizeMuscleContainer(trainedAreasContainer);
             BottomSheetController.OnSheetStateChanged += OnSheetStateChanged;
-            MoveMotionEvents.OnMovementDetected += OnMovementDetected;
+            MotionLearnEvents.OnMovementDetected += OnMovementDetected;
 
             if (backToPrimaryButton != null)
             {
@@ -90,7 +90,7 @@ namespace MoveMotion.UI
         private void OnDestroy()
         {
             BottomSheetController.OnSheetStateChanged -= OnSheetStateChanged;
-            MoveMotionEvents.OnMovementDetected -= OnMovementDetected;
+            MotionLearnEvents.OnMovementDetected -= OnMovementDetected;
         }
 
         // ── Public API ────────────────────────────────────────────────

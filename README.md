@@ -1,4 +1,4 @@
-# GerakAR
+# MotionLearn
 
 Aplikasi mobile Augmented Reality untuk anak Sekolah Dasar. Arahkan kamera ke gambar di flipbook, model 3D langsung muncul dan memperagakan gerakan olahraga.
 
@@ -43,7 +43,7 @@ Aplikasi mobile Augmented Reality untuk anak Sekolah Dasar. Arahkan kamera ke ga
 | Bagian | Teknologi |
 |--------|-----------|
 | Engine | Unity 6000.5.3f1 |
-| Bahasa | C# (namespace `MoveMotion.*`) |
+| Bahasa | C# (namespace `MotionLearn.*`) |
 | Render Pipeline | URP 17.5.0 (Forward Renderer, mobile minimal) |
 | Timeline | Unity Timeline 1.8.12 (animasi pose) |
 | Input | Input System 1.19.0 (touch & pointer) |
@@ -72,7 +72,7 @@ Aplikasi mobile Augmented Reality untuk anak Sekolah Dasar. Arahkan kamera ke ga
 | Scripting Backend | IL2CPP |
 | Arsitektur | ARM64 + ARMv7 |
 | Target SDK | Android API 26+ (min), API 35 (target) |
-| Bundle ID | `id.ac.unp.gerakar` |
+| Bundle ID | `id.ac.unp.motionlearn` |
 | Logging | Android Logcat 1.4.7 |
 | CI / Editor Tooling | Unity Editor scripting via `SetupAndBuild` (menu `Build →`) |
 
@@ -88,7 +88,7 @@ Aplikasi mobile Augmented Reality untuk anak Sekolah Dasar. Arahkan kamera ke ga
 ## Struktur Folder
 
 ```
-gerakar/
+motionlearn/
 ├── app/                          # Unity project
 │   ├── Assets/
 │   │   └── App/
@@ -108,7 +108,7 @@ gerakar/
 │   │       │   ├── Animation/    # MovementController
 │   │       │   ├── Audio/        # AudioGuideController
 │   │       │   ├── Content/      # MovementData, MovementDatabase
-│   │       │   ├── Core/         # AppState, AppStateManager, MoveMotionEvents,
+│   │       │   ├── Core/         # AppState, AppStateManager, MotionLearnEvents,
 │   │       │   │                 # ARAvailabilityChecker, PermissionController
 │   │       │   └── UI/           # Semua controller UI (BootstrapUIController,
 │   │       │                     # ARUIController, BottomSheetController, dll.)
@@ -136,7 +136,7 @@ gerakar/
 | Background intro (G01) | ⚠️ Trial — `components/background.png` (belum final) |
 | Logo UNP | ⚠️ Trial — `components/unp.png` (belum final, bukan logo resmi) |
 | App icon | ⚠️ Trial — `components/icon.png` (belum final) |
-| Logo GerakAR | ❌ Belum — masih placeholder teks |
+| Logo MotionLearn | ❌ Belum — masih placeholder teks |
 | Model 3D Squat + animasi | ⚠️ Trial — `Air Squat.fbx` prototype aktif, bukan karakter final |
 | Model 3D Dynamic Stretching + animasi | ❌ Belum — placeholder capsule |
 | Model 3D Ladder Drill + animasi | ❌ Belum — placeholder capsule |
@@ -194,7 +194,7 @@ Build → Setup and Build APK
 APK akan tersimpan di:
 
 ```
-app/MoveMotion.apk
+app/MotionLearn.apk
 ```
 
 #### Atau manual via Build Settings:
@@ -209,7 +209,7 @@ app/MoveMotion.apk
 ```bash
 /path/to/Unity \
   -batchmode -quit \
-  -projectPath /path/to/gerakar/app \
+  -projectPath /path/to/motionlearn/app \
   -buildTarget Android \
   -executeMethod SetupAndBuild.ExecuteSetupAndBuild \
   -logFile build.log
@@ -222,7 +222,7 @@ app/MoveMotion.apk
 Hubungkan perangkat Android via USB, aktifkan **USB Debugging**, lalu:
 
 ```bash
-adb install app/MoveMotion.apk
+adb install app/MotionLearn.apk
 ```
 
 Atau drag & drop file `.apk` ke perangkat.

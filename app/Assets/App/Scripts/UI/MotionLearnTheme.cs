@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
-    public static class MoveMotionTheme
+    public static class MotionLearnTheme
     {
         // ── Modern Minimalist Palette ────────────────────────────────────
         public static readonly Color DarkText       = new Color(0.125f, 0.149f, 0.125f, 1f); // #202620 (Charcoal)

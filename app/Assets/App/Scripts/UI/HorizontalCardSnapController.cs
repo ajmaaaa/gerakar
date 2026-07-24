@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     public sealed class HorizontalCardSnapController : MonoBehaviour, IEndDragHandler
     {

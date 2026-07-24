@@ -1,4 +1,4 @@
-# GerakAR – Asset Checklist
+# MotionLearn – Asset Checklist
 
 Status terakhir: **Implementasi awal selesai (semua placeholder aktif)**
 
@@ -56,11 +56,11 @@ Status terakhir: **Implementasi awal selesai (semua placeholder aktif)**
 
 ---
 
-### 3. Logo GerakAR (opsional untuk intro)
+### 3. Logo MotionLearn (opsional untuk intro)
 
 | Slot | Format | Keterangan |
 |------|--------|------------|
-| Logo GerakAR | PNG/SVG (transparent) | Ditampilkan di intro screen, tidak di halaman kamera |
+| Logo MotionLearn | PNG/SVG (transparent) | Ditampilkan di intro screen, tidak di halaman kamera |
 
 Assign ke field `introImage` di `IntroController` component pada Bootstrap scene.
 

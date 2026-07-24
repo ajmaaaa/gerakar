@@ -1,5 +1,5 @@
 // ============================================================
-// MoveMotion – PoseTimelineController.cs
+// MotionLearn – PoseTimelineController.cs
 // Thin horizontal slider that controls the MovementController
 // pose scrubbing. Touch → InspectingPose. Release → EndInspect.
 // Shows key-pose markers and a hint label while dragging.
@@ -9,11 +9,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
-using MoveMotion.Core;
-using MoveMotion.Content;
-using MoveMotion.Animation;
+using MotionLearn.Core;
+using MotionLearn.Content;
+using MotionLearn.Animation;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     /// <summary>
     /// Wraps a UI Slider to drive <see cref="MovementController"/>.
@@ -179,7 +179,7 @@ namespace MoveMotion.UI
                 if (img != null)
                 {
                     float t = _markerTimes[i];
-                    img.color = (t <= sliderValue) ? MoveMotionTheme.Primary : _accentColor;
+                    img.color = (t <= sliderValue) ? MotionLearnTheme.Primary : _accentColor;
                 }
             }
         }

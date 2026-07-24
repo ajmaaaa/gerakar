@@ -1,6 +1,6 @@
 using System.IO;
 using System.Linq;
-using MoveMotion.Content;
+using MotionLearn.Content;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditor.SceneManagement;
@@ -86,7 +86,7 @@ public static class AirSquatSetup
 
         string outputDirectory = System.Environment.GetEnvironmentVariable("AIR_SQUAT_PREVIEW_DIR");
         if (string.IsNullOrEmpty(outputDirectory))
-            outputDirectory = "/tmp/opencode/gerakar-air-squat-preview";
+            outputDirectory = "/tmp/opencode/motionlearn-air-squat-preview";
         Directory.CreateDirectory(outputDirectory);
 
         SavePreview(instance, clip, 0f, camera, Path.Combine(outputDirectory, "AirSquat_Start.png"));

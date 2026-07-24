@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
-namespace MoveMotion.AR
+namespace MotionLearn.AR
 {
     /// <summary>
     /// Adapts ARUnityX's Built-In two-camera video background to URP camera stacking.
@@ -149,7 +149,7 @@ namespace MoveMotion.AR
 
             // Keep ARUnityX's generated mesh UVs; they already encode the required
             // Android vertical flip. Only replace its fixed-function shader.
-            Shader cameraShader = Resources.Load<Shader>("GerakARCameraBackground");
+            Shader cameraShader = Resources.Load<Shader>("MotionLearnCameraBackground");
             if (cameraShader == null || !cameraShader.isSupported)
             {
                 string msg = "Bundled URP camera background shader is unavailable.";

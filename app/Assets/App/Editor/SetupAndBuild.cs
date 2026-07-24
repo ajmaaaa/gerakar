@@ -3,12 +3,12 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using MoveMotion.Core;
-using MoveMotion.AR;
-using MoveMotion.Animation;
-using MoveMotion.UI;
-using MoveMotion.Audio;
-using MoveMotion.Content;
+using MotionLearn.Core;
+using MotionLearn.AR;
+using MotionLearn.Animation;
+using MotionLearn.UI;
+using MotionLearn.Audio;
+using MotionLearn.Content;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor.Build;
@@ -42,7 +42,7 @@ public static class SetupAndBuild
         CreateUIShapeSprites.Execute();
         ImportRelatedMovementsSprites();
         AssignRelatedMovementsSprites();
-        Debug.Log("[MoveMotion] Memulai setup scene...");
+        Debug.Log("[MotionLearn] Memulai setup scene...");
 
         var poppinsRegular = FontSetupHelper.LoadPoppinsFont("Regular") ??
             AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
@@ -69,7 +69,7 @@ public static class SetupAndBuild
 
     private static void ConfigurePlayerSettings()
     {
-        PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "id.ac.unp.gerakar");
+        PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "id.ac.unp.motionlearn");
         PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] { GraphicsDeviceType.OpenGLES3 });
         PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7 | AndroidArchitecture.ARM64;
@@ -455,7 +455,7 @@ public static class SetupAndBuild
         var titleGo = CreateUIObject("TitleText", brandGroupGo);
         var titleText = titleGo.AddComponent<TextMeshProUGUI>();
         titleText.textWrappingMode = TextWrappingModes.Normal;
-        titleText.text = "GerakAR";
+        titleText.text = "MotionLearn";
         titleText.fontSize = 34f;
         titleText.fontStyle = FontStyles.Bold;
         titleText.color = WarmWhite;
@@ -1085,7 +1085,7 @@ public static class SetupAndBuild
         var camErrorDescGo = CreateUIObject("Desc", camCardGo);
         var camErrorDesc = camErrorDescGo.AddComponent<TextMeshProUGUI>();
         camErrorDesc.textWrappingMode = TextWrappingModes.Normal;
-        camErrorDesc.text = "Izinkan akses kamera agar GerakAR dapat melihat gambar gerakan.";
+        camErrorDesc.text = "Izinkan akses kamera agar MotionLearn dapat melihat gambar gerakan.";
         camErrorDesc.fontSize = 12f;
         camErrorDesc.color = SecondaryText; // #716040
         camErrorDesc.alignment = TextAlignmentOptions.Center;
@@ -1220,7 +1220,7 @@ public static class SetupAndBuild
         serialBtn.ApplyModifiedProperties();
 
         EditorSceneManager.SaveScene(scene, "Assets/App/Scenes/Bootstrap.unity");
-        Debug.Log("[MoveMotion] Scene Bootstrap selesai dibuat.");
+        Debug.Log("[MotionLearn] Scene Bootstrap selesai dibuat.");
     }
 
     // ─────────────────────────────────────────────────────────────────
@@ -1478,20 +1478,17 @@ public static class SetupAndBuild
         // ═══════════════════════════════════════════════════════════
         var toastGo = CreateUIObject("DetectionToast", canvasStruct.CenterContentGo);
         var toastImg = toastGo.AddComponent<Image>();
-        toastImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        toastImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png");
         toastImg.type = Image.Type.Sliced;
         toastImg.color = WarmWhite;
-        var toastOutline = toastGo.AddComponent<Outline>();
-        toastOutline.effectColor = SoftSand;
-        toastOutline.effectDistance = new Vector2(1f, 1f);
-        SetCenterPosition(toastGo.GetComponent<RectTransform>(), 0f, -3f, 200f, 136f);
+        SetCenterPosition(toastGo.GetComponent<RectTransform>(), 0f, 0f, 240f, 136f);
 
         var toastCircleGo = CreateUIObject("SuccessCircle", toastGo);
         var toastCircleImg = toastCircleGo.AddComponent<Image>();
-        toastCircleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png");
-        toastCircleImg.type = Image.Type.Sliced;
-        toastCircleImg.color = ForestGreen;
-        SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 28f, 44f, 44f);
+        toastCircleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
+        toastCircleImg.type = Image.Type.Simple;
+        toastCircleImg.color = new Color(0.13f, 0.65f, 0.32f, 1.0f);
+        SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 26f, 44f, 44f);
 
         var toastCheckGo = CreateUIObject("CheckIcon", toastCircleGo);
         var toastCheck = toastCheckGo.AddComponent<Image>();
@@ -1501,34 +1498,31 @@ public static class SetupAndBuild
         toastCheck.color = WarmWhite;
         SetCenterPosition(toastCheckGo.GetComponent<RectTransform>(), 0f, 0f, 22f, 22f);
 
+        var toastKickerGo = CreateUIObject("KickerText", toastGo);
+        var toastKicker = toastKickerGo.AddComponent<TextMeshProUGUI>();
+        toastKicker.textWrappingMode = TextWrappingModes.NoWrap;
+        toastKicker.text = "GERAKAN TERDETEKSI";
+        toastKicker.fontSize = 10.5f;
+        toastKicker.fontStyle = FontStyles.Bold;
+        toastKicker.color = ForestGreen;
+        toastKicker.alignment = TextAlignmentOptions.Center;
+        if (fonts != null) toastKicker.font = fonts.Heading;
+        SetCenterPosition(toastKickerGo.GetComponent<RectTransform>(), 0f, -12f, 220f, 16f);
+
         var toastTextGo = CreateUIObject("TitleText", toastGo);
         var toastText = toastTextGo.AddComponent<TextMeshProUGUI>();
         toastText.textWrappingMode = TextWrappingModes.Normal;
-        toastText.text = "Gerakan Ditemukan!";
-        toastText.fontSize = 14f;
+        toastText.text = "Air Squat";
+        toastText.fontSize = 22f;
         toastText.fontStyle = FontStyles.Bold;
         toastText.color = DeepForest;
         toastText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) toastText.font = fonts.Heading;
-        SetCenterPosition(toastTextGo.GetComponent<RectTransform>(), 0f, -16f, 180f, 20f);
+        SetCenterPosition(toastTextGo.GetComponent<RectTransform>(), 0f, -38f, 220f, 28f);
 
         var toastPillGo = CreateUIObject("MovementPill", toastGo);
-        var toastPillImg = toastPillGo.AddComponent<Image>();
-        toastPillImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-08.png");
-        toastPillImg.type = Image.Type.Sliced;
-        toastPillImg.color = ForestGreen;
-        SetCenterPosition(toastPillGo.GetComponent<RectTransform>(), 0f, -45f, 100f, 22f);
+        toastPillGo.SetActive(false);
 
-        var toastPillTextGo = CreateUIObject("Text", toastPillGo);
-        var toastPillText = toastPillTextGo.AddComponent<TextMeshProUGUI>();
-        toastPillText.textWrappingMode = TextWrappingModes.Normal;
-        toastPillText.text = "SQUAT";
-        toastPillText.fontSize = 10f;
-        toastPillText.fontStyle = FontStyles.Bold;
-        toastPillText.color = WarmWhite;
-        toastPillText.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) toastPillText.font = fonts.Heading;
-        StretchRect(toastPillTextGo.GetComponent<RectTransform>());
         toastGo.SetActive(false);
 
         // ═══════════════════════════════════════════════════════════
@@ -1545,7 +1539,7 @@ public static class SetupAndBuild
         var arHeaderTitleGo = CreateUIObject("HeaderTitle", appHeaderGo);
         var arHeaderTitle = arHeaderTitleGo.AddComponent<TextMeshProUGUI>();
         arHeaderTitle.textWrappingMode = TextWrappingModes.Normal;
-        arHeaderTitle.text = "GerakAR";
+        arHeaderTitle.text = "MotionLearn";
         arHeaderTitle.fontSize = 20f;
         arHeaderTitle.fontStyle = FontStyles.Bold;
         arHeaderTitle.color = ForestGreen;
@@ -1927,6 +1921,11 @@ public static class SetupAndBuild
         var scrollRect = scrollViewGo.AddComponent<ScrollRect>();
         scrollRect.horizontal = false;
         scrollRect.vertical = true;
+        scrollRect.movementType = ScrollRect.MovementType.Elastic;
+        scrollRect.elasticity = 0.1f;
+        scrollRect.inertia = true;
+        scrollRect.decelerationRate = 0.135f;
+        scrollRect.scrollSensitivity = 2f;
         var svRT = scrollViewGo.GetComponent<RectTransform>();
         svRT.anchorMin = new Vector2(0f, 0f);
         svRT.anchorMax = new Vector2(1f, 1f);
@@ -2244,7 +2243,7 @@ public static class SetupAndBuild
         camGo.SetActive(true);
 
         EditorSceneManager.SaveScene(scene, "Assets/App/Scenes/MainAR.unity");
-        Debug.Log("[MoveMotion] Scene MainAR selesai dibuat.");
+        Debug.Log("[MotionLearn] Scene MainAR selesai dibuat.");
     }
 
     // ── Helper methods ────────────────────────────────────────────────
@@ -2257,7 +2256,7 @@ public static class SetupAndBuild
             new EditorBuildSettingsScene("Assets/App/Scenes/MainAR.unity", true)
         };
         EditorBuildSettings.scenes = scenes.ToArray();
-        Debug.Log("[MoveMotion] Build Settings scenes updated.");
+        Debug.Log("[MotionLearn] Build Settings scenes updated.");
     }
 
     [MenuItem("Build/Validate ARUnityX Setup")]
@@ -2293,7 +2292,7 @@ public static class SetupAndBuild
         if (Object.FindAnyObjectByType<ARUnityXURPBackgroundPresenter>() == null)
             throw new BuildFailedException("ARUnityX URP background presenter is missing.");
 
-        Debug.Log("[MoveMotion] ARUnityX scene validation passed.");
+        Debug.Log("[MotionLearn] ARUnityX scene validation passed.");
     }
 
     private static void ConfigureRearCamera(ARXVideoConfig videoConfig)
@@ -2318,10 +2317,10 @@ public static class SetupAndBuild
     [MenuItem("Build/Build Current Scenes APK")]
     public static void BuildAPK()
     {
-        Debug.Log("[MoveMotion] Menjalankan build Android APK...");
+        Debug.Log("[MotionLearn] Menjalankan build Android APK...");
         ConfigurePlayerSettings();
 
-        string targetPath = "Builds/MoveMotion.apk";
+        string targetPath = "Builds/MotionLearn.apk";
         System.IO.Directory.CreateDirectory("Builds");
 
         var buildPlayerOptions = new BuildPlayerOptions
@@ -2340,11 +2339,11 @@ public static class SetupAndBuild
 
         if (summary.result == UnityEditor.Build.Reporting.BuildResult.Succeeded)
         {
-            Debug.Log($"[MoveMotion] Build berhasil! File APK: {targetPath} ({summary.totalSize} bytes)");
+            Debug.Log($"[MotionLearn] Build berhasil! File APK: {targetPath} ({summary.totalSize} bytes)");
         }
         else
         {
-            Debug.LogError($"[MoveMotion] Build gagal dengan status: {summary.result}");
+            Debug.LogError($"[MotionLearn] Build gagal dengan status: {summary.result}");
         }
     }
 
@@ -2741,7 +2740,7 @@ public static class SetupAndBuild
         // SafeArea
         var safeArea = CreateUIObject("SafeArea", canvasGo);
         StretchRect(safeArea.GetComponent<RectTransform>());
-        safeArea.AddComponent<MoveMotion.UI.SafeAreaController>();
+        safeArea.AddComponent<MotionLearn.UI.SafeAreaController>();
 
         // TopContent
         var top = CreateUIObject("TopContent", safeArea);

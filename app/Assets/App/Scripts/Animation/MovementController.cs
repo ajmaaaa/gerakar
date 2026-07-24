@@ -1,5 +1,5 @@
 // ============================================================
-// MoveMotion – MovementController.cs
+// MotionLearn – MovementController.cs
 // Controls the Animator on the active model.
 //
 // Loop mode  : animator.speed = 1, clip plays from beginning.
@@ -11,10 +11,10 @@
 // ============================================================
 using System.Collections;
 using UnityEngine;
-using MoveMotion.Core;
-using MoveMotion.Content;
+using MotionLearn.Core;
+using MotionLearn.Content;
 
-namespace MoveMotion.Animation
+namespace MotionLearn.Animation
 {
     /// <summary>
     /// Attached (or addressed) to the model root. Receives MovementData
@@ -66,7 +66,7 @@ namespace MoveMotion.Animation
 
         /// <summary>
         /// Called by <see cref="AR.ARImageTrackingController"/> (via
-        /// <see cref="MoveMotionEvents.OnMovementDetected"/>) to attach this
+        /// <see cref="MotionLearnEvents.OnMovementDetected"/>) to attach this
         /// controller to a specific model's Animator.
         /// </summary>
         public void Attach(GameObject modelGo, MovementData data)
@@ -110,7 +110,7 @@ namespace MoveMotion.Animation
             _currentNormalizedTime = 0f;
 
             if (ActiveMovementContext.ActiveId != null)
-                MoveMotionEvents.RaiseLoopStarted(ActiveMovementContext.ActiveId);
+                MotionLearnEvents.RaiseLoopStarted(ActiveMovementContext.ActiveId);
         }
 
         /// <summary>Pause or resume the loop (used when bottom sheet opens/closes).</summary>
@@ -136,7 +136,7 @@ namespace MoveMotion.Animation
             _animator.speed = 0f;
             ScrubTo(normalizedTime);
 
-            MoveMotionEvents.RaisePoseInspectionStarted(normalizedTime);
+            MotionLearnEvents.RaisePoseInspectionStarted(normalizedTime);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace MoveMotion.Animation
         {
             if (_animator == null) return;
 
-            MoveMotionEvents.RaisePoseInspectionEnded();
+            MotionLearnEvents.RaisePoseInspectionEnded();
             _returnToLoopCo = StartCoroutine(ReturnToLoopSequence());
         }
 

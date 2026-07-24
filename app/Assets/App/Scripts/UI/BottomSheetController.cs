@@ -1,5 +1,5 @@
 // ============================================================
-// MoveMotion – BottomSheetController.cs
+// MotionLearn – BottomSheetController.cs
 // Draggable bottom sheet with three snap points:
 //   Closed  → panel completely below screen
 //   Half    → ~48% of screen height (default material state)
@@ -12,10 +12,10 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using MoveMotion.Core;
-using MoveMotion.Animation;
+using MotionLearn.Core;
+using MotionLearn.Animation;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     /// <summary>
     /// Three-state draggable bottom sheet.
@@ -150,7 +150,6 @@ namespace MoveMotion.UI
             float delta = e.position.y - _dragStartY;
             float newY = Mathf.Clamp(_sheetStartAnchoredY + delta, _closedY, _fullY);
             sheetRect.anchoredPosition = new Vector2(sheetRect.anchoredPosition.x, newY);
-            UpdateContentViewport(newY);
             UpdateScrim(newY);
         }
 
@@ -247,7 +246,6 @@ namespace MoveMotion.UI
                 float t = Mathf.SmoothStep(0f, 1f, elapsed / snapDuration);
                 float y = Mathf.Lerp(startY, targetY, t);
                 sheetRect.anchoredPosition = new Vector2(sheetRect.anchoredPosition.x, y);
-                UpdateContentViewport(y);
                 UpdateScrim(y);
                 yield return null;
             }
@@ -362,6 +360,16 @@ namespace MoveMotion.UI
                 _contentScrollRect = candidate;
                 break;
             }
+
+            if (_contentScrollRect != null)
+            {
+                _contentScrollRect.movementType = ScrollRect.MovementType.Elastic;
+                _contentScrollRect.elasticity = 0.1f;
+                _contentScrollRect.inertia = true;
+                _contentScrollRect.decelerationRate = 0.135f; // Standard responsive mobile scroll momentum
+                _contentScrollRect.scrollSensitivity = 2f;
+            }
+
             return _contentScrollRect;
         }
 
@@ -377,7 +385,7 @@ namespace MoveMotion.UI
             rect.anchorMax = new Vector2(1f, 1f);
             rect.pivot = new Vector2(0.5f, 1f);
             rect.anchoredPosition = new Vector2(0f, -topInset);
-            rect.sizeDelta = new Vector2(0f, Mathf.Max(0f, visibleHeight - topInset)); // No side delta subtraction (was -40f, -bottomInset)
+            rect.sizeDelta = new Vector2(0f, Mathf.Max(100f, visibleHeight - topInset));
         }
 
         // ── Scrim ─────────────────────────────────────────────────────

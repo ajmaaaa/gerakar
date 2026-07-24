@@ -1,6 +1,6 @@
-using MoveMotion.Content;
+using MotionLearn.Content;
 
-namespace MoveMotion.Core
+namespace MotionLearn.Core
 {
     /// <summary>
     /// Authoritative context for the currently active movement across the app.

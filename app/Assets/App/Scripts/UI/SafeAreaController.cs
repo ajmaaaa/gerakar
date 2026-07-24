@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     /// <summary>
     /// Adjusts the anchors of its RectTransform to match the screen's safe area (notches).

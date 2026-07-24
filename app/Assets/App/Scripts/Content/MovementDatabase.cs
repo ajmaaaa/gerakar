@@ -1,12 +1,12 @@
 // ============================================================
-// MoveMotion – MovementDatabase.cs
+// MotionLearn – MovementDatabase.cs
 // ScriptableObject registry that maps referenceImageName →
 // MovementData. Assign via the Inspector on the MainAR scene.
 // ============================================================
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MoveMotion.Content
+namespace MotionLearn.Content
 {
     /// <summary>
     /// Container for all three (or more) MovementData assets.

@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.EnhancedTouch;
 using Touch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 
-namespace MoveMotion.AR
+namespace MotionLearn.AR
 {
     public sealed class ScreenSpaceModelController : MonoBehaviour
     {

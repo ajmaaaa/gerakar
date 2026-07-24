@@ -1,5 +1,5 @@
 // ============================================================
-// MoveMotion – ARUIController.cs
+// MotionLearn – ARUIController.cs
 // Manages visibility of all AR-screen UI elements based on
 // AppState changes: scan overlay, movement label, timeline,
 // and floating action buttons.
@@ -8,14 +8,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
-using MoveMotion.Core;
-using MoveMotion.Content;
+using MotionLearn.Core;
+using MotionLearn.Content;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     /// <summary>
     /// Listens to <see cref="AppStateManager.OnStateChanged"/> and
-    /// <see cref="MoveMotionEvents"/> to show/hide the correct UI elements
+    /// <see cref="MotionLearnEvents"/> to show/hide the correct UI elements
     /// for each state. No game logic lives here – only visibility control.
     ///
     /// Wiring (Inspector):
@@ -72,8 +72,8 @@ namespace MoveMotion.UI
             ApplyDetectionChipStyle(detectionToast);
 
             AppStateManager.OnStateChanged += OnStateChanged;
-            MoveMotionEvents.OnMovementDetected += OnMovementDetected;
-            MoveMotionEvents.OnLoopStarted += OnLoopStarted;
+            MotionLearnEvents.OnMovementDetected += OnMovementDetected;
+            MotionLearnEvents.OnLoopStarted += OnLoopStarted;
             Audio.AudioGuideController.OnAudioAvailabilityChanged += OnAudioAvailabilityChanged;
 
             // Wire buttons
@@ -94,8 +94,8 @@ namespace MoveMotion.UI
         private void OnDestroy()
         {
             AppStateManager.OnStateChanged -= OnStateChanged;
-            MoveMotionEvents.OnMovementDetected -= OnMovementDetected;
-            MoveMotionEvents.OnLoopStarted -= OnLoopStarted;
+            MotionLearnEvents.OnMovementDetected -= OnMovementDetected;
+            MotionLearnEvents.OnLoopStarted -= OnLoopStarted;
             Audio.AudioGuideController.OnAudioAvailabilityChanged -= OnAudioAvailabilityChanged;
         }
 
@@ -208,25 +208,110 @@ namespace MoveMotion.UI
 
         public static void ApplyDetectionChipStyle(GameObject toast)
         {
-            RectTransform toastRect = toast?.GetComponent<RectTransform>();
+            if (toast == null) return;
+
+            // 1. Clean Compact Card Container (240px x 136px)
+            RectTransform toastRect = toast.GetComponent<RectTransform>();
             if (toastRect != null)
             {
-                toastRect.anchoredPosition = new Vector2(toastRect.anchoredPosition.x, -3f);
-                toastRect.sizeDelta = new Vector2(toastRect.sizeDelta.x, 136f);
+                toastRect.anchorMin = new Vector2(0.5f, 0.5f);
+                toastRect.anchorMax = new Vector2(0.5f, 0.5f);
+                toastRect.anchoredPosition = new Vector2(0f, 0f);
+                toastRect.sizeDelta = new Vector2(240f, 136f);
             }
 
-            Transform pill = toast?.transform.Find("MovementPill");
-            if (pill == null)
-                return;
-
-            var rect = pill as RectTransform;
-            rect.anchoredPosition = new Vector2(rect.anchoredPosition.x, -45f);
-
-            Image background = pill.GetComponent<Image>();
-            if (background != null && background.type == Image.Type.Sliced)
+            Image toastBg = toast.GetComponent<Image>();
+            if (toastBg != null)
             {
-                bool usesEightPixelRadius = background.sprite != null && background.sprite.name.Contains("08");
-                background.pixelsPerUnitMultiplier = usesEightPixelRadius ? 1f : 1.5f;
+                toastBg.color = new Color(0.98f, 0.97f, 0.95f, 0.98f); // Warm White glass card (#FAF8F5)
+                toastBg.type = Image.Type.Sliced;
+            }
+
+            Outline toastOutline = toast.GetComponent<Outline>();
+            if (toastOutline != null)
+            {
+                toastOutline.enabled = false; // Clean pop-up card without green border outline
+            }
+
+            // 2. Centered Checkmark Badge (Top Center 44px x 44px at y: 26f)
+            Transform circleTrans = toast.transform.Find("SuccessCircle");
+            if (circleTrans != null)
+            {
+                var circleRect = circleTrans as RectTransform;
+                circleRect.anchorMin = new Vector2(0.5f, 0.5f);
+                circleRect.anchorMax = new Vector2(0.5f, 0.5f);
+                circleRect.anchoredPosition = new Vector2(0f, 26f);
+                circleRect.sizeDelta = new Vector2(44f, 44f);
+
+                Image circleImg = circleTrans.GetComponent<Image>();
+                if (circleImg != null)
+                {
+                    circleImg.color = new Color(0.13f, 0.65f, 0.32f, 1.0f);
+                }
+
+                Transform checkIcon = circleTrans.Find("CheckIcon");
+                if (checkIcon != null)
+                {
+                    var checkRect = checkIcon as RectTransform;
+                    checkRect.anchoredPosition = Vector2.zero;
+                    checkRect.sizeDelta = new Vector2(22f, 22f);
+                }
+            }
+
+            // 3. Centered Kicker Text ("GERAKAN TERDETEKSI") at y: -12f
+            Transform kickerTrans = toast.transform.Find("KickerText");
+            if (kickerTrans == null)
+            {
+                var kickerGo = new GameObject("KickerText", typeof(RectTransform), typeof(TextMeshProUGUI));
+                kickerGo.layer = toast.layer;
+                kickerTrans = kickerGo.transform;
+                kickerTrans.SetParent(toast.transform, false);
+            }
+            TextMeshProUGUI kickerTxt = kickerTrans.GetComponent<TextMeshProUGUI>();
+            if (kickerTxt != null)
+            {
+                var kickerRect = kickerTrans as RectTransform;
+                kickerRect.anchorMin = new Vector2(0.5f, 0.5f);
+                kickerRect.anchorMax = new Vector2(0.5f, 0.5f);
+                kickerRect.anchoredPosition = new Vector2(0f, -12f);
+                kickerRect.sizeDelta = new Vector2(220f, 16f);
+
+                kickerTxt.text = "GERAKAN TERDETEKSI";
+                kickerTxt.fontSize = 10.5f;
+                kickerTxt.fontStyle = FontStyles.Bold;
+                kickerTxt.color = new Color(0.09f, 0.40f, 0.20f, 1.0f);
+                kickerTxt.alignment = TextAlignmentOptions.Center;
+                kickerTxt.textWrappingMode = TextWrappingModes.NoWrap;
+            }
+
+            // 4. Centered Title Text ("Air Squat") at y: -38f
+            Transform titleTrans = toast.transform.Find("TitleText");
+            if (titleTrans != null)
+            {
+                var titleRect = titleTrans as RectTransform;
+                titleRect.anchorMin = new Vector2(0.5f, 0.5f);
+                titleRect.anchorMax = new Vector2(0.5f, 0.5f);
+                titleRect.anchoredPosition = new Vector2(0f, -38f);
+                titleRect.sizeDelta = new Vector2(220f, 28f);
+
+                TextMeshProUGUI titleTxt = titleTrans.GetComponent<TextMeshProUGUI>();
+                if (titleTxt != null)
+                {
+                    if (string.IsNullOrEmpty(titleTxt.text) || titleTxt.text == "Gerakan Ditemukan!")
+                        titleTxt.text = "Air Squat";
+                    titleTxt.fontSize = 22f;
+                    titleTxt.fontStyle = FontStyles.Bold;
+                    titleTxt.color = new Color(0.06f, 0.15f, 0.09f, 1.0f);
+                    titleTxt.alignment = TextAlignmentOptions.Center;
+                    titleTxt.overflowMode = TextOverflowModes.Ellipsis;
+                }
+            }
+
+            // 5. Hide MovementPill / image container
+            Transform pillTrans = toast.transform.Find("MovementPill");
+            if (pillTrans != null)
+            {
+                pillTrans.gameObject.SetActive(false);
             }
         }
 
@@ -242,6 +327,10 @@ namespace MoveMotion.UI
             rect.sizeDelta = size;
             rect.localRotation = Quaternion.Euler(0f, 0f, rotation);
             var image = stroke.GetComponent<Image>();
+#if UNITY_EDITOR
+            image.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-08.png");
+            image.type = Image.Type.Sliced;
+#endif
             image.color = Color.white;
             image.raycastTarget = false;
         }
@@ -281,12 +370,42 @@ namespace MoveMotion.UI
 
         /// <summary>
         /// Called by <see cref="ARImageTrackingController"/> (or a bridge)
-        /// when a new movement is detected, to update the name label.
+        /// when a new movement is detected, to update the name label and photo.
         /// </summary>
-        public void SetMovementName(string displayName)
+        public void SetMovementName(string displayName, Sprite thumbnailSprite = null)
         {
             if (movementNameLabel != null)
                 movementNameLabel.text = displayName;
+
+            if (detectionToast != null)
+            {
+                var toastTitle = detectionToast.transform.Find("TitleText")?.GetComponent<TextMeshProUGUI>();
+                if (toastTitle != null && !string.IsNullOrEmpty(displayName))
+                {
+                    toastTitle.text = displayName;
+                }
+
+                if (thumbnailSprite != null)
+                {
+                    SetDetectionToastThumbnail(thumbnailSprite);
+                }
+            }
+        }
+
+        public void SetDetectionToastThumbnail(Sprite sprite)
+        {
+            if (detectionToast == null || sprite == null) return;
+            Transform photoTrans = detectionToast.transform.Find("MovementPill");
+            if (photoTrans != null)
+            {
+                Image photoImg = photoTrans.GetComponent<Image>();
+                if (photoImg != null)
+                {
+                    photoImg.sprite = sprite;
+                    photoImg.color = Color.white; // Direct photo without extra background layer
+                    photoImg.preserveAspect = true;
+                }
+            }
         }
 
         // ── Button handlers ───────────────────────────────────────────
@@ -308,7 +427,7 @@ namespace MoveMotion.UI
         {
             _stateMgr?.TransitionTo(AppState.ShowingMaterial);
             string activeId = ActiveMovementContext.ActiveId ?? string.Empty;
-            MoveMotionEvents.RaiseMaterialOpened(activeId);
+            MotionLearnEvents.RaiseMaterialOpened(activeId);
         }
 
         private void OnPlayPausePressed()

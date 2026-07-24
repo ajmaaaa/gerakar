@@ -1,15 +1,15 @@
 using System.Collections;
 using UnityEngine;
-using MoveMotion.Animation;
-using MoveMotion.Content;
-using MoveMotion.Core;
-using MoveMotion.UI;
+using MotionLearn.Animation;
+using MotionLearn.Content;
+using MotionLearn.Core;
+using MotionLearn.UI;
 
-namespace MoveMotion.AR
+namespace MotionLearn.AR
 {
     /// <summary>
     /// Adapts ARUnityX tracked-object events to the provider-independent
-    /// MoveMotion movement and UI lifecycle.
+    /// MotionLearn movement and UI lifecycle.
     /// </summary>
     public sealed class ARImageTrackingController : MonoBehaviour
     {
@@ -124,7 +124,7 @@ namespace MoveMotion.AR
         {
             modelPool?.HideActive();
             _stateManager?.TransitionTo(AppState.TargetConfirmed);
-            MoveMotionEvents.RaiseDetectionStarted(movement.movementId);
+            MotionLearnEvents.RaiseDetectionStarted(movement.movementId);
 
             yield return new WaitForSeconds(confirmationDuration);
 
@@ -150,9 +150,9 @@ namespace MoveMotion.AR
 
             timelineController?.SetMovementData(movement);
             materialController?.SetMovement(movement);
-            uiController?.SetMovementName(movement.displayName);
+            uiController?.SetMovementName(movement.displayName, movement.thumbnail);
 
-            MoveMotionEvents.RaiseMovementDetected(movement.movementId);
+            MotionLearnEvents.RaiseMovementDetected(movement.movementId);
             _stateManager?.TransitionTo(presentationState);
         }
 
@@ -165,7 +165,7 @@ namespace MoveMotion.AR
             CancelDetection();
 
             if (_targetMovement != null && modelPool?.ActiveMovementId == _targetMovement.movementId)
-                MoveMotionEvents.RaiseTrackingLost(_targetMovement.movementId);
+                MotionLearnEvents.RaiseTrackingLost(_targetMovement.movementId);
 
             movementController?.CancelReturnTimer();
             modelPool?.HideActive();

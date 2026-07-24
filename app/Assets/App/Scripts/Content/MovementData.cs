@@ -1,5 +1,5 @@
 // ============================================================
-// MoveMotion – MovementData.cs
+// MotionLearn – MovementData.cs
 // ScriptableObject that holds all data for one movement target.
 // Assign prefab, clip, content, and audio from the Inspector.
 // Final assets (model, clip, audio) are assigned here when ready.
@@ -7,7 +7,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MoveMotion.Content
+namespace MotionLearn.Content
 {
     // ── Supporting types ─────────────────────────────────────────────
 

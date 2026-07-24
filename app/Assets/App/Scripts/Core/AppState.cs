@@ -1,11 +1,11 @@
 // ============================================================
-// MoveMotion – AppState.cs
+// MotionLearn – AppState.cs
 // Defines all application states used by the state machine.
 // ============================================================
-namespace MoveMotion.Core
+namespace MotionLearn.Core
 {
     /// <summary>
-    /// All mutually-exclusive states of the MoveMotion application.
+    /// All mutually-exclusive states of the MotionLearn application.
     /// Transitions are managed by <see cref="AppStateManager"/>.
     /// </summary>
     public enum AppState

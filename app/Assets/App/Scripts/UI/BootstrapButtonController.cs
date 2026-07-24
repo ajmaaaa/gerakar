@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using MoveMotion.Core;
+using MotionLearn.Core;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     /// <summary>
     /// Handles wiring and click logic for Bootstrap scene fallback and simulation buttons (G02, G08, G09).

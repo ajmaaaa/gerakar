@@ -1,4 +1,4 @@
-Shader "GerakAR/ARUnityXCameraBackground"
+Shader "MotionLearn/ARUnityXCameraBackground"
 {
     Properties
     {

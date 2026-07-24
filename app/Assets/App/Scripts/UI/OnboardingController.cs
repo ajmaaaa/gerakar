@@ -1,12 +1,12 @@
 // ============================================================
-// MoveMotion – OnboardingController.cs
+// MotionLearn – OnboardingController.cs
 // Shows the first-use instructions panel ("Sebelum Mulai").
 // Uses PlayerPrefs to display only once per installation.
 // ============================================================
 using UnityEngine;
-using MoveMotion.Core;
+using MotionLearn.Core;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     /// <summary>
     /// Manages the first-time onboarding panel that appears between
@@ -23,7 +23,7 @@ namespace MoveMotion.UI
     {
         // ── Constants ─────────────────────────────────────────────────
 
-        private const string OnboardingKey = "gerakar.onboarding.completed.v1";
+        private const string OnboardingKey = "motionlearn.onboarding.completed.v1";
 
         public static bool IsCompleted => PlayerPrefs.GetInt(OnboardingKey, 0) == 1;
 

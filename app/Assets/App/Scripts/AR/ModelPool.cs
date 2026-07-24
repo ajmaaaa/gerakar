@@ -1,13 +1,13 @@
 // ============================================================
-// MoveMotion – ModelPool.cs
+// MotionLearn – ModelPool.cs
 // Simple cache that instantiates one GameObject per MovementData
 // and reuses it on subsequent detections to avoid GC spikes.
 // ============================================================
 using System.Collections.Generic;
 using UnityEngine;
-using MoveMotion.Content;
+using MotionLearn.Content;
 
-namespace MoveMotion.AR
+namespace MotionLearn.AR
 {
     /// <summary>
     /// Manages a pool of model GameObjects (one per MovementData).

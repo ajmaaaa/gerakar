@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     public static class UIRuntimeStyler
     {

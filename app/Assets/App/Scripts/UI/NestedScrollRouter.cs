@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     public sealed class NestedScrollRouter : MonoBehaviour,
         IInitializePotentialDragHandler, IBeginDragHandler, IDragHandler, IEndDragHandler

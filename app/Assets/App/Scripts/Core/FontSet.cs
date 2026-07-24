@@ -1,6 +1,6 @@
 using TMPro;
 
-namespace MoveMotion.Core
+namespace MotionLearn.Core
 {
     public sealed class FontSet
     {

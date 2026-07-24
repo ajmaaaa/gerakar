@@ -1,9 +1,9 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using MoveMotion.Content;
+using MotionLearn.Content;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     public static class RelatedMovementCardView
     {

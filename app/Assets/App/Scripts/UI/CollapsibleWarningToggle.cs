@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     public class CollapsibleWarningToggle : MonoBehaviour
     {

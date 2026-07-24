@@ -34,6 +34,6 @@ public static class CreateUISolidRectangle
             importer.SaveAndReimport();
         }
 
-        Debug.Log("[MoveMotion] UISolidRectangle sprite created at " + path);
+        Debug.Log("[MotionLearn] UISolidRectangle sprite created at " + path);
     }
 }

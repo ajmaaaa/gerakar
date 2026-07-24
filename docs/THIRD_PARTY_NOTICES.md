@@ -2,7 +2,7 @@
 
 ## ARUnityX and artoolkitX
 
-GerakAR uses ARUnityX `1.3.1`, distributed through OpenUPM as
+MotionLearn uses ARUnityX `1.3.1`, distributed through OpenUPM as
 `org.artoolkitx.artoolkitx-unity`, for camera access and natural-image tracking.
 
 ARUnityX and its bundled artoolkitX native runtime are licensed under the GNU
@@ -14,4 +14,4 @@ included by the upstream project.
 - License: https://www.gnu.org/licenses/lgpl-3.0.html
 
 No upstream logos, target images, or sample application UI are presented as
-GerakAR-owned assets.
+MotionLearn-owned assets.

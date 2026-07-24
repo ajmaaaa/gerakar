@@ -2,7 +2,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace MoveMotion.Editor
+namespace MotionLearn.Editor
 {
     public static class BrandingAssetSetup
     {

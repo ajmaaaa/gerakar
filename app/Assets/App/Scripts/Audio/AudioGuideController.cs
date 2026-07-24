@@ -1,5 +1,5 @@
 // ============================================================
-// MoveMotion – AudioGuideController.cs
+// MotionLearn – AudioGuideController.cs
 // Manages playback of the voice guide audio clip for each movement.
 // Playback starts only after the user presses the audio control.
 // Pauses when the user scrubs the timeline or target is lost.
@@ -7,10 +7,10 @@
 // ============================================================
 using UnityEngine;
 using System;
-using MoveMotion.Core;
-using MoveMotion.Content;
+using MotionLearn.Core;
+using MotionLearn.Content;
 
-namespace MoveMotion.Audio
+namespace MotionLearn.Audio
 {
     [RequireComponent(typeof(AudioSource))]
     public class AudioGuideController : MonoBehaviour
@@ -53,19 +53,19 @@ namespace MoveMotion.Audio
             _stateMgr = AppStateManager.Instance;
 
             // Subscribe to event bus
-            MoveMotionEvents.OnMovementDetected += PrepareAudioForMovement;
-            MoveMotionEvents.OnTrackingLost += StopAudio;
-            MoveMotionEvents.OnPoseInspectionStarted += PauseAudioOnScrub;
-            MoveMotionEvents.OnPoseInspectionEnded += ResumeAudioAfterScrub;
+            MotionLearnEvents.OnMovementDetected += PrepareAudioForMovement;
+            MotionLearnEvents.OnTrackingLost += StopAudio;
+            MotionLearnEvents.OnPoseInspectionStarted += PauseAudioOnScrub;
+            MotionLearnEvents.OnPoseInspectionEnded += ResumeAudioAfterScrub;
             AppStateManager.OnStateChanged += OnAppStateChanged;
         }
 
         private void OnDestroy()
         {
-            MoveMotionEvents.OnMovementDetected -= PrepareAudioForMovement;
-            MoveMotionEvents.OnTrackingLost -= StopAudio;
-            MoveMotionEvents.OnPoseInspectionStarted -= PauseAudioOnScrub;
-            MoveMotionEvents.OnPoseInspectionEnded -= ResumeAudioAfterScrub;
+            MotionLearnEvents.OnMovementDetected -= PrepareAudioForMovement;
+            MotionLearnEvents.OnTrackingLost -= StopAudio;
+            MotionLearnEvents.OnPoseInspectionStarted -= PauseAudioOnScrub;
+            MotionLearnEvents.OnPoseInspectionEnded -= ResumeAudioAfterScrub;
             AppStateManager.OnStateChanged -= OnAppStateChanged;
         }
 

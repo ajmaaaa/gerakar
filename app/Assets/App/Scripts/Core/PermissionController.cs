@@ -1,5 +1,5 @@
 // ============================================================
-// MoveMotion – PermissionController.cs
+// MotionLearn – PermissionController.cs
 // Requests camera permission on Android via Unity's permission API
 // and advances the AppState accordingly.
 // ============================================================
@@ -8,9 +8,9 @@ using UnityEngine;
 #if UNITY_ANDROID
 using UnityEngine.Android;
 #endif
-using MoveMotion.Core;
+using MotionLearn.Core;
 
-namespace MoveMotion.Core
+namespace MotionLearn.Core
 {
     /// <summary>
     /// Checks and requests camera permission on Android.

@@ -1,12 +1,12 @@
 // ============================================================
-// MoveMotion – AppStateManager.cs
+// MotionLearn – AppStateManager.cs
 // Singleton that owns the current AppState and broadcasts
 // state-change events to all listening systems.
 // ============================================================
 using System;
 using UnityEngine;
 
-namespace MoveMotion.Core
+namespace MotionLearn.Core
 {
     /// <summary>
     /// Central state machine. All state transitions go through

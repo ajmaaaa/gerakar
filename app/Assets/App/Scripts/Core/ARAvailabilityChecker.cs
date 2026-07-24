@@ -1,5 +1,5 @@
 // ============================================================
-// MoveMotion – ARAvailabilityChecker.cs
+// MotionLearn – ARAvailabilityChecker.cs
 // Checks whether the ARUnityX runtime can be attempted on this platform.
 // Transitions: CheckingAR → LoadingARScene (Ready + permission granted)
 //                         → UnsupportedNotice (Unsupported/InstallFailed)
@@ -7,7 +7,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace MoveMotion.Core
+namespace MotionLearn.Core
 {
     /// <summary>
     /// Checks AR availability and handles proper routing for:

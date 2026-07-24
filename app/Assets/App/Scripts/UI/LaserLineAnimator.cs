@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MoveMotion.UI
+namespace MotionLearn.UI
 {
     public class LaserLineAnimator : MonoBehaviour
     {
