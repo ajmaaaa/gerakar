@@ -1645,25 +1645,72 @@ public static class SetupAndBuild
 
         var trackContainerGo = CreateUIObject("TrackContainer", sliderGo);
         var tcRT = trackContainerGo.GetComponent<RectTransform>();
+
+        // ── PREVIOUS IMPLEMENTATION (KEPT IN COMMENT FOR REFERENCE) ──
+        // tcRT.anchorMin = new Vector2(0f, 0.5f);
+        // tcRT.anchorMax = new Vector2(1f, 0.5f);
+        // tcRT.pivot = new Vector2(0.5f, 0.5f);
+        // tcRT.anchoredPosition = Vector2.zero;
+        // tcRT.sizeDelta = new Vector2(-12f, 4f); // Sleek 4px line track spanning 288px (from x=6 to x=294)
+        // var circlePill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/CirclePill-24.png");
+        // var trackBgGo = CreateUIObject("TrackBackground", trackContainerGo);
+        // var trackBgImg = trackBgGo.AddComponent<Image>();
+        // trackBgImg.sprite = circlePill;
+        // trackBgImg.type = Image.Type.Sliced;
+        // ─────────────────────────────────────────────────────────────
+
+        // NEW IMPLEMENTATION: Rectangular line matched with node size (10px height) + Semi-Circle End Caps aligned to Node boundaries
         tcRT.anchorMin = new Vector2(0f, 0.5f);
         tcRT.anchorMax = new Vector2(1f, 0.5f);
         tcRT.pivot = new Vector2(0.5f, 0.5f);
-        tcRT.anchoredPosition = Vector2.zero;
-        tcRT.sizeDelta = new Vector2(-12f, 4f); // Sleek 4px line track spanning 288px (from x=6 to x=294)
+        tcRT.offsetMin = new Vector2(12f, -5f); // Aligned to Node 0 center (x=12px), height 10px (-5 to +5)
+        tcRT.offsetMax = new Vector2(-12f, 5f); // Aligned to Node N-1 center (x=288px), height 10px (-5 to +5)
 
-        var circlePill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/CirclePill-24.png");
+        var solidRect = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/UISolidRectangle.png");
+        var semiCircleLeft = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/SemiCircleLeft-24.png");
+        var semiCircleRight = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/SemiCircleRight-24.png");
+
+        // 1. Track Background (Solid slate rectangle + semi-circle end caps)
         var trackBgGo = CreateUIObject("TrackBackground", trackContainerGo);
         var trackBgImg = trackBgGo.AddComponent<Image>();
-        trackBgImg.sprite = circlePill;
-        trackBgImg.type = Image.Type.Sliced;
+        trackBgImg.sprite = solidRect;
+        trackBgImg.type = Image.Type.Simple;
         trackBgImg.preserveAspect = false;
-        trackBgImg.color = new Color(0.88f, 0.91f, 0.94f, 1.0f); // Clean light slate line track (#E2E8F0)
+        trackBgImg.color = new Color(0.88f, 0.91f, 0.94f, 1.0f); // Light slate (#E2E8F0)
         var tbgRT = trackBgGo.GetComponent<RectTransform>();
         tbgRT.anchorMin = new Vector2(0f, 0f);
         tbgRT.anchorMax = new Vector2(1f, 1f);
         tbgRT.pivot = new Vector2(0.5f, 0.5f);
         tbgRT.anchoredPosition = Vector2.zero;
         tbgRT.sizeDelta = Vector2.zero;
+
+        // Left End Cap for TrackBackground (Semi-circle facing left: half covers node 0 end, half protrudes outward)
+        var bgLeftCapGo = CreateUIObject("LeftCap", trackBgGo);
+        var bgLeftCapImg = bgLeftCapGo.AddComponent<Image>();
+        bgLeftCapImg.sprite = semiCircleLeft;
+        bgLeftCapImg.type = Image.Type.Simple;
+        bgLeftCapImg.preserveAspect = false;
+        bgLeftCapImg.color = new Color(0.88f, 0.91f, 0.94f, 1.0f);
+        var bglcRT = bgLeftCapGo.GetComponent<RectTransform>();
+        bglcRT.anchorMin = new Vector2(0f, 0.5f);
+        bglcRT.anchorMax = new Vector2(0f, 0.5f);
+        bglcRT.pivot = new Vector2(1f, 0.5f); // Pivot at right flat edge (aligned with node 0 center x=0)
+        bglcRT.anchoredPosition = Vector2.zero;
+        bglcRT.sizeDelta = new Vector2(5f, 10f); // 5px width (half circle radius), 10px height
+
+        // Right End Cap for TrackBackground (Semi-circle facing right: half covers node N-1 end, half protrudes outward)
+        var bgRightCapGo = CreateUIObject("RightCap", trackBgGo);
+        var bgRightCapImg = bgRightCapGo.AddComponent<Image>();
+        bgRightCapImg.sprite = semiCircleRight;
+        bgRightCapImg.type = Image.Type.Simple;
+        bgRightCapImg.preserveAspect = false;
+        bgRightCapImg.color = new Color(0.88f, 0.91f, 0.94f, 1.0f);
+        var bgrcRT = bgRightCapGo.GetComponent<RectTransform>();
+        bgrcRT.anchorMin = new Vector2(1f, 0.5f);
+        bgrcRT.anchorMax = new Vector2(1f, 0.5f);
+        bgrcRT.pivot = new Vector2(0f, 0.5f); // Pivot at left flat edge (aligned with node N-1 center x=L)
+        bgrcRT.anchoredPosition = Vector2.zero;
+        bgrcRT.sizeDelta = new Vector2(5f, 10f); // 5px width (half circle radius), 10px height
 
         var fillAreaGo = CreateUIObject("FillArea", trackContainerGo);
         var faRT = fillAreaGo.GetComponent<RectTransform>();
@@ -1673,10 +1720,11 @@ public static class SetupAndBuild
         faRT.anchoredPosition = Vector2.zero;
         faRT.sizeDelta = Vector2.zero;
 
+        // 2. Active Fill (Solid Forest Green rectangle + semi-circle left cap)
         var activeFillGo = CreateUIObject("ActiveFill", fillAreaGo);
         var fillImg = activeFillGo.AddComponent<Image>();
-        fillImg.sprite = circlePill;
-        fillImg.type = Image.Type.Sliced;
+        fillImg.sprite = solidRect;
+        fillImg.type = Image.Type.Simple;
         fillImg.preserveAspect = false;
         fillImg.color = ForestGreen; // Forest Green active fill (#166534)
         var afRT = activeFillGo.GetComponent<RectTransform>();
@@ -1686,6 +1734,20 @@ public static class SetupAndBuild
         afRT.anchoredPosition = Vector2.zero;
         afRT.sizeDelta = Vector2.zero; // Driven by slider!
         slider.fillRect = afRT;
+
+        // Left End Cap for ActiveFill
+        var fillLeftCapGo = CreateUIObject("LeftCap", activeFillGo);
+        var fillLeftCapImg = fillLeftCapGo.AddComponent<Image>();
+        fillLeftCapImg.sprite = semiCircleLeft;
+        fillLeftCapImg.type = Image.Type.Simple;
+        fillLeftCapImg.preserveAspect = false;
+        fillLeftCapImg.color = ForestGreen;
+        var flcRT = fillLeftCapGo.GetComponent<RectTransform>();
+        flcRT.anchorMin = new Vector2(0f, 0.5f);
+        flcRT.anchorMax = new Vector2(0f, 0.5f);
+        flcRT.pivot = new Vector2(1f, 0.5f);
+        flcRT.anchoredPosition = Vector2.zero;
+        flcRT.sizeDelta = new Vector2(5f, 10f);
 
         var handleAreaGo = CreateUIObject("HandleTouchArea", sliderGo);
         handleAreaGo.AddComponent<Image>().color = Color.clear;

@@ -10,7 +10,8 @@ public static class ScreenshotCapturer
     [MenuItem("Build/Capture All Screens")]
     public static void CaptureScreens()
     {
-        Debug.Log("[ScreenshotCapturer] Rebuilding all UI scenes first...");
+        Debug.Log("[ScreenshotCapturer] Generating shape sprites & rebuilding UI scenes...");
+        CreateUIShapeSprites.Execute();
         SetupAndBuild.ExecuteSetupOnly();
 
         var outDir = System.Environment.GetEnvironmentVariable("SCREENSHOT_OUT_DIR");

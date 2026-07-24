@@ -25,6 +25,10 @@ public static class CreateUIShapeSprites
         // 4. Round Top only
         GenerateRoundTopRect(Path.Combine(dir, "RoundTop-24.png"), 96, 24);
 
+        // 5. Semi Circles (Left & Right end caps)
+        GenerateSemiCircleLeft(Path.Combine(dir, "SemiCircleLeft-24.png"), 24);
+        GenerateSemiCircleRight(Path.Combine(dir, "SemiCircleRight-24.png"), 24);
+
         AssetDatabase.Refresh();
         Debug.Log("[MotionLearn] Shape sprite generation complete.");
     }
@@ -262,6 +266,128 @@ public static class CreateUIShapeSprites
             importer.alphaIsTransparency = true;
             importer.spritePixelsPerUnit = 400;
             importer.spriteBorder = new Vector4(radius, 0, radius, radius);
+            importer.SaveAndReimport();
+        }
+    }
+
+    private static void GenerateSemiCircleLeft(string path, int displayRadius)
+    {
+        int scale = 4;
+        int radius = displayRadius * scale;
+        int width = radius;
+        int height = radius * 2;
+
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        float cx = width; // Center on right flat edge
+        float cy = radius;
+        float rSq = radius * radius;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                float alphaSum = 0f;
+                int samples = 4;
+                for (int sx = 0; sx < samples; sx++)
+                {
+                    for (int sy = 0; sy < samples; sy++)
+                    {
+                        float px = x + (sx + 0.5f) / samples;
+                        float py = y + (sy + 0.5f) / samples;
+                        float dx = px - cx;
+                        float dy = py - cy;
+                        if (dx * dx + dy * dy <= rSq)
+                            alphaSum += 1.0f;
+                    }
+                }
+                float finalAlpha = alphaSum / (samples * samples);
+                tex.SetPixel(x, y, new Color(1f, 1f, 1f, finalAlpha));
+            }
+        }
+        tex.Apply();
+
+        byte[] pngData = tex.EncodeToPNG();
+        File.WriteAllBytes(path, pngData);
+        Object.DestroyImmediate(tex);
+
+        AssetDatabase.ImportAsset(path);
+        var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+        if (importer != null)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.mipmapEnabled = true;
+            importer.wrapMode = TextureWrapMode.Clamp;
+            importer.filterMode = FilterMode.Bilinear;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            var settings = new TextureImporterSettings();
+            importer.ReadTextureSettings(settings);
+            settings.spriteMeshType = SpriteMeshType.FullRect;
+            importer.SetTextureSettings(settings);
+            importer.alphaIsTransparency = true;
+            importer.spritePixelsPerUnit = 400;
+            importer.spriteBorder = Vector4.zero;
+            importer.SaveAndReimport();
+        }
+    }
+
+    private static void GenerateSemiCircleRight(string path, int displayRadius)
+    {
+        int scale = 4;
+        int radius = displayRadius * scale;
+        int width = radius;
+        int height = radius * 2;
+
+        Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        float cx = 0; // Center on left flat edge
+        float cy = radius;
+        float rSq = radius * radius;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                float alphaSum = 0f;
+                int samples = 4;
+                for (int sx = 0; sx < samples; sx++)
+                {
+                    for (int sy = 0; sy < samples; sy++)
+                    {
+                        float px = x + (sx + 0.5f) / samples;
+                        float py = y + (sy + 0.5f) / samples;
+                        float dx = px - cx;
+                        float dy = py - cy;
+                        if (dx * dx + dy * dy <= rSq)
+                            alphaSum += 1.0f;
+                    }
+                }
+                float finalAlpha = alphaSum / (samples * samples);
+                tex.SetPixel(x, y, new Color(1f, 1f, 1f, finalAlpha));
+            }
+        }
+        tex.Apply();
+
+        byte[] pngData = tex.EncodeToPNG();
+        File.WriteAllBytes(path, pngData);
+        Object.DestroyImmediate(tex);
+
+        AssetDatabase.ImportAsset(path);
+        var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+        if (importer != null)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.mipmapEnabled = true;
+            importer.wrapMode = TextureWrapMode.Clamp;
+            importer.filterMode = FilterMode.Bilinear;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            var settings = new TextureImporterSettings();
+            importer.ReadTextureSettings(settings);
+            settings.spriteMeshType = SpriteMeshType.FullRect;
+            importer.SetTextureSettings(settings);
+            importer.alphaIsTransparency = true;
+            importer.spritePixelsPerUnit = 400;
+            importer.spriteBorder = Vector4.zero;
             importer.SaveAndReimport();
         }
     }
