@@ -225,7 +225,7 @@ namespace MotionLearn.UI
             if (toastBg != null)
             {
                 toastBg.sprite = null; // Flat solid background - no rounded corner warping!
-                toastBg.color = new Color(0.98f, 0.97f, 0.95f, 1.0f); // Solid Warm White / Beige (#FAF8F5)
+                toastBg.color = new Color(0.984f, 0.973f, 0.953f, 1.0f); // Solid WarmCream (#FBF8F3) matching app background!
                 toastBg.type = Image.Type.Simple;
             }
 

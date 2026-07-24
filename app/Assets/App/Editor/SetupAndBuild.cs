@@ -644,19 +644,30 @@ public static class SetupAndBuild
         var g08HeaderBarGo = CreateUIObject("HeaderBar", nonARModePanelGo);
         var g08HeaderBarImg = g08HeaderBarGo.AddComponent<Image>();
         g08HeaderBarImg.color = Color.clear; // Transparent header background
-        SetAnchorTop(g08HeaderBarGo.GetComponent<RectTransform>(), 0f, -16f, 360f, 56f);
+        SetAnchorTop(g08HeaderBarGo.GetComponent<RectTransform>(), 0f, -12f, 360f, 68f);
 
-        // MotionLearn brand heading (consistent with AR HUD)
+        // MotionLearn centered brand heading + subtitle (matching user mockup)
         var g08BrandGo = CreateUIObject("Brand", g08HeaderBarGo);
         var g08BrandText = g08BrandGo.AddComponent<TextMeshProUGUI>();
         g08BrandText.textWrappingMode = TextWrappingModes.Normal;
         g08BrandText.text = "MotionLearn";
-        g08BrandText.fontSize = 15f;
+        g08BrandText.fontSize = 22f;
         g08BrandText.fontStyle = FontStyles.Bold;
         g08BrandText.color = DeepForest; // #12372A
-        g08BrandText.alignment = TextAlignmentOptions.Left;
+        g08BrandText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) g08BrandText.font = fonts.Heading;
-        SetCenterPosition(g08BrandGo.GetComponent<RectTransform>(), -85f, 0f, 150f, 24f);
+        SetCenterPosition(g08BrandGo.GetComponent<RectTransform>(), 0f, 8f, 220f, 26f);
+
+        var g08SubGo = CreateUIObject("Subtitle", g08HeaderBarGo);
+        var g08SubText = g08SubGo.AddComponent<TextMeshProUGUI>();
+        g08SubText.textWrappingMode = TextWrappingModes.Normal;
+        g08SubText.text = "Belajar Gerak Jadi Seru";
+        g08SubText.fontSize = 11.5f;
+        g08SubText.fontStyle = FontStyles.Normal;
+        g08SubText.color = SecondaryText; // #716040
+        g08SubText.alignment = TextAlignmentOptions.Center;
+        if (fonts != null) g08SubText.font = fonts.Medium;
+        SetCenterPosition(g08SubGo.GetComponent<RectTransform>(), 0f, -16f, 220f, 18f);
 
         // Top right mode & info button (smooth 14px radius pill shape)
         var g08BadgeGo = CreateUIObject("ModeBadge", g08HeaderBarGo);
@@ -665,7 +676,7 @@ public static class SetupAndBuild
         g08BadgeImg.type = Image.Type.Sliced;
         g08BadgeImg.color = new Color(0.918f, 0.867f, 0.812f, 0.75f); // SoftSand tint
         var g08BadgeBtn = g08BadgeGo.AddComponent<Button>();
-        SetCenterPosition(g08BadgeGo.GetComponent<RectTransform>(), 105f, 0f, 115f, 28f);
+        SetCenterPosition(g08BadgeGo.GetComponent<RectTransform>(), 115f, 10f, 110f, 26f);
 
         var g08BadgeIconGo = CreateUIObject("Icon", g08BadgeGo);
         var g08BadgeIconImg = g08BadgeIconGo.AddComponent<Image>();
@@ -673,18 +684,18 @@ public static class SetupAndBuild
         g08BadgeIconImg.preserveAspect = true;
         g08BadgeIconImg.raycastTarget = false;
         g08BadgeIconImg.color = SecondaryText;
-        SetCenterPosition(g08BadgeIconGo.GetComponent<RectTransform>(), -44f, 0f, 14f, 14f);
+        SetCenterPosition(g08BadgeIconGo.GetComponent<RectTransform>(), -42f, 0f, 13f, 13f);
 
         var g08BadgeTextGo = CreateUIObject("Text", g08BadgeGo);
         var g08BadgeText = g08BadgeTextGo.AddComponent<TextMeshProUGUI>();
         g08BadgeText.textWrappingMode = TextWrappingModes.Normal;
         g08BadgeText.text = "NON-AR MODE";
-        g08BadgeText.fontSize = 8.5f;
+        g08BadgeText.fontSize = 8f;
         g08BadgeText.fontStyle = FontStyles.Bold;
         g08BadgeText.color = SecondaryText; // #716040
         g08BadgeText.alignment = TextAlignmentOptions.Left;
         if (fonts != null) g08BadgeText.font = fonts.Heading;
-        SetCenterPosition(g08BadgeTextGo.GetComponent<RectTransform>(), 8f, 0f, 75f, 16f);
+        SetCenterPosition(g08BadgeTextGo.GetComponent<RectTransform>(), 8f, 0f, 72f, 16f);
 
         // G08 Collapsible Warning Popup Dialog Modal (shown when info button is pressed)
         var warnOverlayGo = CreateUIObject("WarningPopupOverlay", nonARModePanelGo);
@@ -698,9 +709,9 @@ public static class SetupAndBuild
         var collapsibleWarnRT = collapsibleWarnGo.GetComponent<RectTransform>();
         SetCenterPosition(collapsibleWarnRT, 0f, 0f, 300f, 140f); // Centered modal dialog popup
 
-        // G08 Catalog Content (shifted up directly below header bar to eliminate top space)
+        // G08 Catalog Content (positioned right below centered brand header)
         var catalogCatalogGo = CreateUIObject("CatalogCatalog", nonARModePanelGo);
-        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, 135f, 320f, 340f);
+        SetCenterPosition(catalogCatalogGo.GetComponent<RectTransform>(), 0f, 85f, 320f, 340f);
 
         var catTitleGo = CreateUIObject("CatTitleText", catalogCatalogGo);
         var catTitle = catTitleGo.AddComponent<TextMeshProUGUI>();
