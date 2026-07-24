@@ -29,7 +29,13 @@ namespace MotionLearn.UI
 
             RectTransform contentRect = container as RectTransform;
             if (contentRect != null)
+            {
+                contentRect.anchorMin = new Vector2(0f, 0.5f);
+                contentRect.anchorMax = new Vector2(0f, 0.5f);
+                contentRect.pivot = new Vector2(0f, 0.5f);
+                contentRect.anchoredPosition = Vector2.zero;
                 contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, 180f);
+            }
 
             Transform scrollView = container.parent != null ? container.parent.parent : null;
             if (scrollView == null)
@@ -48,6 +54,8 @@ namespace MotionLearn.UI
             ScrollRect horizontalScroll = scrollView.GetComponent<ScrollRect>();
             if (horizontalScroll == null)
                 return;
+
+            horizontalScroll.horizontalNormalizedPosition = 0f;
 
             var snap = scrollView.GetComponent<HorizontalCardSnapController>();
             if (snap == null)

@@ -261,6 +261,7 @@ namespace MotionLearn.UI
                     outerCircleImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
 #endif
                     outerCircleImg.type = Image.Type.Simple;
+                    outerCircleImg.preserveAspect = true;
                     outerCircleImg.color = new Color(0.65f, 0.95f, 0.80f, 0.55f);
                 }
 
@@ -286,6 +287,7 @@ namespace MotionLearn.UI
                     midImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
 #endif
                     midImg.type = Image.Type.Simple;
+                    midImg.preserveAspect = true;
                     midImg.color = new Color(0.29f, 0.85f, 0.48f, 0.85f);
                 }
 
@@ -311,6 +313,7 @@ namespace MotionLearn.UI
                     innerImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
 #endif
                     innerImg.type = Image.Type.Simple;
+                    innerImg.preserveAspect = true;
                     innerImg.color = new Color(0.09f, 0.65f, 0.28f, 1.0f);
                 }
 

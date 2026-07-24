@@ -1939,20 +1939,20 @@ public static class SetupAndBuild
         shRT.anchoredPosition = Vector2.zero;
         shRT.sizeDelta = new Vector2(0f, 76f);
 
-        // Grab handle
-        var handleGo = CreateUIObject("GrabHandle", sheetGo);
+        // Grab handle pill (top-center drag indicator showing sheet can be pulled up)
+        var handleGo = CreateUIObject("GrabHandle", sheetHeaderGo);
         var handleImg = handleGo.AddComponent<Image>();
-        handleImg.sprite = uiSolidRect;
-        handleImg.type = Image.Type.Simple;
-        handleImg.preserveAspect = false;
-        handleImg.color = ForestGreen;
+        handleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Pill-14.png");
+        handleImg.type = Image.Type.Sliced;
+        handleImg.color = ForestGreen; // Forest Green drag indicator pill (#1F5D42)
         handleImg.raycastTarget = false;
         var handleRT = handleGo.GetComponent<RectTransform>();
         handleRT.anchorMin = new Vector2(0.5f, 1f);
         handleRT.anchorMax = new Vector2(0.5f, 1f);
-        handleRT.pivot = new Vector2(0.5f, 0.5f);
-        handleRT.anchoredPosition = new Vector2(0f, -10f);
-        handleRT.sizeDelta = new Vector2(40f, 4f);
+        handleRT.pivot = new Vector2(0.5f, 1f);
+        handleRT.anchoredPosition = new Vector2(0f, -8f);
+        handleRT.sizeDelta = new Vector2(38f, 4f);
+        handleGo.transform.SetAsLastSibling();
 
         // Left text group
         var leftGroupGo = CreateUIObject("LeftGroup", sheetHeaderGo);
