@@ -1060,7 +1060,7 @@ public static class SetupAndBuild
         camOffIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
         camOffIconImg.type = Image.Type.Sliced;
         camOffIconImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // 60% SoftSand tint background
-        SetCenterPosition(camOffIconGo.GetComponent<RectTransform>(), 0f, 130f, 64f, 64f);
+        SetCenterPosition(camOffIconGo.GetComponent<RectTransform>(), 0f, 140f, 64f, 64f);
 
         var camOffIconSvgGo = CreateUIObject("SvgIcon", camOffIconGo);
         var camOffIconSvg = camOffIconSvgGo.AddComponent<Image>();
@@ -1081,7 +1081,7 @@ public static class SetupAndBuild
         camErrorTitle.color = DeepForest; // #12372A
         camErrorTitle.alignment = TextAlignmentOptions.Center;
         if (fonts != null) camErrorTitle.font = fonts.Heading;
-        SetCenterPosition(camErrorTitleGo.GetComponent<RectTransform>(), 0f, 75f, 280f, 28f);
+        SetCenterPosition(camErrorTitleGo.GetComponent<RectTransform>(), 0f, 70f, 280f, 28f);
 
         var camErrorDescGo = CreateUIObject("Desc", camCardGo);
         var camErrorDesc = camErrorDescGo.AddComponent<TextMeshProUGUI>();
@@ -1091,7 +1091,7 @@ public static class SetupAndBuild
         camErrorDesc.color = SecondaryText; // #716040
         camErrorDesc.alignment = TextAlignmentOptions.Center;
         if (fonts != null) camErrorDesc.font = fonts.Medium;
-        SetCenterPosition(camErrorDescGo.GetComponent<RectTransform>(), 0f, 25f, 260f, 48f);
+        SetCenterPosition(camErrorDescGo.GetComponent<RectTransform>(), 0f, 15f, 260f, 48f);
 
         // Buka Pengaturan Kamera button (primary button)
         var settingsGo = CreateUIObject("SettingsButton", camCardGo);
@@ -1101,7 +1101,7 @@ public static class SetupAndBuild
         settingsImg.color = DeepForest; // Dark DeepForest background button
         var settingsBtn = settingsGo.AddComponent<Button>();
         AddSoftShadow(settingsGo, 2f, -3f, 0.12f); // Shadow on settings button
-        SetCenterPosition(settingsGo.GetComponent<RectTransform>(), 0f, -40f, 260f, 48f);
+        SetCenterPosition(settingsGo.GetComponent<RectTransform>(), 0f, -50f, 260f, 48f);
 
         var settingsContentGo = CreateUIObject("Content", settingsGo);
         SetCenterPosition(settingsContentGo.GetComponent<RectTransform>(), 0f, 0f, 188f, 24f);
@@ -1143,7 +1143,7 @@ public static class SetupAndBuild
         retryBtnImg.color = new Color(0.918f, 0.867f, 0.812f, 0.6f); // SoftSand 60% opacity background
         var retryBtn = retryGo.AddComponent<Button>();
         AddSoftShadow(retryGo, 2f, -2f, 0.06f); // Shadow on retry button
-        SetCenterPosition(retryGo.GetComponent<RectTransform>(), 0f, -96f, 260f, 48f);
+        SetCenterPosition(retryGo.GetComponent<RectTransform>(), 0f, -108f, 260f, 48f);
 
         var retryContentGo = CreateUIObject("Content", retryGo);
         SetCenterPosition(retryContentGo.GetComponent<RectTransform>(), 0f, 0f, 170f, 24f);
