@@ -1651,10 +1651,10 @@ public static class SetupAndBuild
         tcRT.anchoredPosition = Vector2.zero;
         tcRT.sizeDelta = new Vector2(-24f, 12f); // Thick capsule height 12f
 
-        var roundRect12 = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        var capsulePill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/CapsulePill-24.png");
         var trackBgGo = CreateUIObject("TrackBackground", trackContainerGo);
         var trackBgImg = trackBgGo.AddComponent<Image>();
-        trackBgImg.sprite = roundRect12;
+        trackBgImg.sprite = capsulePill;
         trackBgImg.type = Image.Type.Sliced;
         trackBgImg.preserveAspect = false;
         trackBgImg.color = new Color(0.663f, 0.745f, 0.635f, 0.4f); // Light sage green transparent capsule background
@@ -1675,7 +1675,7 @@ public static class SetupAndBuild
 
         var activeFillGo = CreateUIObject("ActiveFill", fillAreaGo);
         var fillImg = activeFillGo.AddComponent<Image>();
-        fillImg.sprite = roundRect12;
+        fillImg.sprite = capsulePill;
         fillImg.type = Image.Type.Sliced;
         fillImg.preserveAspect = false;
         fillImg.color = ForestGreen; // Thick Forest Green active fill
