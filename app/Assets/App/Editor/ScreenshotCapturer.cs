@@ -168,6 +168,11 @@ public static class ScreenshotCapturer
             deactivateAll();
             unsup.SetActive(true);
             cameraError.SetActive(true);
+            if (bootstrapUI != null)
+            {
+                var method = typeof(MotionLearn.UI.BootstrapUIController).GetMethod("UpdatePanels", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                method?.Invoke(bootstrapUI, new object[] { MotionLearn.Core.AppState.CameraDenied });
+            }
             SaveRTToPNG(cam, rt, Path.Combine(outDir, "G09_CameraError.png"));
         }
         else

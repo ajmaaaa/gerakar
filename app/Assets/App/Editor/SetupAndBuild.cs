@@ -1134,17 +1134,17 @@ public static class SetupAndBuild
 
         var retryIconGo = CreateUIObject("Icon", retryGo);
         var retryIconImg = retryIconGo.AddComponent<Image>();
-        retryIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/refresh-cw.svg");
+        retryIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/book-open.svg");
         retryIconImg.preserveAspect = true;
         retryIconImg.raycastTarget = false;
         retryIconImg.color = DeepForest;
-        SetCenterPosition(retryIconGo.GetComponent<RectTransform>(), -50f, 0f, 16f, 16f);
+        SetCenterPosition(retryIconGo.GetComponent<RectTransform>(), -65f, 0f, 16f, 16f);
 
         var retryTextGo = CreateUIObject("Text", retryGo);
         var retryText = retryTextGo.AddComponent<TextMeshProUGUI>();
         retryText.textWrappingMode = TextWrappingModes.Normal;
-        retryText.text = "     Coba Lagi";
-        retryText.fontSize = 12f;
+        retryText.text = "     Belajar Tanpa Kamera";
+        retryText.fontSize = 11f;
         retryText.fontStyle = FontStyles.Bold;
         retryText.color = DeepForest;
         retryText.alignment = TextAlignmentOptions.Center;
