@@ -653,7 +653,7 @@ public static class SetupAndBuild
         g08BrandText.text = "MotionLearn";
         g08BrandText.fontSize = 20f;
         g08BrandText.fontStyle = FontStyles.Bold;
-        g08BrandText.color = DeepForest; // #12372A
+        g08BrandText.color = ForestGreen; // #1F5D42 matching OpenCamera green!
         g08BrandText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) g08BrandText.font = fonts.Display;
         SetAnchorTop(g08BrandGo.GetComponent<RectTransform>(), 0f, -48f, 200f, 28f);
@@ -669,14 +669,14 @@ public static class SetupAndBuild
         if (fonts != null) g08SubText.font = fonts.Medium;
         SetAnchorTop(g08SubGo.GetComponent<RectTransform>(), 0f, -76f, 200f, 16f);
 
-        // Top right mode & info button (smooth 14px radius pill shape)
+        // Top right mode & info button (smooth 14px radius pill shape, positioned higher up)
         var g08BadgeGo = CreateUIObject("ModeBadge", g08HeaderBarGo);
         var g08BadgeImg = g08BadgeGo.AddComponent<Image>();
         g08BadgeImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Pill-14.png"); // smooth 14px radius pill
         g08BadgeImg.type = Image.Type.Sliced;
         g08BadgeImg.color = new Color(0.918f, 0.867f, 0.812f, 0.75f); // SoftSand tint
         var g08BadgeBtn = g08BadgeGo.AddComponent<Button>();
-        SetAnchorTop(g08BadgeGo.GetComponent<RectTransform>(), 110f, -48f, 110f, 26f);
+        SetAnchorTop(g08BadgeGo.GetComponent<RectTransform>(), 110f, -24f, 110f, 26f);
 
         var g08BadgeIconGo = CreateUIObject("Icon", g08BadgeGo);
         var g08BadgeIconImg = g08BadgeIconGo.AddComponent<Image>();
@@ -1579,13 +1579,19 @@ public static class SetupAndBuild
         innerCircleImg.color = new Color(0.09f, 0.65f, 0.28f, 1.0f);
         SetCenterPosition(innerCircleGo.GetComponent<RectTransform>(), 0f, 0f, 54f, 54f);
 
-        var toastCheckGo = CreateUIObject("CheckIcon", innerCircleGo);
-        var toastCheck = toastCheckGo.AddComponent<Image>();
-        toastCheck.sprite = checkIcon;
-        toastCheck.preserveAspect = true;
-        toastCheck.raycastTarget = false;
-        toastCheck.color = WarmWhite;
-        SetCenterPosition(toastCheckGo.GetComponent<RectTransform>(), 0f, 0f, 28f, 28f);
+        var stroke1 = CreateUIObject("CheckStroke1", innerCircleGo);
+        var s1Img = stroke1.AddComponent<Image>();
+        s1Img.sprite = uiSolidRect;
+        s1Img.color = Color.white;
+        SetCenterPosition(stroke1.GetComponent<RectTransform>(), -4f, -2f, 10f, 4.5f);
+        stroke1.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0f, 0f, 45f);
+
+        var stroke2 = CreateUIObject("CheckStroke2", innerCircleGo);
+        var s2Img = stroke2.AddComponent<Image>();
+        s2Img.sprite = uiSolidRect;
+        s2Img.color = Color.white;
+        SetCenterPosition(stroke2.GetComponent<RectTransform>(), 3.5f, 2f, 18f, 4.5f);
+        stroke2.GetComponent<RectTransform>().localRotation = Quaternion.Euler(0f, 0f, -45f);
 
         var toastKickerGo = CreateUIObject("KickerText", toastGo);
         var toastKicker = toastKickerGo.AddComponent<TextMeshProUGUI>();

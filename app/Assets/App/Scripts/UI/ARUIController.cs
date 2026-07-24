@@ -314,44 +314,11 @@ namespace MotionLearn.UI
                     innerImg.color = new Color(0.09f, 0.65f, 0.28f, 1.0f);
                 }
 
-                // Ensure EXACTLY ONE Checkmark Icon under innerTrans
-                Transform checkIcon = innerTrans.Find("CheckIcon");
-                if (checkIcon == null)
+                // Ensure solid white checkmark icon inside innerTrans
+                if (innerTrans.Find("CheckStroke1") == null)
                 {
-                    checkIcon = circleTrans.Find("CheckIcon");
-                }
-
-                // Remove any secondary/duplicate check icon children under circleTrans or innerTrans
-                foreach (Transform t in circleTrans.GetComponentsInChildren<Transform>(true))
-                {
-                    if (t != null && t != circleTrans && t != midTrans && t != innerTrans && t != checkIcon && (t.name.Contains("Check") || t.name.Contains("Stroke")))
-                    {
-                        Object.DestroyImmediate(t.gameObject);
-                    }
-                }
-
-                if (checkIcon != null)
-                {
-                    checkIcon.SetParent(innerTrans, false);
-                    checkIcon.gameObject.SetActive(true);
-                    var checkRect = checkIcon as RectTransform;
-                    checkRect.anchorMin = new Vector2(0.5f, 0.5f);
-                    checkRect.anchorMax = new Vector2(0.5f, 0.5f);
-                    checkRect.pivot = new Vector2(0.5f, 0.5f);
-                    checkRect.anchoredPosition = Vector2.zero;
-                    checkRect.sizeDelta = new Vector2(28f, 28f);
-
-                    Image checkImg = checkIcon.GetComponent<Image>();
-                    if (checkImg != null)
-                    {
-#if UNITY_EDITOR
-                        if (checkImg.sprite == null)
-                            checkImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/check.svg");
-#endif
-                        checkImg.color = Color.white;
-                        checkImg.raycastTarget = false;
-                        checkImg.preserveAspect = true;
-                    }
+                    CreateCheckStroke(innerTrans, "CheckStroke1", new Vector2(-4f, -2f), new Vector2(10f, 4.5f), 45f);
+                    CreateCheckStroke(innerTrans, "CheckStroke2", new Vector2(3.5f, 2f), new Vector2(18f, 4.5f), -45f);
                 }
             }
 
