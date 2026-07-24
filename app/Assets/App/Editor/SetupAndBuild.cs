@@ -646,28 +646,28 @@ public static class SetupAndBuild
         g08HeaderBarImg.color = Color.clear; // Transparent header background
         SetAnchorTop(g08HeaderBarGo.GetComponent<RectTransform>(), 0f, -12f, 360f, 68f);
 
-        // MotionLearn centered brand heading + subtitle (matching user mockup)
+        // MotionLearn centered brand heading + subtitle (100% identical to normal AR HUD header)
         var g08BrandGo = CreateUIObject("Brand", g08HeaderBarGo);
         var g08BrandText = g08BrandGo.AddComponent<TextMeshProUGUI>();
         g08BrandText.textWrappingMode = TextWrappingModes.Normal;
         g08BrandText.text = "MotionLearn";
-        g08BrandText.fontSize = 22f;
+        g08BrandText.fontSize = 20f;
         g08BrandText.fontStyle = FontStyles.Bold;
         g08BrandText.color = DeepForest; // #12372A
         g08BrandText.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) g08BrandText.font = fonts.Heading;
-        SetCenterPosition(g08BrandGo.GetComponent<RectTransform>(), 0f, 8f, 220f, 26f);
+        if (fonts != null) g08BrandText.font = fonts.Display;
+        SetAnchorTop(g08BrandGo.GetComponent<RectTransform>(), 0f, -48f, 200f, 28f);
 
         var g08SubGo = CreateUIObject("Subtitle", g08HeaderBarGo);
         var g08SubText = g08SubGo.AddComponent<TextMeshProUGUI>();
         g08SubText.textWrappingMode = TextWrappingModes.Normal;
         g08SubText.text = "Belajar Gerak Jadi Seru";
-        g08SubText.fontSize = 11.5f;
+        g08SubText.fontSize = 10f;
         g08SubText.fontStyle = FontStyles.Normal;
         g08SubText.color = SecondaryText; // #716040
         g08SubText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) g08SubText.font = fonts.Medium;
-        SetCenterPosition(g08SubGo.GetComponent<RectTransform>(), 0f, -16f, 220f, 18f);
+        SetAnchorTop(g08SubGo.GetComponent<RectTransform>(), 0f, -76f, 200f, 16f);
 
         // Top right mode & info button (smooth 14px radius pill shape)
         var g08BadgeGo = CreateUIObject("ModeBadge", g08HeaderBarGo);
@@ -676,7 +676,7 @@ public static class SetupAndBuild
         g08BadgeImg.type = Image.Type.Sliced;
         g08BadgeImg.color = new Color(0.918f, 0.867f, 0.812f, 0.75f); // SoftSand tint
         var g08BadgeBtn = g08BadgeGo.AddComponent<Button>();
-        SetCenterPosition(g08BadgeGo.GetComponent<RectTransform>(), 115f, 10f, 110f, 26f);
+        SetAnchorTop(g08BadgeGo.GetComponent<RectTransform>(), 110f, -48f, 110f, 26f);
 
         var g08BadgeIconGo = CreateUIObject("Icon", g08BadgeGo);
         var g08BadgeIconImg = g08BadgeIconGo.AddComponent<Image>();

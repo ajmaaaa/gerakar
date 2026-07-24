@@ -225,7 +225,7 @@ namespace MotionLearn.UI
             if (toastBg != null)
             {
                 toastBg.sprite = null; // Flat solid background - no rounded corner warping!
-                toastBg.color = new Color(0.984f, 0.973f, 0.953f, 1.0f); // Solid WarmCream (#FBF8F3) matching app background!
+                toastBg.color = new Color(0.957f, 0.941f, 0.902f, 1.0f); // Exact WarmCream (#F4F0E6) matching app background!
                 toastBg.type = Image.Type.Simple;
             }
 
@@ -344,8 +344,13 @@ namespace MotionLearn.UI
                     Image checkImg = checkIcon.GetComponent<Image>();
                     if (checkImg != null)
                     {
+#if UNITY_EDITOR
+                        if (checkImg.sprite == null)
+                            checkImg.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/check.svg");
+#endif
                         checkImg.color = Color.white;
                         checkImg.raycastTarget = false;
+                        checkImg.preserveAspect = true;
                     }
                 }
             }
