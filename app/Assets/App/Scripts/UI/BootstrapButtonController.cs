@@ -63,8 +63,8 @@ namespace MotionLearn.UI
                 // G09a: Denied
                 // settingsBtn (Forest Green primary) opens settings
                 settingsBtn?.onClick.AddListener(OpenDeviceSettings);
-                // retryBtn (Warm Cream secondary) retries permission
-                retryBtn?.onClick.AddListener(OnRetryClicked);
+                // retryBtn (Warm Cream secondary) routes to Non-AR 3D catalog
+                retryBtn?.onClick.AddListener(GoToNonARMode);
             }
             else
             {

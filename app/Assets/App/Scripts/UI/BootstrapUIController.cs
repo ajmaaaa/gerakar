@@ -219,14 +219,14 @@ namespace MotionLearn.UI
                         
                         if (errorDescText != null)
                             errorDescText.text = permissionDenied 
-                                ? "Izinkan akses kamera agar MotionLearn dapat melihat gambar gerakan."
+                                ? "Izinkan akses kamera agar MotionLearn dapat melihat gambar gerakan, atau gunakan mode 3D tanpa kamera."
                                 : "Periksa izin kamera, atau gunakan mode tanpa kamera.";
                         
                         if (primaryBtnText != null)
                             primaryBtnText.text = permissionDenied ? "BUKA PENGATURAN" : "Coba Lagi";
                         
                         if (secondaryBtnText != null)
-                            secondaryBtnText.text = permissionDenied ? "Coba Lagi" : "Belajar Tanpa Kamera";
+                            secondaryBtnText.text = "Belajar Tanpa Kamera";
 
                         var btnController = FindAnyObjectByType<BootstrapButtonController>();
                         if (btnController != null)
