@@ -1649,13 +1649,13 @@ public static class SetupAndBuild
         tcRT.anchorMax = new Vector2(1f, 0.5f);
         tcRT.pivot = new Vector2(0.5f, 0.5f);
         tcRT.anchoredPosition = Vector2.zero;
-        tcRT.sizeDelta = new Vector2(-24f, 12f); // Exact bounds from Node 0 center (x=12px) to Node N-1 center (x=288px)
+        tcRT.sizeDelta = new Vector2(-24f, 12f); // Exact bounds matching Node 0 center to Node N-1 center (276px wide x 12px high)
 
-        var smoothCapsule = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/SmoothCapsule-12.png");
+        var capsuleHD = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/CapsuleHD.png");
         var trackBgGo = CreateUIObject("TrackBackground", trackContainerGo);
         var trackBgImg = trackBgGo.AddComponent<Image>();
-        trackBgImg.sprite = smoothCapsule;
-        trackBgImg.type = Image.Type.Sliced;
+        trackBgImg.sprite = capsuleHD;
+        trackBgImg.type = Image.Type.Simple; // Un-sliced HD vector quad for 100% pure semi-circle radius
         trackBgImg.preserveAspect = false;
         trackBgImg.color = new Color(0.09f, 0.40f, 0.20f, 0.15f); // Soft transparent forest green track background
         var tbgRT = trackBgGo.GetComponent<RectTransform>();
@@ -1666,6 +1666,7 @@ public static class SetupAndBuild
         tbgRT.sizeDelta = Vector2.zero;
 
         var fillAreaGo = CreateUIObject("FillArea", trackContainerGo);
+        fillAreaGo.AddComponent<RectMask2D>(); // RectMask2D clips ActiveFill cleanly with zero 9-slice distortion!
         var faRT = fillAreaGo.GetComponent<RectTransform>();
         faRT.anchorMin = new Vector2(0f, 0f);
         faRT.anchorMax = new Vector2(1f, 1f);
@@ -1675,10 +1676,10 @@ public static class SetupAndBuild
 
         var activeFillGo = CreateUIObject("ActiveFill", fillAreaGo);
         var fillImg = activeFillGo.AddComponent<Image>();
-        fillImg.sprite = smoothCapsule;
-        fillImg.type = Image.Type.Sliced;
+        fillImg.sprite = capsuleHD;
+        fillImg.type = Image.Type.Simple; // Un-sliced HD vector quad
         fillImg.preserveAspect = false;
-        fillImg.color = ForestGreen; // Thick Forest Green active fill
+        fillImg.color = ForestGreen; // Forest Green active fill
         var afRT = activeFillGo.GetComponent<RectTransform>();
         afRT.anchorMin = new Vector2(0f, 0f);
         afRT.anchorMax = new Vector2(0f, 1f);
@@ -1746,7 +1747,7 @@ public static class SetupAndBuild
         startLabel.color = SecondaryText;
         startLabel.alignment = TextAlignmentOptions.Left;
         if (fonts != null) startLabel.font = fonts.Medium;
-        SetCenterPosition(startLabelGo.GetComponent<RectTransform>(), -130f, 0f, 50f, 14f);
+        SetCenterPosition(startLabelGo.GetComponent<RectTransform>(), -120f, 0f, 60f, 14f);
 
         var midLabelGo = CreateUIObject("Petunjuk", tlBottomLabelsGo);
         var midLabel = midLabelGo.AddComponent<TextMeshProUGUI>();
@@ -1756,7 +1757,7 @@ public static class SetupAndBuild
         midLabel.color = SecondaryText;
         midLabel.alignment = TextAlignmentOptions.Center;
         if (fonts != null) midLabel.font = fonts.Medium;
-        SetCenterPosition(midLabelGo.GetComponent<RectTransform>(), 0f, 0f, 260f, 14f);
+        SetCenterPosition(midLabelGo.GetComponent<RectTransform>(), 0f, 0f, 180f, 14f);
 
         var endLabelGo = CreateUIObject("Selesai", tlBottomLabelsGo);
         var endLabel = endLabelGo.AddComponent<TextMeshProUGUI>();
@@ -1766,7 +1767,7 @@ public static class SetupAndBuild
         endLabel.color = SecondaryText;
         endLabel.alignment = TextAlignmentOptions.Right;
         if (fonts != null) endLabel.font = fonts.Medium;
-        SetCenterPosition(endLabelGo.GetComponent<RectTransform>(), 130f, 0f, 50f, 14f);
+        SetCenterPosition(endLabelGo.GetComponent<RectTransform>(), 120f, 0f, 60f, 14f);
 
         var timelineCtrl = timelineRootGo.AddComponent<PoseTimelineController>();
         var serialTimeline = new SerializedObject(timelineCtrl);
