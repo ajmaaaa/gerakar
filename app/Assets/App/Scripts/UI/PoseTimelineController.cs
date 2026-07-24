@@ -179,7 +179,7 @@ namespace MotionLearn.UI
                 var img = _markers[i].GetComponent<Image>();
                 if (img != null)
                 {
-                    img.color = lineGreen; // Crisp Forest Green nodes
+                    img.color = lineGreen; // Clean Forest Green node dots
                 }
             }
         }
@@ -207,12 +207,6 @@ namespace MotionLearn.UI
                     img.preserveAspect = true;
                     img.color = lineGreen;
                 }
-                
-                // Add crisp white outline ring around 12px circle nodes
-                var outline = dot.GetComponent<Outline>();
-                if (outline == null) outline = dot.AddComponent<Outline>();
-                outline.effectColor = Color.white;
-                outline.effectDistance = new Vector2(1.5f, 1.5f);
 
                 var rt = dot.GetComponent<RectTransform>();
                 if (rt != null)
@@ -221,7 +215,7 @@ namespace MotionLearn.UI
                     rt.anchorMax = new Vector2(markerTime, 0.5f);
                     rt.pivot = new Vector2(0.5f, 0.5f);
                     rt.anchoredPosition = Vector2.zero;
-                    rt.sizeDelta = new Vector2(12f, 12f); // 12px circle node
+                    rt.sizeDelta = new Vector2(10f, 10f); // 10px clean circle node
                 }
 
                 _markers.Add(dot);
