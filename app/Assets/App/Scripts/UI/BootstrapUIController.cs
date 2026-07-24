@@ -223,10 +223,10 @@ namespace MotionLearn.UI
                                 : "Periksa izin kamera, atau gunakan mode tanpa kamera.";
                         
                         if (primaryBtnText != null)
-                            primaryBtnText.text = permissionDenied ? "BUKA PENGATURAN" : "Coba Lagi";
+                            primaryBtnText.text = "BUKA PENGATURAN KAMERA";
                         
                         if (secondaryBtnText != null)
-                            secondaryBtnText.text = "Belajar Tanpa Kamera";
+                            secondaryBtnText.text = "BELAJAR TANPA KAMERA";
 
                         var btnController = FindAnyObjectByType<BootstrapButtonController>();
                         if (btnController != null)

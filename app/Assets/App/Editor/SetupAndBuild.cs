@@ -1093,7 +1093,7 @@ public static class SetupAndBuild
         if (fonts != null) camErrorDesc.font = fonts.Medium;
         SetCenterPosition(camErrorDescGo.GetComponent<RectTransform>(), 0f, 25f, 260f, 48f);
 
-        // Buka Pengaturan button (primary button)
+        // Buka Pengaturan Kamera button (primary button)
         var settingsGo = CreateUIObject("SettingsButton", camCardGo);
         var settingsImg = settingsGo.AddComponent<Image>();
         settingsImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
@@ -1109,20 +1109,20 @@ public static class SetupAndBuild
         settingsIconImg.preserveAspect = true;
         settingsIconImg.raycastTarget = false;
         settingsIconImg.color = Color.white;
-        SetCenterPosition(settingsIconGo.GetComponent<RectTransform>(), -75f, 0f, 16f, 16f);
+        SetCenterPosition(settingsIconGo.GetComponent<RectTransform>(), -100f, 0f, 18f, 18f);
 
         var settingsTextGo = CreateUIObject("Text", settingsGo);
         var settingsText = settingsTextGo.AddComponent<TextMeshProUGUI>();
         settingsText.textWrappingMode = TextWrappingModes.Normal;
-        settingsText.text = "     BUKA PENGATURAN";
+        settingsText.text = "BUKA PENGATURAN KAMERA";
         settingsText.fontSize = 11f;
         settingsText.fontStyle = FontStyles.Bold;
         settingsText.color = Color.white;
         settingsText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) settingsText.font = fonts.Heading;
-        StretchRect(settingsTextGo.GetComponent<RectTransform>());
+        SetCenterPosition(settingsTextGo.GetComponent<RectTransform>(), 10f, 0f, 200f, 24f);
 
-        // Coba Lagi button (secondary button)
+        // Belajar Tanpa Kamera button (secondary button)
         var retryGo = CreateUIObject("RetryButton", camCardGo);
         var retryBtnImg = retryGo.AddComponent<Image>();
         retryBtnImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
@@ -1138,18 +1138,18 @@ public static class SetupAndBuild
         retryIconImg.preserveAspect = true;
         retryIconImg.raycastTarget = false;
         retryIconImg.color = DeepForest;
-        SetCenterPosition(retryIconGo.GetComponent<RectTransform>(), -65f, 0f, 16f, 16f);
+        SetCenterPosition(retryIconGo.GetComponent<RectTransform>(), -100f, 0f, 18f, 18f);
 
         var retryTextGo = CreateUIObject("Text", retryGo);
         var retryText = retryTextGo.AddComponent<TextMeshProUGUI>();
         retryText.textWrappingMode = TextWrappingModes.Normal;
-        retryText.text = "     Belajar Tanpa Kamera";
+        retryText.text = "BELAJAR TANPA KAMERA";
         retryText.fontSize = 11f;
         retryText.fontStyle = FontStyles.Bold;
         retryText.color = DeepForest;
         retryText.alignment = TextAlignmentOptions.Center;
         if (fonts != null) retryText.font = fonts.Heading;
-        StretchRect(retryTextGo.GetComponent<RectTransform>());
+        SetCenterPosition(retryTextGo.GetComponent<RectTransform>(), 10f, 0f, 200f, 24f);
 
         // Bottom helper tip text
         var tipGo = CreateUIObject("HelperTip", camCardGo);
