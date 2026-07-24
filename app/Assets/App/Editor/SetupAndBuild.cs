@@ -1103,24 +1103,37 @@ public static class SetupAndBuild
         AddSoftShadow(settingsGo, 2f, -3f, 0.12f); // Shadow on settings button
         SetCenterPosition(settingsGo.GetComponent<RectTransform>(), 0f, -40f, 260f, 48f);
 
-        var settingsIconGo = CreateUIObject("Icon", settingsGo);
+        var settingsContentGo = CreateUIObject("Content", settingsGo);
+        SetCenterPosition(settingsContentGo.GetComponent<RectTransform>(), 0f, 0f, 188f, 24f);
+
+        var settingsIconGo = CreateUIObject("Icon", settingsContentGo);
         var settingsIconImg = settingsIconGo.AddComponent<Image>();
         settingsIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/camera.svg");
         settingsIconImg.preserveAspect = true;
         settingsIconImg.raycastTarget = false;
         settingsIconImg.color = Color.white;
-        SetCenterPosition(settingsIconGo.GetComponent<RectTransform>(), -100f, 0f, 18f, 18f);
+        var sIconRT = settingsIconGo.GetComponent<RectTransform>();
+        sIconRT.anchorMin = new Vector2(0f, 0.5f);
+        sIconRT.anchorMax = new Vector2(0f, 0.5f);
+        sIconRT.pivot = new Vector2(0f, 0.5f);
+        sIconRT.anchoredPosition = Vector2.zero;
+        sIconRT.sizeDelta = new Vector2(18f, 18f);
 
-        var settingsTextGo = CreateUIObject("Text", settingsGo);
+        var settingsTextGo = CreateUIObject("Text", settingsContentGo);
         var settingsText = settingsTextGo.AddComponent<TextMeshProUGUI>();
-        settingsText.textWrappingMode = TextWrappingModes.Normal;
+        settingsText.textWrappingMode = TextWrappingModes.NoWrap;
         settingsText.text = "BUKA PENGATURAN KAMERA";
-        settingsText.fontSize = 11f;
+        settingsText.fontSize = 10.5f;
         settingsText.fontStyle = FontStyles.Bold;
         settingsText.color = Color.white;
-        settingsText.alignment = TextAlignmentOptions.Center;
+        settingsText.alignment = TextAlignmentOptions.MidlineLeft;
         if (fonts != null) settingsText.font = fonts.Heading;
-        SetCenterPosition(settingsTextGo.GetComponent<RectTransform>(), 10f, 0f, 200f, 24f);
+        var sTextRT = settingsTextGo.GetComponent<RectTransform>();
+        sTextRT.anchorMin = new Vector2(0f, 0f);
+        sTextRT.anchorMax = new Vector2(1f, 1f);
+        sTextRT.pivot = new Vector2(0f, 0.5f);
+        sTextRT.offsetMin = new Vector2(26f, 0f); // 18px icon + 8px gap
+        sTextRT.offsetMax = Vector2.zero;
 
         // Belajar Tanpa Kamera button (secondary button)
         var retryGo = CreateUIObject("RetryButton", camCardGo);
@@ -1132,24 +1145,37 @@ public static class SetupAndBuild
         AddSoftShadow(retryGo, 2f, -2f, 0.06f); // Shadow on retry button
         SetCenterPosition(retryGo.GetComponent<RectTransform>(), 0f, -96f, 260f, 48f);
 
-        var retryIconGo = CreateUIObject("Icon", retryGo);
+        var retryContentGo = CreateUIObject("Content", retryGo);
+        SetCenterPosition(retryContentGo.GetComponent<RectTransform>(), 0f, 0f, 170f, 24f);
+
+        var retryIconGo = CreateUIObject("Icon", retryContentGo);
         var retryIconImg = retryIconGo.AddComponent<Image>();
         retryIconImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Icons/Lucide/book-open.svg");
         retryIconImg.preserveAspect = true;
         retryIconImg.raycastTarget = false;
         retryIconImg.color = DeepForest;
-        SetCenterPosition(retryIconGo.GetComponent<RectTransform>(), -100f, 0f, 18f, 18f);
+        var rIconRT = retryIconGo.GetComponent<RectTransform>();
+        rIconRT.anchorMin = new Vector2(0f, 0.5f);
+        rIconRT.anchorMax = new Vector2(0f, 0.5f);
+        rIconRT.pivot = new Vector2(0f, 0.5f);
+        rIconRT.anchoredPosition = Vector2.zero;
+        rIconRT.sizeDelta = new Vector2(18f, 18f);
 
-        var retryTextGo = CreateUIObject("Text", retryGo);
+        var retryTextGo = CreateUIObject("Text", retryContentGo);
         var retryText = retryTextGo.AddComponent<TextMeshProUGUI>();
-        retryText.textWrappingMode = TextWrappingModes.Normal;
+        retryText.textWrappingMode = TextWrappingModes.NoWrap;
         retryText.text = "BELAJAR TANPA KAMERA";
-        retryText.fontSize = 11f;
+        retryText.fontSize = 10.5f;
         retryText.fontStyle = FontStyles.Bold;
         retryText.color = DeepForest;
-        retryText.alignment = TextAlignmentOptions.Center;
+        retryText.alignment = TextAlignmentOptions.MidlineLeft;
         if (fonts != null) retryText.font = fonts.Heading;
-        SetCenterPosition(retryTextGo.GetComponent<RectTransform>(), 10f, 0f, 200f, 24f);
+        var rTextRT = retryTextGo.GetComponent<RectTransform>();
+        rTextRT.anchorMin = new Vector2(0f, 0f);
+        rTextRT.anchorMax = new Vector2(1f, 1f);
+        rTextRT.pivot = new Vector2(0f, 0.5f);
+        rTextRT.offsetMin = new Vector2(26f, 0f); // 18px icon + 8px gap
+        rTextRT.offsetMax = Vector2.zero;
 
         // Bottom helper tip text
         var tipGo = CreateUIObject("HelperTip", camCardGo);
