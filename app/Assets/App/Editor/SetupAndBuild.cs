@@ -1070,8 +1070,11 @@ public static class SetupAndBuild
         var dhlg = drelContentGo.AddComponent<HorizontalLayoutGroup>();
         dhlg.padding = new RectOffset(20, 20, 4, 12);
         dhlg.spacing = 12f;
+        dhlg.childAlignment = TextAnchor.UpperLeft; // Align cards cleanly starting from left offset 20px
         dhlg.childControlWidth = true;
         dhlg.childControlHeight = true;
+        dhlg.childForceExpandWidth = false;
+        dhlg.childForceExpandHeight = false;
 
         var drelCsf = drelContentGo.AddComponent<ContentSizeFitter>();
         drelCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -1953,7 +1956,7 @@ public static class SetupAndBuild
         handleRT.anchorMax = new Vector2(0.5f, 1f);
         handleRT.pivot = new Vector2(0.5f, 1f);
         handleRT.anchoredPosition = new Vector2(0f, -8f);
-        handleRT.sizeDelta = new Vector2(36f, 4f);
+        handleRT.sizeDelta = new Vector2(64f, 4f); // Longer green drag indicator line (64px width!)
         handleGo.transform.SetAsLastSibling();
 
         // Left text group
