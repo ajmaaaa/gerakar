@@ -18,7 +18,7 @@ namespace MotionLearn.UI
             HorizontalLayoutGroup layout = container.GetComponent<HorizontalLayoutGroup>();
             if (layout != null)
             {
-                layout.padding = new RectOffset(0, 12, 4, 8);
+                layout.padding = new RectOffset(20, 20, 4, 12);
                 layout.spacing = 12f;
                 layout.childAlignment = TextAnchor.UpperLeft;
                 layout.childControlWidth = true;

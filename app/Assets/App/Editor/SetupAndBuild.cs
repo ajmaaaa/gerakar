@@ -756,8 +756,16 @@ public static class SetupAndBuild
         // Header for Non-AR Detail (consistent with G08 Catalog)
         var detailHeaderGo = CreateUIObject("HeaderBar", nonARDetailPanelGo);
         var detailHeaderImg = detailHeaderGo.AddComponent<Image>();
-        detailHeaderImg.color = Color.clear;
-        SetAnchorTop(detailHeaderGo.GetComponent<RectTransform>(), 0f, -16f, 360f, 56f);
+        detailHeaderImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-16.png");
+        detailHeaderImg.type = Image.Type.Sliced;
+        detailHeaderImg.color = WarmCream; // Solid background hides content scrolling underneath
+        AddSoftShadow(detailHeaderGo, 0f, -4f, 0.15f); // Downward drop shadow on sticky header
+        var dhRT = detailHeaderGo.GetComponent<RectTransform>();
+        dhRT.anchorMin = new Vector2(0f, 1f);
+        dhRT.anchorMax = new Vector2(1f, 1f);
+        dhRT.pivot = new Vector2(0.5f, 1f);
+        dhRT.anchoredPosition = Vector2.zero;
+        dhRT.sizeDelta = new Vector2(0f, 76f);
 
         var detailLeftGroupGo = CreateUIObject("LeftGroup", detailHeaderGo);
         var dlgRT = detailLeftGroupGo.GetComponent<RectTransform>();
@@ -1008,9 +1016,14 @@ public static class SetupAndBuild
         nestedScrollRouter.SetParentScrollRect(detailScrollRect);
         drelScroll.horizontal = true;
         drelScroll.vertical = false;
-        dRelatedScrollViewGo.GetComponent<RectTransform>().sizeDelta = new Vector2(900f, 130f);
+        var drelRT = dRelatedScrollViewGo.GetComponent<RectTransform>();
+        drelRT.anchorMin = new Vector2(0f, 0.5f);
+        drelRT.anchorMax = new Vector2(1f, 0.5f);
+        drelRT.pivot = new Vector2(0.5f, 0.5f);
+        drelRT.offsetMin = new Vector2(-20f, -90f); // Extend 20px to absolute left screen edge
+        drelRT.offsetMax = new Vector2(20f, 90f);   // Extend 20px to absolute right screen edge
         var drelLE = dRelatedScrollViewGo.AddComponent<LayoutElement>();
-        drelLE.preferredHeight = 130f;
+        drelLE.preferredHeight = 180f;
 
         var drelViewportGo = CreateUIObject("Viewport", dRelatedScrollViewGo);
         drelViewportGo.AddComponent<RectMask2D>();
@@ -1023,11 +1036,11 @@ public static class SetupAndBuild
         drelContentRT.anchorMax = new Vector2(0f, 0.5f);
         drelContentRT.pivot = new Vector2(0f, 0.5f);
         drelContentRT.anchoredPosition = Vector2.zero;
-        drelContentRT.sizeDelta = new Vector2(800f, 120f);
+        drelContentRT.sizeDelta = new Vector2(800f, 180f);
         drelScroll.content = drelContentRT;
 
         var dhlg = drelContentGo.AddComponent<HorizontalLayoutGroup>();
-        dhlg.padding = new RectOffset(4, 4, 4, 4);
+        dhlg.padding = new RectOffset(20, 20, 4, 12);
         dhlg.spacing = 12f;
         dhlg.childControlWidth = true;
         dhlg.childControlHeight = true;
@@ -1036,6 +1049,9 @@ public static class SetupAndBuild
         drelCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         drelCsf.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
         RelatedMovementCardView.ConfigureContainer(drelContentGo.transform);
+
+        // Sticky header sits on top layer casting downward drop shadow over scrolling content
+        detailHeaderGo.transform.SetAsLastSibling();
 
         // ── G09 — CAMERA DENIED ──
         var cameraErrorPanelGo = CreateUIObject("CameraErrorPanel", unsupGo);
@@ -1880,14 +1896,19 @@ public static class SetupAndBuild
         sheetRT.anchoredPosition = new Vector2(0f, 0f);
         sheetRT.sizeDelta = new Vector2(0f, 752f);
 
-        // Header area — Transparent with no bottom separator
+        // Header area — Solid WarmCream background with downward drop shadow separator
         var sheetHeaderGo = CreateUIObject("SheetHeader", sheetGo);
+        var sheetHeaderImg = sheetHeaderGo.AddComponent<Image>();
+        sheetHeaderImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-16.png");
+        sheetHeaderImg.type = Image.Type.Sliced;
+        sheetHeaderImg.color = WarmCream; // Hides content scrolling underneath
+        AddSoftShadow(sheetHeaderGo, 0f, -4f, 0.15f); // Downward drop shadow on sticky header
         var shRT = sheetHeaderGo.GetComponent<RectTransform>();
         shRT.anchorMin = new Vector2(0f, 1f);
         shRT.anchorMax = new Vector2(1f, 1f);
         shRT.pivot = new Vector2(0.5f, 1f);
-        shRT.anchoredPosition = new Vector2(0f, -16f); // Offset slightly below grab handle
-        shRT.sizeDelta = new Vector2(0f, 64f); // height 64f for kicker + title
+        shRT.anchoredPosition = Vector2.zero;
+        shRT.sizeDelta = new Vector2(0f, 76f);
 
         // Grab handle
         var handleGo = CreateUIObject("GrabHandle", sheetGo);
@@ -2257,7 +2278,14 @@ public static class SetupAndBuild
         var relScroll = relatedScrollViewGo.AddComponent<ScrollRect>();
         relScroll.horizontal = true;
         relScroll.vertical = false;
-        relatedScrollViewGo.GetComponent<RectTransform>().sizeDelta = new Vector2(900f, 130f);
+        var relRT = relatedScrollViewGo.GetComponent<RectTransform>();
+        relRT.anchorMin = new Vector2(0f, 0.5f);
+        relRT.anchorMax = new Vector2(1f, 0.5f);
+        relRT.pivot = new Vector2(0.5f, 0.5f);
+        relRT.offsetMin = new Vector2(-20f, -90f); // Extend 20px to absolute left sheet edge
+        relRT.offsetMax = new Vector2(20f, 90f);   // Extend 20px to absolute right sheet edge
+        var relLE = relatedScrollViewGo.AddComponent<LayoutElement>();
+        relLE.preferredHeight = 180f;
 
         var relViewportGo = CreateUIObject("Viewport", relatedScrollViewGo);
         relViewportGo.AddComponent<RectMask2D>();
@@ -2270,11 +2298,11 @@ public static class SetupAndBuild
         relContentRT.anchorMax = new Vector2(0f, 0.5f);
         relContentRT.pivot = new Vector2(0f, 0.5f);
         relContentRT.anchoredPosition = Vector2.zero;
-        relContentRT.sizeDelta = new Vector2(800f, 120f);
+        relContentRT.sizeDelta = new Vector2(800f, 180f);
         relScroll.content = relContentRT;
 
         var hlg = relContentGo.AddComponent<HorizontalLayoutGroup>();
-        hlg.padding = new RectOffset(4, 4, 4, 4);
+        hlg.padding = new RectOffset(20, 20, 4, 12);
         hlg.spacing = 12f;
         hlg.childControlWidth = true;
         hlg.childControlHeight = true;
@@ -2283,6 +2311,9 @@ public static class SetupAndBuild
         relCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         relCsf.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
         RelatedMovementCardView.ConfigureContainer(relContentGo.transform);
+
+        // Sticky header sits on top layer casting downward drop shadow over scrolling content
+        sheetHeaderGo.transform.SetAsLastSibling();
 
         // Scrim
         var scrimGo = CreateUIObject("Scrim", canvasStruct.SafeAreaGo);
