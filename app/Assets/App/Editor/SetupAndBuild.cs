@@ -1064,13 +1064,13 @@ public static class SetupAndBuild
         drelContentRT.anchorMax = new Vector2(0f, 0.5f);
         drelContentRT.pivot = new Vector2(0f, 0.5f);
         drelContentRT.anchoredPosition = Vector2.zero;
-        drelContentRT.sizeDelta = new Vector2(800f, 180f);
+        drelContentRT.sizeDelta = new Vector2(0f, 180f); // Auto-fit width via ContentSizeFitter
         drelScroll.content = drelContentRT;
 
         var dhlg = drelContentGo.AddComponent<HorizontalLayoutGroup>();
         dhlg.padding = new RectOffset(20, 20, 4, 12);
         dhlg.spacing = 12f;
-        dhlg.childAlignment = TextAnchor.UpperCenter; // Centered initial 2-card layout with equal 20px side margins!
+        dhlg.childAlignment = TextAnchor.UpperLeft; // Clean left-aligned layout inside auto-fitted 360px content box
         dhlg.childControlWidth = true;
         dhlg.childControlHeight = true;
         dhlg.childForceExpandWidth = false;

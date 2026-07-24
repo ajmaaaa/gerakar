@@ -20,7 +20,7 @@ namespace MotionLearn.UI
             {
                 layout.padding = new RectOffset(20, 20, 4, 12);
                 layout.spacing = 12f;
-                layout.childAlignment = TextAnchor.UpperCenter; // Centered initial 2-card layout with equal 20px side margins!
+                layout.childAlignment = TextAnchor.UpperLeft; // Clean left-aligned layout inside auto-fitted 360px content box
                 layout.childControlWidth = true;
                 layout.childControlHeight = true;
                 layout.childForceExpandWidth = false;
@@ -34,7 +34,7 @@ namespace MotionLearn.UI
                 contentRect.anchorMax = new Vector2(0f, 0.5f);
                 contentRect.pivot = new Vector2(0f, 0.5f);
                 contentRect.anchoredPosition = Vector2.zero;
-                contentRect.sizeDelta = new Vector2(contentRect.sizeDelta.x, 180f);
+                contentRect.sizeDelta = new Vector2(0f, 180f);
             }
 
             Transform viewport = container.parent;
