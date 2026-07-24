@@ -20,7 +20,11 @@ namespace MotionLearn.UI
                 {
                     text.color = ForestGreen; // Forest Green (#1F5D42) matching OpenCamera green!
                 }
-                else if (text.name == "HeaderSubtitle" || text.name == "Subtitle" || text.name == "BrandSubtitle")
+                else if (text.name == "HeaderSubtitle" || text.name == "HeaderSub")
+                {
+                    text.color = new Color(0.98f, 0.98f, 0.98f, 0.95f); // White subtitle text on AR Camera overlay!
+                }
+                else if (text.name == "Subtitle" || text.name == "BrandSubtitle")
                 {
                     text.color = new Color(0.44f, 0.38f, 0.25f, 1.0f); // Secondary text (#716040)
                 }

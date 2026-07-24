@@ -782,8 +782,8 @@ public static class SetupAndBuild
         // Header for Non-AR Detail (consistent with G08 Catalog)
         var detailHeaderGo = CreateUIObject("HeaderBar", nonARDetailPanelGo);
         var detailHeaderImg = detailHeaderGo.AddComponent<Image>();
-        detailHeaderImg.sprite = uiSolidRect;
-        detailHeaderImg.type = Image.Type.Simple;
+        detailHeaderImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundTop-24.png"); // Rounded top corners (tumpul)
+        detailHeaderImg.type = Image.Type.Sliced;
         detailHeaderImg.color = WarmCream; // Solid background hides content scrolling underneath
         AddSoftShadow(detailHeaderGo, 0f, -4f, 0.15f); // Downward drop shadow on sticky header
         var dhRT = detailHeaderGo.GetComponent<RectTransform>();
@@ -1543,9 +1543,9 @@ public static class SetupAndBuild
         SetCenterPosition(instSubtitleGo.GetComponent<RectTransform>(), 0f, -14f, 280f, 16f);
 
         // ═══════════════════════════════════════════════════════════
-        // G04 — DETECTION TOAST (Child of CenterContent)
+        // G04 — DETECTION TOAST (Full Screen Edge-to-Edge)
         // ═══════════════════════════════════════════════════════════
-        var toastGo = CreateUIObject("DetectionToast", canvasStruct.CenterContentGo);
+        var toastGo = CreateUIObject("DetectionToast", canvasStruct.CanvasGo); // Parented to root CanvasGo to cover top Android status bar!
         var toastImg = toastGo.AddComponent<Image>();
         toastImg.sprite = uiSolidRect; // Flat solid background - no rounded corner warping!
         toastImg.type = Image.Type.Simple;
@@ -1650,7 +1650,7 @@ public static class SetupAndBuild
         arHeaderSub.textWrappingMode = TextWrappingModes.Normal;
         arHeaderSub.text = "Belajar Gerak Jadi Seru";
         arHeaderSub.fontSize = 10f;
-        arHeaderSub.color = SoftSand;
+        arHeaderSub.color = new Color(0.98f, 0.98f, 0.98f, 0.95f); // Pure white subtitle text on camera screen!
         arHeaderSub.alignment = TextAlignmentOptions.Center;
         if (fonts != null) arHeaderSub.font = fonts.Medium;
         SetAnchorTop(arHeaderSubGo.GetComponent<RectTransform>(), 0f, -76f, 200f, 16f);
@@ -1928,8 +1928,8 @@ public static class SetupAndBuild
         // Header area — Solid WarmCream background with downward drop shadow separator
         var sheetHeaderGo = CreateUIObject("SheetHeader", sheetGo);
         var sheetHeaderImg = sheetHeaderGo.AddComponent<Image>();
-        sheetHeaderImg.sprite = uiSolidRect;
-        sheetHeaderImg.type = Image.Type.Simple;
+        sheetHeaderImg.sprite = roundTopSprite; // Rounded top corners (tumpul)
+        sheetHeaderImg.type = Image.Type.Sliced;
         sheetHeaderImg.color = WarmCream; // Hides content scrolling underneath
         AddSoftShadow(sheetHeaderGo, 0f, -4f, 0.15f); // Downward drop shadow on sticky header
         var shRT = sheetHeaderGo.GetComponent<RectTransform>();
@@ -2739,13 +2739,13 @@ public static class SetupAndBuild
     {
         var warnGo = CreateUIObject("CollapsibleWarning", parent);
         var warnImg = warnGo.AddComponent<Image>();
-        warnImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+        warnImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-16.png"); // Smooth rounded corners (tumpul)
         warnImg.type = Image.Type.Sliced;
         warnImg.color = WarmWhite; // Solid white background for modal dialog
 
         var warnOutline = warnGo.AddComponent<Outline>();
-        warnOutline.effectColor = SoftSand;
-        warnOutline.effectDistance = new Vector2(1f, 1f);
+        warnOutline.effectColor = new Color(0.78f, 0.70f, 0.58f, 1.0f); // Distinct outline border line stroke!
+        warnOutline.effectDistance = new Vector2(1.5f, 1.5f);
 
         AddSoftShadow(warnGo, 2f, -3f, 0.12f); // Shadow on popup modal
 
