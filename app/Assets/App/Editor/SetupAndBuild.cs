@@ -1649,7 +1649,7 @@ public static class SetupAndBuild
         tcRT.anchorMax = new Vector2(1f, 0.5f);
         tcRT.pivot = new Vector2(0.5f, 0.5f);
         tcRT.anchoredPosition = Vector2.zero;
-        tcRT.sizeDelta = new Vector2(-24f, 12f); // 12px capsule line height matching 12px circle node dots
+        tcRT.sizeDelta = new Vector2(-12f, 12f); // Extends 6px past 12px insets to fully enclose Node 0 and Node N-1 inside end caps!
 
         var circlePill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/CirclePill-24.png");
         var trackBgGo = CreateUIObject("TrackBackground", trackContainerGo);
@@ -1657,7 +1657,7 @@ public static class SetupAndBuild
         trackBgImg.sprite = circlePill;
         trackBgImg.type = Image.Type.Sliced;
         trackBgImg.preserveAspect = false;
-        trackBgImg.color = new Color(0.65f, 0.95f, 0.80f, 0.55f); // Light sage green transparent capsule track background
+        trackBgImg.color = new Color(0.09f, 0.40f, 0.20f, 0.15f); // Soft transparent forest green track background
         var tbgRT = trackBgGo.GetComponent<RectTransform>();
         tbgRT.anchorMin = new Vector2(0f, 0f);
         tbgRT.anchorMax = new Vector2(1f, 1f);
@@ -1724,13 +1724,13 @@ public static class SetupAndBuild
         shadow.effectColor = new Color(0f, 0f, 0f, 0.25f);
         shadow.effectDistance = new Vector2(0f, -2f);
 
-        var nodeContainerGo = CreateUIObject("NodeContainer", trackContainerGo);
+        var nodeContainerGo = CreateUIObject("NodeContainer", sliderGo);
         var ncRT = nodeContainerGo.GetComponent<RectTransform>();
         ncRT.anchorMin = new Vector2(0f, 0f);
         ncRT.anchorMax = new Vector2(1f, 1f);
         ncRT.pivot = new Vector2(0.5f, 0.5f);
-        ncRT.offsetMin = Vector2.zero; // Spans 100% flush across TrackContainer from Node 0 to Node N-1
-        ncRT.offsetMax = Vector2.zero;
+        ncRT.offsetMin = new Vector2(12f, 0f); // Center of Node 0 at x=12px (exact center of left 12px end cap)
+        ncRT.offsetMax = new Vector2(-12f, 0f); // Center of Node N-1 at x=288px (exact center of right 12px end cap)
 
         var markerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
             "Assets/App/Prefabs/TimelineMarker.prefab");
@@ -1750,13 +1750,13 @@ public static class SetupAndBuild
 
         var midLabelGo = CreateUIObject("Petunjuk", tlBottomLabelsGo);
         var midLabel = midLabelGo.AddComponent<TextMeshProUGUI>();
-        midLabel.textWrappingMode = TextWrappingModes.Normal;
+        midLabel.textWrappingMode = TextWrappingModes.NoWrap;
         midLabel.text = "Geser untuk memeriksa pose";
         midLabel.fontSize = 11f;
         midLabel.color = SecondaryText;
         midLabel.alignment = TextAlignmentOptions.Center;
         if (fonts != null) midLabel.font = fonts.Medium;
-        SetCenterPosition(midLabelGo.GetComponent<RectTransform>(), 0f, 0f, 160f, 14f);
+        SetCenterPosition(midLabelGo.GetComponent<RectTransform>(), 0f, 0f, 260f, 14f);
 
         var endLabelGo = CreateUIObject("Selesai", tlBottomLabelsGo);
         var endLabel = endLabelGo.AddComponent<TextMeshProUGUI>();

@@ -172,14 +172,18 @@ namespace MotionLearn.UI
 
         private void UpdateMarkerColors(float sliderValue)
         {
-            Color lineGreen = new Color(0.09f, 0.40f, 0.20f, 1.0f); // Exact same Forest Green as the line when passed
             for (int i = 0; i < _markers.Count; i++)
             {
                 if (_markers[i] == null) continue;
                 var img = _markers[i].GetComponent<Image>();
                 if (img != null)
                 {
-                    img.color = lineGreen; // All marker nodes use the exact same green color as the line
+                    float t = _markerTimes[i];
+                    // Active/Passed nodes: Pure White for crisp high-contrast visibility on dark green fill line!
+                    // Upcoming nodes: Forest Green on light sage track background!
+                    img.color = (t <= sliderValue)
+                        ? Color.white
+                        : new Color(0.09f, 0.40f, 0.20f, 1.0f);
                 }
             }
         }
@@ -189,7 +193,6 @@ namespace MotionLearn.UI
             if (markerContainer == null || markerPrefab == null || poses == null) return;
             AlignMarkersWithHandleRange();
             _accentColor = accentColor;
-            Color lineGreen = new Color(0.09f, 0.40f, 0.20f, 1.0f);
 
             for (int i = 0; i < poses.Count; i++)
             {
@@ -205,7 +208,6 @@ namespace MotionLearn.UI
 #endif
                     img.type = Image.Type.Simple;
                     img.preserveAspect = true;
-                    img.color = lineGreen;
                 }
                 var rt = dot.GetComponent<RectTransform>();
                 if (rt != null)
@@ -214,7 +216,7 @@ namespace MotionLearn.UI
                     rt.anchorMax = new Vector2(markerTime, 0.5f);
                     rt.pivot = new Vector2(0.5f, 0.5f);
                     rt.anchoredPosition = Vector2.zero;
-                    rt.sizeDelta = new Vector2(12f, 12f); // 12x12 node dot on 6px line
+                    rt.sizeDelta = new Vector2(10f, 10f); // 10px crisp circle node
                 }
 
                 _markers.Add(dot);
@@ -244,8 +246,8 @@ namespace MotionLearn.UI
                 mcRT.anchorMin = new Vector2(0f, 0f);
                 mcRT.anchorMax = new Vector2(1f, 1f);
                 mcRT.pivot = new Vector2(0.5f, 0.5f);
-                mcRT.offsetMin = Vector2.zero; // Spans 100% flush across TrackContainer from Node 0 to Node N-1
-                mcRT.offsetMax = Vector2.zero;
+                mcRT.offsetMin = new Vector2(12f, 0f); // Inset 12px from left matching handle knob center
+                mcRT.offsetMax = new Vector2(-12f, 0f); // Inset 12px from right matching handle knob center
             }
         }
 
