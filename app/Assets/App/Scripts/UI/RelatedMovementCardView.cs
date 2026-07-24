@@ -8,6 +8,7 @@ namespace MotionLearn.UI
     public static class RelatedMovementCardView
     {
         private static readonly Color WarmCream = new Color32(244, 240, 230, 255);
+        private static readonly Color WarmWhite = new Color32(251, 248, 243, 255);
         private static readonly Color DeepForest = new Color32(18, 55, 42, 255);
 
         public static void ConfigureContainer(Transform container)
@@ -162,21 +163,24 @@ namespace MotionLearn.UI
             frameRect.sizeDelta = new Vector2(-20f, 118f);
 
             Image frame = frameTransform.GetComponent<Image>();
-            frame.sprite = cardBackground != null ? cardBackground.sprite : null;
-            frame.type = frame.sprite != null ? Image.Type.Sliced : Image.Type.Simple;
-            frame.color = WarmCream;
+#if UNITY_EDITOR
+            frame.sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-12.png");
+#endif
+            frame.type = Image.Type.Sliced;
+            frame.color = WarmWhite; // Solid clean WarmWhite inner card box
             frame.raycastTarget = false;
 
             Mask mask = frameTransform.GetComponent<Mask>();
-            mask.showMaskGraphic = true;
+            if (mask != null)
+                mask.showMaskGraphic = true;
 
             thumbnailTransform.SetParent(frameTransform, false);
             RectTransform rect = thumbnailTransform as RectTransform;
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
             rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = new Vector2(-8f, -8f);
+            rect.offsetMin = new Vector2(6f, 6f);
+            rect.offsetMax = new Vector2(-6f, -6f);
 
             Image image = thumbnailTransform.GetComponent<Image>();
             if (image == null)
