@@ -2337,7 +2337,8 @@ public static class SetupAndBuild
         relLE.preferredHeight = 180f;
 
         var relViewportGo = CreateUIObject("Viewport", relatedScrollViewGo);
-        relViewportGo.AddComponent<RectMask2D>();
+        var relMask = relViewportGo.AddComponent<RectMask2D>();
+        relMask.padding = new Vector4(-20f, 0f, -20f, 0f); // Allow cards to scroll 100% unclipped edge-to-edge!
         StretchRect(relViewportGo.GetComponent<RectTransform>());
         relScroll.viewport = relViewportGo.GetComponent<RectTransform>();
 
@@ -2347,14 +2348,17 @@ public static class SetupAndBuild
         relContentRT.anchorMax = new Vector2(0f, 0.5f);
         relContentRT.pivot = new Vector2(0f, 0.5f);
         relContentRT.anchoredPosition = Vector2.zero;
-        relContentRT.sizeDelta = new Vector2(800f, 180f);
+        relContentRT.sizeDelta = new Vector2(0f, 180f); // Auto-fit width via ContentSizeFitter
         relScroll.content = relContentRT;
 
         var hlg = relContentGo.AddComponent<HorizontalLayoutGroup>();
         hlg.padding = new RectOffset(20, 20, 4, 12);
         hlg.spacing = 12f;
+        hlg.childAlignment = TextAnchor.UpperLeft; // Clean left-aligned layout inside auto-fitted 360px content box
         hlg.childControlWidth = true;
         hlg.childControlHeight = true;
+        hlg.childForceExpandWidth = false;
+        hlg.childForceExpandHeight = false;
 
         var relCsf = relContentGo.AddComponent<ContentSizeFitter>();
         relCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
