@@ -1649,12 +1649,12 @@ public static class SetupAndBuild
         tcRT.anchorMax = new Vector2(1f, 0.5f);
         tcRT.pivot = new Vector2(0.5f, 0.5f);
         tcRT.anchoredPosition = Vector2.zero;
-        tcRT.sizeDelta = new Vector2(-12f, 12f); // Extends 6px past 12px insets to fully enclose Node 0 and Node N-1 inside end caps!
+        tcRT.sizeDelta = new Vector2(-24f, 12f); // Exact bounds from Node 0 center (x=12px) to Node N-1 center (x=288px)
 
-        var circlePill = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/CirclePill-24.png");
+        var smoothCapsule = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/SmoothCapsule-12.png");
         var trackBgGo = CreateUIObject("TrackBackground", trackContainerGo);
         var trackBgImg = trackBgGo.AddComponent<Image>();
-        trackBgImg.sprite = circlePill;
+        trackBgImg.sprite = smoothCapsule;
         trackBgImg.type = Image.Type.Sliced;
         trackBgImg.preserveAspect = false;
         trackBgImg.color = new Color(0.09f, 0.40f, 0.20f, 0.15f); // Soft transparent forest green track background
@@ -1675,7 +1675,7 @@ public static class SetupAndBuild
 
         var activeFillGo = CreateUIObject("ActiveFill", fillAreaGo);
         var fillImg = activeFillGo.AddComponent<Image>();
-        fillImg.sprite = circlePill;
+        fillImg.sprite = smoothCapsule;
         fillImg.type = Image.Type.Sliced;
         fillImg.preserveAspect = false;
         fillImg.color = ForestGreen; // Thick Forest Green active fill
