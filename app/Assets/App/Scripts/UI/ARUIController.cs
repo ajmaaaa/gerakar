@@ -210,7 +210,7 @@ namespace MotionLearn.UI
         {
             if (toast == null) return;
 
-            // 1. Full Screen Warm Beige Background View (100% x 100%)
+            // 1. Full Screen Solid Warm Beige View (100% x 100%, flat solid, no rounded corner warping)
             RectTransform toastRect = toast.GetComponent<RectTransform>();
             if (toastRect != null)
             {
@@ -224,6 +224,7 @@ namespace MotionLearn.UI
             Image toastBg = toast.GetComponent<Image>();
             if (toastBg != null)
             {
+                toastBg.sprite = null; // Flat solid background - no rounded corner warping!
                 toastBg.color = new Color(0.98f, 0.97f, 0.95f, 1.0f); // Solid Warm White / Beige (#FAF8F5)
                 toastBg.type = Image.Type.Simple;
             }
@@ -234,34 +235,14 @@ namespace MotionLearn.UI
                 toastOutline.enabled = false;
             }
 
-            // 2. MotionLearn Header Title Text ("MOTIONLEARN") at top
-            Transform headerTrans = toast.transform.Find("HeaderTitleText");
-            if (headerTrans == null)
+            // Remove duplicate header text on toast to prevent overlapping with main AppHeader
+            Transform duplicateHeader = toast.transform.Find("HeaderTitleText");
+            if (duplicateHeader != null)
             {
-                var headerGo = new GameObject("HeaderTitleText", typeof(RectTransform), typeof(TextMeshProUGUI));
-                headerGo.layer = toast.layer;
-                headerTrans = headerGo.transform;
-                headerTrans.SetParent(toast.transform, false);
-            }
-            TextMeshProUGUI headerTxt = headerTrans.GetComponent<TextMeshProUGUI>();
-            if (headerTxt != null)
-            {
-                var headerRect = headerTrans as RectTransform;
-                headerRect.anchorMin = new Vector2(0.5f, 1f);
-                headerRect.anchorMax = new Vector2(0.5f, 1f);
-                headerRect.pivot = new Vector2(0.5f, 1f);
-                headerRect.anchoredPosition = new Vector2(0f, -54f);
-                headerRect.sizeDelta = new Vector2(300f, 32f);
-
-                headerTxt.text = "MOTIONLEARN";
-                headerTxt.fontSize = 16f;
-                headerTxt.fontStyle = FontStyles.Bold;
-                headerTxt.characterSpacing = 2f;
-                headerTxt.color = new Color(0.06f, 0.15f, 0.09f, 1.0f);
-                headerTxt.alignment = TextAlignmentOptions.Center;
+                duplicateHeader.gameObject.SetActive(false);
             }
 
-            // 3. Centered Checkmark Badge (64px x 64px at center y: 50f)
+            // 2. Centered Checkmark Badge (64px x 64px at center y: 40f)
             Transform circleTrans = toast.transform.Find("SuccessCircle");
             if (circleTrans != null)
             {
@@ -269,7 +250,7 @@ namespace MotionLearn.UI
                 circleRect.anchorMin = new Vector2(0.5f, 0.5f);
                 circleRect.anchorMax = new Vector2(0.5f, 0.5f);
                 circleRect.pivot = new Vector2(0.5f, 0.5f);
-                circleRect.anchoredPosition = new Vector2(0f, 50f);
+                circleRect.anchoredPosition = new Vector2(0f, 40f);
                 circleRect.sizeDelta = new Vector2(64f, 64f);
 
                 Image circleImg = circleTrans.GetComponent<Image>();
@@ -291,7 +272,7 @@ namespace MotionLearn.UI
                 }
             }
 
-            // 4. Centered Kicker Text ("GERAKAN TERDETEKSI") at y: -10f
+            // 3. Centered Kicker Text ("GERAKAN TERDETEKSI") at y: -20f
             Transform kickerTrans = toast.transform.Find("KickerText");
             if (kickerTrans == null)
             {
@@ -307,7 +288,7 @@ namespace MotionLearn.UI
                 kickerRect.anchorMin = new Vector2(0.5f, 0.5f);
                 kickerRect.anchorMax = new Vector2(0.5f, 0.5f);
                 kickerRect.pivot = new Vector2(0.5f, 0.5f);
-                kickerRect.anchoredPosition = new Vector2(0f, -10f);
+                kickerRect.anchoredPosition = new Vector2(0f, -20f);
                 kickerRect.sizeDelta = new Vector2(300f, 20f);
 
                 kickerTxt.text = "GERAKAN TERDETEKSI";
@@ -319,7 +300,7 @@ namespace MotionLearn.UI
                 kickerTxt.textWrappingMode = TextWrappingModes.NoWrap;
             }
 
-            // 5. Centered Movement Name Title Text ("Air Squat") at y: -50f
+            // 4. Centered Movement Name Title Text ("Air Squat") at y: -60f
             Transform titleTrans = toast.transform.Find("TitleText");
             if (titleTrans != null)
             {
@@ -327,8 +308,8 @@ namespace MotionLearn.UI
                 titleRect.anchorMin = new Vector2(0.5f, 0.5f);
                 titleRect.anchorMax = new Vector2(0.5f, 0.5f);
                 titleRect.pivot = new Vector2(0.5f, 0.5f);
-                titleRect.anchoredPosition = new Vector2(0f, -50f);
-                titleRect.sizeDelta = new Vector2(320f, 36f);
+                titleRect.anchoredPosition = new Vector2(0f, -60f);
+                titleRect.sizeDelta = new Vector2(320f, 38f);
 
                 TextMeshProUGUI titleTxt = titleTrans.GetComponent<TextMeshProUGUI>();
                 if (titleTxt != null)
@@ -343,7 +324,7 @@ namespace MotionLearn.UI
                 }
             }
 
-            // 6. Hide MovementPill / image container
+            // 5. Hide MovementPill / image container
             Transform pillTrans = toast.transform.Find("MovementPill");
             if (pillTrans != null)
             {

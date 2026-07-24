@@ -333,7 +333,23 @@ public static class ScreenshotCapturer
         {
             deactivateAll();
             detectionToastGo.SetActive(true);
-            if (appHeaderGo != null) appHeaderGo.SetActive(true);
+            if (appHeaderGo != null)
+            {
+                appHeaderGo.SetActive(true);
+                UIRuntimeStyler.EnsureHeaderContrast(appHeaderGo.transform);
+            }
+
+            var titleTrans = detectionToastGo.transform.Find("TitleText");
+            if (titleTrans != null)
+            {
+                var titleTxt = titleTrans.GetComponent<TMPro.TextMeshProUGUI>();
+                if (titleTxt != null)
+                {
+                    titleTxt.text = "Air Squat";
+                    titleTxt.color = new Color(0.06f, 0.15f, 0.09f, 1.0f);
+                }
+            }
+
             SaveRTToPNG(cam, rt, Path.Combine(outDir, "G04_DetectionToast.png"));
         }
         else

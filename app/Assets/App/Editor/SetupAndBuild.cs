@@ -1478,8 +1478,8 @@ public static class SetupAndBuild
         // ═══════════════════════════════════════════════════════════
         var toastGo = CreateUIObject("DetectionToast", canvasStruct.CenterContentGo);
         var toastImg = toastGo.AddComponent<Image>();
-        toastImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/RoundedRect-24.png");
-        toastImg.type = Image.Type.Sliced;
+        toastImg.sprite = uiSolidRect; // Flat solid background - no rounded corner warping!
+        toastImg.type = Image.Type.Simple;
         toastImg.color = WarmWhite;
         // 1. Full Screen Warm Beige Background View (100% x 100%)
         var toastRT = toastGo.GetComponent<RectTransform>();
@@ -1489,28 +1489,12 @@ public static class SetupAndBuild
         toastRT.offsetMin = Vector2.zero;
         toastRT.offsetMax = Vector2.zero;
 
-        var toastHeaderGo = CreateUIObject("HeaderTitleText", toastGo);
-        var toastHeader = toastHeaderGo.AddComponent<TextMeshProUGUI>();
-        toastHeader.text = "MOTIONLEARN";
-        toastHeader.fontSize = 16f;
-        toastHeader.fontStyle = FontStyles.Bold;
-        toastHeader.characterSpacing = 2f;
-        toastHeader.color = DeepForest;
-        toastHeader.alignment = TextAlignmentOptions.Center;
-        if (fonts != null) toastHeader.font = fonts.Heading;
-        var thRT = toastHeaderGo.GetComponent<RectTransform>();
-        thRT.anchorMin = new Vector2(0.5f, 1f);
-        thRT.anchorMax = new Vector2(0.5f, 1f);
-        thRT.pivot = new Vector2(0.5f, 1f);
-        thRT.anchoredPosition = new Vector2(0f, -54f);
-        thRT.sizeDelta = new Vector2(300f, 32f);
-
         var toastCircleGo = CreateUIObject("SuccessCircle", toastGo);
         var toastCircleImg = toastCircleGo.AddComponent<Image>();
         toastCircleImg.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/App/UI/Sprites/Shapes/Circle-24.png");
         toastCircleImg.type = Image.Type.Simple;
         toastCircleImg.color = new Color(0.13f, 0.65f, 0.32f, 1.0f);
-        SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 50f, 64f, 64f);
+        SetCenterPosition(toastCircleGo.GetComponent<RectTransform>(), 0f, 40f, 64f, 64f);
 
         var toastCheckGo = CreateUIObject("CheckIcon", toastCircleGo);
         var toastCheck = toastCheckGo.AddComponent<Image>();
