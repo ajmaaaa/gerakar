@@ -314,11 +314,11 @@ namespace MotionLearn.UI
                     innerImg.color = new Color(0.09f, 0.65f, 0.28f, 1.0f);
                 }
 
-                // Ensure solid white checkmark icon inside innerTrans
+                // Ensure solid white checkmark icon inside innerTrans (pixel-perfect vertex join)
                 if (innerTrans.Find("CheckStroke1") == null)
                 {
-                    CreateCheckStroke(innerTrans, "CheckStroke1", new Vector2(-4f, -2f), new Vector2(10f, 4.5f), 45f);
-                    CreateCheckStroke(innerTrans, "CheckStroke2", new Vector2(3.5f, 2f), new Vector2(18f, 4.5f), -45f);
+                    CreateCheckStroke(innerTrans, "CheckStroke1", new Vector2(-5.0f, -2.5f), new Vector2(10f, 4.5f), 45f);
+                    CreateCheckStroke(innerTrans, "CheckStroke2", new Vector2(3.2f, 2.8f), new Vector2(18f, 4.5f), -45f);
                 }
             }
 

@@ -16,17 +16,17 @@ namespace MotionLearn.UI
 
             foreach (TextMeshProUGUI text in header.GetComponentsInChildren<TextMeshProUGUI>(true))
             {
-                if (text.name == "HeaderTitle" || text.name == "Title" || text.name == "BrandTitle")
+                if (text.name == "HeaderTitle" || text.name == "Title" || text.name == "BrandTitle" || text.name == "Brand")
                 {
-                    text.color = new Color(0.06f, 0.15f, 0.09f, 1.0f); // Deep Forest Green (#0C2314)
+                    text.color = ForestGreen; // Forest Green (#1F5D42) matching OpenCamera green!
                 }
                 else if (text.name == "HeaderSubtitle" || text.name == "Subtitle" || text.name == "BrandSubtitle")
                 {
-                    text.color = new Color(0.09f, 0.40f, 0.20f, 1.0f); // Forest Green (#166534)
+                    text.color = new Color(0.44f, 0.38f, 0.25f, 1.0f); // Secondary text (#716040)
                 }
                 else
                 {
-                    text.color = new Color(0.06f, 0.15f, 0.09f, 1.0f);
+                    text.color = ForestGreen;
                 }
 
                 Outline outline = text.GetComponent<Outline>();
